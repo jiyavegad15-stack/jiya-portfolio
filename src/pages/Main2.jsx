@@ -584,7 +584,7 @@ const Main2 = () => {
         <Link to="/about" style={Styles.NavLink(open)} className="nav-hover">
           About
         </Link>
-        <Link to="/portfolio" style={Styles.NavLink(open)} className="nav-hover">
+        <Link to="/work" style={Styles.NavLink(open)} className="nav-hover">
           Portfolio
         </Link>
         <Link to="/education" style={Styles.NavLink(open)} className="nav-hover">
