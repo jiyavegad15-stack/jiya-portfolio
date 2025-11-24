@@ -164,6 +164,7 @@ const AboutStyles = {
         alignItems: "center",
         gap: "14px",
         fontFamily: "'Georgia', serif",
+        textDecoration: "none",
     },
 
     SocialIcons: {
@@ -226,7 +227,7 @@ const AboutStyles = {
 
 // 🌿 ENHANCED UI COMPONENTS
 const LogoComponent = () => (
-    <Link to="/" style={{...AboutStyles.Logo, textDecoration: 'none', color: 'inherit'}}>
+    <Link to="/" style={AboutStyles.Logo}>
         <div style={{
             width: "14px",
             height: "14px",
