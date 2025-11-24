@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
 import {
   Zap,
   Linkedin,
@@ -47,6 +48,7 @@ const Styles = {
     display: "flex",
     alignItems: "center",
     gap: "1rem",
+    textDecoration: "none",
   },
 
   SocialIconsContainer: {
@@ -284,7 +286,7 @@ const IntroContent = () => (
 );
 
 const LogoComponent = () => (
-  <div style={Styles.Logo} className="logo-mobile">
+  <Link to="/" style={Styles.Logo} className="logo-mobile">
     <div
       style={{
         width: "12px",
@@ -295,7 +297,7 @@ const LogoComponent = () => (
       }}
     />
     JV
-  </div>
+  </Link>
 );
 
 const SocialIcons = () => (
@@ -577,27 +579,28 @@ const Main2 = () => {
         </button>
       )}
 
+      {/* FIXED NAVIGATION - Using React Router Link */}
       <div style={Styles.NavLinks(open)} className="nav-links-mobile">
-        <a href="/jiya-portfolio/#/about" style={Styles.NavLink(open)} className="nav-hover">
+        <Link to="/about" style={Styles.NavLink(open)} className="nav-hover">
           About
-        </a>
-        <a href="/jiya-portfolio/#/work" style={Styles.NavLink(open)} className="nav-hover">
+        </Link>
+        <Link to="/portfolio" style={Styles.NavLink(open)} className="nav-hover">
           Portfolio
-        </a>
-        <a href="/jiya-portfolio/#/education" style={Styles.NavLink(open)} className="nav-hover">
+        </Link>
+        <Link to="/education" style={Styles.NavLink(open)} className="nav-hover">
           Education
-        </a>
+        </Link>
       </div>
 
       {/* Side links - Hidden on mobile */}
       {!isMobile && (
         <div style={Styles.SideElements(open)} className="side-elements-mobile">
-          <a href="/jiya-portfolio/#/cv" style={Styles.SideLink} className="side-hover">
+          <Link to="/cv" style={Styles.SideLink} className="side-hover">
             Curriculum Vitae
-          </a>
-          <a href="/jiya-portfolio/#/process" style={Styles.SideLink} className="side-hover">
+          </Link>
+          <Link to="/process" style={Styles.SideLink} className="side-hover">
             Design Philosophy
-          </a>
+          </Link>
         </div>
       )}
     </div>
