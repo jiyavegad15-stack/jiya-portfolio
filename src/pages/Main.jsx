@@ -580,13 +580,13 @@ const PremiumAppContent = () => {
 
       {/* Bottom Navigation */}
       <div style={Styles.NavLinks(open)} className="nav-links-mobile">
-        <a href="/#/about" style={Styles.NavLink(open)} className="nav-hover">
+        <a href="/jiya-portfolio/#/about" style={Styles.NavLink(open)} className="nav-hover">
           About
         </a>
-        <a href="/#/work" style={Styles.NavLink(open)} className="nav-hover">
+        <a href="/jiya-portfolio/#/work" style={Styles.NavLink(open)} className="nav-hover">
           Portfolio
         </a>
-        <a href="/#/Education" style={Styles.NavLink(open)} className="nav-hover">
+        <a href="/jiya-portfolio/#/Education" style={Styles.NavLink(open)} className="nav-hover">
           Education
         </a>
       </div>
@@ -594,10 +594,10 @@ const PremiumAppContent = () => {
       {/* Side links - Hidden on mobile */}
       {!isMobile && (
         <div style={Styles.SideElements(open)} className="side-elements-mobile">
-          <a href="/#/cv" style={Styles.SideLink} className="side-hover">
+          <a href="/jiya-portfolio/#/cv" style={Styles.SideLink} className="side-hover">
             Curriculum Vitae
           </a>
-          <a href="/#/process" style={Styles.SideLink} className="side-hover">
+          <a href="/jiya-portfolio/#/process" style={Styles.SideLink} className="side-hover">
             Design Philosophy
           </a>
         </div>
