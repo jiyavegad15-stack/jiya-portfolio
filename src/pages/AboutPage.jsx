@@ -262,7 +262,7 @@ const SocialIcons = () => (
 );
 
 const PowerButton = () => (
-    <Link to="main2" style={AboutStyles.PowerButton} className="power-hover">
+    <Link to="/main2" style={AboutStyles.PowerButton} className="power-hover">
         <Zap size={26} style={{ color: Theme.CREAM_WHITE }} />
     </Link>
 );
