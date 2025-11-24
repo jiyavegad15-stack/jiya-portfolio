@@ -1,7 +1,5 @@
-import React from "react";
-import { Link } from "react-router-dom";
-import { Zap, Github, Instagram, Linkedin, Sparkles, Palette, Scissors, Heart, ArrowRight, BookOpen, MapPin } from "lucide-react";
-import ConceptSketch from "../components/ConceptSketch";
+import React, { useState } from "react";
+import { Zap, Github, Linkedin, Sparkles, Palette, Scissors, Heart, ArrowRight, BookOpen, MapPin, Code, Briefcase, GraduationCap, Grid, Instagram } from "lucide-react";
 
 // 🎨 REFINED COLOR PALETTE
 const Theme = {
@@ -13,422 +11,240 @@ const Theme = {
     CREAM_WHITE: "#FFFDF8"
 };
 
-// 🌿 ELEGANT ANIMATIONS
+// 🌿 ELEGANT ANIMATIONS (Custom CSS is kept for complex animations)
 const animationsCSS = `
 @keyframes fadeInUp {
-  0% { opacity: 0; transform: translateY(40px); }
-  100% { opacity: 1; transform: translateY(0); }
+  0% { opacity: 0; transform: translateY(40px); }
+  100% { opacity: 1; transform: translateY(0); }
 }
 
 @keyframes fadeInLeft {
-  0% { opacity: 0; transform: translateX(-40px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0% { opacity: 0; transform: translateX(-40px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes fadeInRight {
-  0% { opacity: 0; transform: translateX(40px); }
-  100% { opacity: 1; transform: translateX(0); }
+  0% { opacity: 0; transform: translateX(40px); }
+  100% { opacity: 1; transform: translateX(0); }
 }
 
 @keyframes gentlePulse {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.02); }
-}
-
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.02); }
 }
 
 .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
 .animate-fadeInLeft { animation: fadeInLeft 0.8s ease-out forwards; }
 .animate-fadeInRight { animation: fadeInRight 0.8s ease-out forwards; }
 .animate-pulse { animation: gentlePulse 3s ease-in-out infinite; }
+
+/* Hover effects */
+.social-hover:hover {
+    transform: translateY(-3px);
+    background: rgba(251, 233, 208, 0.15);
+    border-color: rgba(230, 72, 51, 0.4);
+    box-shadow: 0 10px 30px rgba(230, 72, 51, 0.3);
+}
+
+.power-hover:hover {
+    transform: translateX(-50%) scale(1.1);
+    box-shadow: 0 15px 40px rgba(230, 72, 51, 0.5);
+}
+
+.content-hover:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 35px 70px rgba(36, 72, 85, 0.5);
+}
+
+.nav-item:hover {
+    color: ${Theme.WARM_RED};
+    transform: scale(1.05);
+}
+
+/* Backdrop fallback */
+.backdrop-fallback {
+    background: rgba(36, 72, 85, 0.6);
+}
+
+/* Base link reset */
+a {
+    text-decoration: none;
+}
 `;
 
-// 🌿 PREMIUM STYLES
-const AboutStyles = {
-    Box: {
-        backgroundColor: Theme.DARK_TEAL,
-        width: "100vw",
-        minHeight: "100vh",
-        color: Theme.SOFT_BEIGE,
-        position: "relative",
-        overflowX: "hidden",
-        overflowY: "auto",
-        fontFamily: "'Georgia', 'Times New Roman', serif",
-        background: `linear-gradient(135deg, ${Theme.DARK_TEAL} 0%, #1a3a47 100%)`,
-    },
-
-    BackgroundElements: {
-        position: "fixed",
-        inset: 0,
-        pointerEvents: "none",
-        zIndex: 0,
-    },
-
+// 🌿 COMPLEX INLINE STYLES (For non-Tailwindable effects like custom glass, gradients, and filters)
+const ComplexStyles = {
+    // Floating orb component style helper
     FloatingOrb: (size, color, top, left, opacity) => ({
         position: "absolute",
         width: size,
         height: size,
         borderRadius: "50%",
         background: `radial-gradient(circle, ${color}${opacity} 0%, transparent 70%)`,
-        filter: "blur(40px)",
+        filter: "blur(50px)",
         top,
         left,
     }),
 
-    ContentArea: {
-        width: "52vw",
-        position: "relative",
-        left: "10%",
-        zIndex: 2,
-        paddingTop: "12%",
-        paddingBottom: "6rem",
-    },
-
+    // Main Bio Box style
     MainContentBox: {
-        width: "100%",
-        padding: "4rem 4.5rem",
-        marginBottom: "3rem",
-        borderLeft: `4px solid ${Theme.WARM_RED}`,
         background: `linear-gradient(135deg, 
             rgba(251, 233, 208, 0.08) 0%, 
             rgba(144, 174, 173, 0.05) 50%,
             rgba(135, 79, 65, 0.03) 100%)`,
         backdropFilter: "blur(16px)",
         WebkitBackdropFilter: "blur(16px)",
-        borderRadius: "24px",
         boxShadow: `
             0 25px 50px rgba(36, 72, 85, 0.3),
             inset 0 1px 0 rgba(251, 233, 208, 0.1),
             inset 0 0 0 1px rgba(251, 233, 208, 0.05)
         `,
-        lineHeight: 1.7,
-        fontSize: "1.15rem",
-        position: "relative",
-        overflow: "hidden",
     },
 
+    // Interests Box style
     InterestsContentBox: {
-        width: "90%",
-        padding: "3rem 3.5rem",
-        border: `1.5px solid ${Theme.MUTED_AQUA}25`,
         background: `linear-gradient(135deg, 
             rgba(135, 79, 65, 0.08) 0%, 
             rgba(144, 174, 173, 0.06) 100%)`,
         backdropFilter: "blur(12px)",
         WebkitBackdropFilter: "blur(12px)",
-        borderRadius: "20px",
         boxShadow: "0 20px 40px rgba(36, 72, 85, 0.25)",
-        lineHeight: 1.65,
-        fontSize: "1.05rem",
-        position: "relative",
     },
 
+    // Heading style (for gradient text)
     Heading: {
-        fontSize: "3.5rem",
-        fontWeight: 700,
-        marginBottom: "2.5rem",
-        color: Theme.SOFT_BEIGE,
-        letterSpacing: "0.5px",
-        fontFamily: "'Georgia', serif",
         background: `linear-gradient(135deg, ${Theme.SOFT_BEIGE} 0%, ${Theme.MUTED_AQUA} 100%)`,
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
-        lineHeight: "1.2",
+        letterSpacing: "0.5px",
     },
 
+    // SubHeading style
     SubHeading: {
-        fontSize: "1.8rem",
-        fontWeight: 600,
-        marginTop: "3rem",
-        marginBottom: "1.5rem",
         color: Theme.WARM_RED,
-        display: "flex",
-        alignItems: "center",
-        gap: "16px",
-        fontFamily: "'Georgia', serif",
-    },
-
-    Logo: {
-        position: "fixed",
-        top: "3rem",
-        left: "4rem",
-        zIndex: 50,
-        fontSize: "2.4rem",
-        fontWeight: "700",
-        color: Theme.SOFT_BEIGE,
-        display: "flex",
-        alignItems: "center",
-        gap: "14px",
-        fontFamily: "'Georgia', serif",
-        textDecoration: "none",
-    },
-
-    SocialIcons: {
-        position: "fixed",
-        top: "3rem",
-        right: "4rem",
-        display: "flex",
-        gap: "1rem",
-        zIndex: 50,
-    },
-
-    SocialIcon: {
-        width: "46px",
-        height: "46px",
-        borderRadius: "50%",
-        background: "rgba(251, 233, 208, 0.08)",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        backdropFilter: "blur(12px)",
-        border: `1.5px solid ${Theme.SOFT_BEIGE}20`,
-        transition: "all 0.3s ease",
-        cursor: "pointer",
-        color: Theme.SOFT_BEIGE,
-        textDecoration: "none",
-    },
-
-    PowerButton: {
-        position: "fixed",
-        top: "1.5rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "56px",
-        height: "56px",
-        borderRadius: "50%",
-        background: `linear-gradient(135deg, ${Theme.WARM_RED} 0%, ${Theme.MUDDY_BROWN} 100%)`,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        textDecoration: "none",
-        boxShadow: `0 8px 30px ${Theme.WARM_RED}30`,
-        zIndex: 60,
-        transition: "all 0.3s ease",
-    },
-
-    BigTitle: {
-        position: "fixed",
-        top: "10%",
-        left: "8%",
-        fontSize: "15vh",
-        fontWeight: "900",
-        letterSpacing: "4px",
-        opacity: 0.03,
-        color: Theme.SOFT_BEIGE,
-        pointerEvents: "none",
-        zIndex: 0,
-        fontFamily: "'Georgia', serif",
     },
 };
 
-// 🌿 ENHANCED UI COMPONENTS
-const LogoComponent = () => (
-    <Link to="/" style={AboutStyles.Logo}>
-        <div style={{
-            width: "14px",
-            height: "14px",
-            borderRadius: "50%",
-            background: `linear-gradient(135deg, ${Theme.WARM_RED}, ${Theme.MUDDY_BROWN})`,
-            boxShadow: `0 0 25px ${Theme.WARM_RED}40`,
-        }}></div>
-        JV
-    </Link>
-);
-
-const SocialIcons = () => (
-    <div style={AboutStyles.SocialIcons}>
-        <a 
-            href="https://instagram.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={AboutStyles.SocialIcon} 
-            className="social-hover"
-        >
-            <Instagram size={22} />
-        </a>
-        <a 
-            href="https://linkedin.com" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            style={AboutStyles.SocialIcon} 
-            className="social-hover"
-        >
-            <Linkedin size={22} />
-        </a>
-    </div>
-);
-
-const PowerButton = () => (
-    <Link to="/main2" style={AboutStyles.PowerButton} className="power-hover">
-        <Zap size={26} style={{ color: Theme.CREAM_WHITE }} />
-    </Link>
-);
+// -----------------------------------------------------------
+// UI COMPONENTS - Shared by AboutPageContent
+// -----------------------------------------------------------
 
 const BackgroundElements = () => (
-    <div style={AboutStyles.BackgroundElements}>
-        <div style={AboutStyles.FloatingOrb("400px", Theme.WARM_RED, "15%", "10%", "08")} />
-        <div style={AboutStyles.FloatingOrb("500px", Theme.MUTED_AQUA, "60%", "80%", "06")} />
-        <div style={AboutStyles.FloatingOrb("300px", Theme.MUDDY_BROWN, "75%", "15%", "05")} />
+    <div className="fixed inset-0 pointer-events-none z-0">
+        {/* Adjusted opacity values in hex for a smoother look */}
+        <div style={ComplexStyles.FloatingOrb("400px", Theme.WARM_RED, "15%", "10%", "08")} />
+        <div style={ComplexStyles.FloatingOrb("500px", Theme.MUTED_AQUA, "60%", "80%", "06")} />
+        <div style={ComplexStyles.FloatingOrb("300px", Theme.MUDDY_BROWN, "75%", "15%", "05")} />
     </div>
 );
 
-const BigTitle = () => (
-    <h1 style={AboutStyles.BigTitle}>
-        ABOUT
+const BigTitle = ({ title }) => (
+    <h1 className="fixed top-[10%] left-1/2 -translate-x-1/2 md:left-[8%] md:translate-x-0 text-[10vh] md:text-[15vh] font-[900] opacity-3 pointer-events-none z-0" 
+        style={{ color: Theme.SOFT_BEIGE }}
+    >
+        {title}
     </h1>
 );
 
 const IconBullet = ({ icon: Icon, text }) => (
-    <li style={{
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "16px",
-        marginBottom: "16px",
-        padding: "12px 0",
-    }}>
-        <div style={{
-            width: "28px",
-            height: "28px",
-            borderRadius: "8px",
+    <li className="flex gap-4 mb-4 py-3 border-b border-white/10 last:border-b-0 items-start">
+        <div className="w-7 h-7 rounded-lg flex items-center justify-center mt-0.5 flex-shrink-0" style={{
             background: `linear-gradient(135deg, ${Theme.WARM_RED}20, ${Theme.MUTED_AQUA}25)`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            marginTop: "2px",
             border: `1px solid ${Theme.WARM_RED}30`,
         }}>
             <Icon size={16} color={Theme.WARM_RED} />
         </div>
-        <span style={{ fontSize: "1.1rem", lineHeight: "1.6" }}>{text}</span>
+        <span className="text-base md:text-lg leading-relaxed">{text}</span>
     </li>
 );
 
 const HighlightText = ({ children }) => (
-    <strong style={{
-        color: Theme.WARM_RED,
+    <strong className="font-semibold" style={{
         background: `linear-gradient(135deg, ${Theme.WARM_RED}, ${Theme.MUDDY_BROWN})`,
         WebkitBackgroundClip: "text",
         WebkitTextFillColor: "transparent",
         backgroundClip: "text",
-        fontWeight: "600",
     }}>
         {children}
     </strong>
 );
 
-// 🌿 PREMIUM ABOUT PAGE
-const AboutPage = () => {
+const ScrollIndicator = () => (
+    <div className="fixed bottom-6 left-1/2 transform -translate-x-1/2 z-50 flex items-center gap-3 p-3 px-6 rounded-full text-sm font-medium" style={{
+        color: Theme.MUTED_AQUA,
+        opacity: 0.8,
+        background: "rgba(36, 72, 85, 0.6)",
+        backdropFilter: "blur(12px)",
+        border: `1px solid ${Theme.MUTED_AQUA}25`,
+    }}>
+        <span>Scroll to explore</span>
+        <div style={{ animation: "gentlePulse 2s ease-in-out infinite" }}>
+            <ArrowRight size={18} style={{ transform: "rotate(90deg)" }} />
+        </div>
+    </div>
+);
+
+
+// -----------------------------------------------------------
+// PAGE: ABOUT (RE-RESPONSIVE)
+// -----------------------------------------------------------
+const AboutPageContent = () => {
     return (
-        <div style={AboutStyles.Box}>
-            <style>{animationsCSS}</style>
+        <>
+            <BigTitle title="ABOUT" />
 
-            {/* Enhanced Hover Effects */}
-            <style>
-                {`
-                    .social-hover:hover {
-                        transform: translateY(-2px);
-                        background: rgba(251, 233, 208, 0.15);
-                        border-color: ${Theme.WARM_RED}40;
-                        box-shadow: 0 8px 25px rgba(230, 72, 51, 0.2);
-                    }
-
-                    .power-hover:hover {
-                        transform: translateX(-50%) scale(1.05);
-                        box-shadow: 0 12px 35px ${Theme.WARM_RED}40;
-                    }
-
-                    .content-hover:hover {
-                        transform: translateY(-2px);
-                        box-shadow: 0 30px 60px rgba(36, 72, 85, 0.4);
-                    }
-
-                    /* Fallback for browsers that don't support backdrop-filter */
-                    @supports not (backdrop-filter: blur(12px)) {
-                        .backdrop-fallback {
-                            background: rgba(36, 72, 85, 0.95);
-                        }
-                    }
-                `}
-            </style>
-
-            <BackgroundElements />
-            <LogoComponent />
-            <SocialIcons />
-            <PowerButton />
-            <BigTitle />
-
-            {/* Right side Concept Sketch */}
-            <ConceptSketch />
-
-            {/* Main Content Containers */}
-            <div style={AboutStyles.ContentArea}>
+            {/* MAIN CONTENT AREA - Responsive and Centered */}
+            <div className="relative z-10 mx-auto px-6 py-28 md:px-12 lg:max-w-4xl lg:py-36">
                 
-                {/* 1. Main Bio and Philosophy Box */}
-                <div style={AboutStyles.MainContentBox} className="content-hover">
-                    {/* Decorative Top Line */}
-                    <div style={{
-                        position: "absolute",
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        height: "1px",
-                        background: `linear-gradient(90deg, transparent, ${Theme.WARM_RED}50, transparent)`,
-                    }}></div>
-                    
-                    <h2 style={AboutStyles.Heading}>About Me</h2>
+                {/* 1. BIO BOX */}
+                <div style={ComplexStyles.MainContentBox} 
+                     className="animate-fadeInUp content-hover mb-12 rounded-3xl p-8 md:p-14 lg:p-16 transition-all duration-500 hover:scale-[1.005] backdrop-fallback border-l-4"
+                     // Added Tailwind border-l-4 for responsiveness
+                     data-style={{borderColor: Theme.WARM_RED}} // Used data-style for dynamic CSS property
+                >
 
-                    <p style={{ fontSize: "1.25rem", marginBottom: "2rem", opacity: 0.95, lineHeight: "1.8" }}>
+                    {/* Decorative Top Line */}
+                    <div className="absolute top-0 left-0 right-0 h-px" style={{
+                        background: `linear-gradient(90deg, transparent, ${Theme.WARM_RED}50, transparent)`
+                    }} />
+
+                    <h2 className="text-4xl md:text-5xl lg:text-6xl font-extrabold mb-8 md:mb-10 leading-snug" style={ComplexStyles.Heading}>
+                        About Me
+                    </h2>
+
+                    <p className="text-xl mb-6 opacity-95 leading-relaxed">
                         I'm <HighlightText>Jiya Vegad</HighlightText>, a designer who weaves emotion, culture, 
                         and modern silhouettes into expressive fashion that tells compelling stories through fabric and form.
                     </p>
 
-                    <p style={{ marginBottom: "2rem", opacity: 0.9, lineHeight: "1.8" }}>
+                    <p className="mb-8 opacity-90 text-lg leading-relaxed">
                         My work explores identity, movement, and transformation through rich earth tones, 
                         sculptural lines, and artisanal techniques that bridge <HighlightText>traditional craftsmanship</HighlightText> 
                         with <HighlightText>contemporary design</HighlightText> sensibilities.
                     </p>
                     
-                    <h3 style={AboutStyles.SubHeading}>
+                    <h3 className="text-2xl md:text-3xl font-semibold mt-10 mb-6 flex items-center gap-4" style={ComplexStyles.SubHeading}>
                         <Palette size={28} />
                         Design Philosophy
                     </h3>
                     
-                    <ul style={{ marginLeft: "0.5rem", marginTop: "1rem", padding: 0, listStyle: "none" }}>
+                    <ul className="list-none p-0">
                         <IconBullet icon={Sparkles} text="Concept-based couture that tells emotional stories and explores human experiences" />
                         <IconBullet icon={Scissors} text="Craft-inspired silhouettes with modern sensibilities and sustainable practices" />
                         <IconBullet icon={BookOpen} text="Sustainable textile reinterpretation and innovation through traditional techniques" />
                     </ul>
 
                     {/* Philosophy Quote */}
-                    <div style={{ 
-                        marginTop: "3rem", 
-                        padding: "2rem",
+                    <div className="mt-12 p-6 md:p-8 rounded-2xl relative" style={{
                         background: `linear-gradient(135deg, ${Theme.MUDDY_BROWN}12, ${Theme.WARM_RED}08)`,
-                        borderRadius: "16px",
                         border: `1px solid ${Theme.MUTED_AQUA}25`,
-                        fontStyle: "italic",
-                        position: "relative",
                     }}>
-                        <Heart size={24} style={{ 
-                            position: "absolute", 
-                            top: "-12px", 
-                            left: "24px", 
+                        <Heart size={24} className="absolute -top-3 left-6 p-1.5 rounded-full" style={{
                             color: Theme.WARM_RED,
                             background: Theme.DARK_TEAL,
-                            padding: "6px",
-                            borderRadius: "50%",
                         }} />
-                        <p style={{ 
-                            fontSize: "1.2rem", 
-                            lineHeight: "1.7", 
-                            margin: 0,
-                            opacity: 0.95,
-                        }}>
+                        <p className="text-xl italic m-0 opacity-90 leading-relaxed">
                             "True fashion is <HighlightText>emotion woven into form</HighlightText> — 
                             where every stitch carries intention, every silhouette tells a story, 
                             and every garment becomes a canvas for personal expression."
@@ -436,32 +252,33 @@ const AboutPage = () => {
                     </div>
                 </div>
 
-                {/* 2. Personal Interests Card */}
-                <div style={AboutStyles.InterestsContentBox} className="content-hover">
-                    <h3 style={AboutStyles.SubHeading}>
+                {/* 2. PERSONAL INTERESTS */}
+                <div style={ComplexStyles.InterestsContentBox} 
+                     className="animate-fadeInRight content-hover p-8 md:p-12 rounded-2xl transition-all duration-500 hover:scale-[1.005] backdrop-fallback lg:w-[90%]"
+                     // Removed fixed width: "90%" to let Tailwind handle width responsively
+                >
+
+                    <h3 className="text-2xl md:text-3xl font-semibold mb-6 flex items-center gap-4" style={ComplexStyles.SubHeading}>
                         <Sparkles size={24} />
                         Personal Interests
                     </h3>
                     
-                    <ul style={{ marginLeft: "0.5rem", padding: 0, listStyle: "none" }}>
+                    <ul className="list-none p-0">
                         <IconBullet icon={MapPin} text="Exploring architectural geometry and urban textures in Mumbai's diverse neighborhoods" />
                         <IconBullet icon={Heart} text="Collecting vintage silk scarves and traditional embroidery samples from various cultures" />
                         <IconBullet icon={Sparkles} text="Digital illustration and 3D modeling for fashion visualization and concept development" />
                     </ul>
 
-                    {/* Inspiration Note */}
-                    <div style={{
-                        marginTop: "2.5rem",
-                        padding: "1.5rem",
+                    {/* Current Inspiration Box */}
+                    <div className="mt-8 p-4 md:p-6 rounded-xl" style={{
                         background: `linear-gradient(135deg, ${Theme.MUTED_AQUA}10, transparent)`,
-                        borderRadius: "12px",
                         border: `1px solid ${Theme.MUTED_AQUA}25`,
                     }}>
-                        <div style={{ display: "flex", alignItems: "center", gap: "12px", marginBottom: "0.5rem" }}>
+                        <div className="flex items-center gap-3 mb-2">
                             <ArrowRight size={18} color={Theme.MUTED_AQUA} />
-                            <span style={{ fontWeight: "600", color: Theme.MUTED_AQUA }}>Current Inspiration</span>
+                            <span className="font-semibold text-base" style={{ color: Theme.MUTED_AQUA }}>Current Inspiration</span>
                         </div>
-                        <p style={{ fontSize: "1rem", opacity: 0.85, margin: 0, fontStyle: "italic" }}>
+                        <p className="text-base italic opacity-85 m-0">
                             "Finding inspiration in the intersection of traditional crafts and digital innovation, 
                             where heritage techniques meet contemporary design thinking."
                         </p>
@@ -469,36 +286,194 @@ const AboutPage = () => {
                 </div>
             </div>
 
-            {/* Elegant Scroll Indicator */}
-            <div style={{
-                position: "fixed",
-                bottom: "3rem",
-                left: "50%",
-                transform: "translateX(-50%)",
-                color: Theme.MUTED_AQUA,
-                fontSize: "1rem",
-                opacity: 0.8,
-                zIndex: 50,
-                display: "flex",
-                alignItems: "center",
-                gap: "12px",
-                background: "rgba(36, 72, 85, 0.6)",
-                padding: "12px 24px",
-                borderRadius: "25px",
-                backdropFilter: "blur(12px)",
-                border: `1px solid ${Theme.MUTED_AQUA}25`,
-            }}>
-                <span style={{ fontWeight: "500" }}>Scroll to explore</span>
-                <div style={{ 
-                    animation: "gentlePulse 2s ease-in-out infinite",
-                    display: "flex",
-                    alignItems: "center",
-                }}>
-                    <ArrowRight size={18} style={{ transform: "rotate(90deg)" }} />
-                </div>
-            </div>
+            <ScrollIndicator />
+        </>
+    );
+};
+
+
+// -----------------------------------------------------------
+// PAGE PLACEHOLDERS
+// -----------------------------------------------------------
+const PlaceholderPage = ({ title, icon: Icon }) => (
+    <div className="relative z-10 mx-auto px-6 py-32 md:px-12 lg:max-w-4xl lg:py-48 text-center animate-fadeInUp">
+        <div className="p-12 md:p-20 rounded-3xl mx-auto backdrop-fallback" style={ComplexStyles.MainContentBox}>
+            <Icon size={64} className="mx-auto mb-6" style={{ color: Theme.WARM_RED }} />
+            <h1 className="text-4xl md:text-5xl font-extrabold mb-4" style={ComplexStyles.Heading}>
+                {title}
+            </h1>
+            <p className="text-lg opacity-80">
+                This page is currently under refinement. Check back soon for detailed content on {title.toLowerCase()}.
+            </p>
+        </div>
+    </div>
+);
+
+const MainPage = () => <PlaceholderPage title="Designer Home" icon={Zap} />;
+const MySkillsPage = () => <PlaceholderPage title="Skills & Techniques" icon={Scissors} />;
+const PortfolioPage = () => <PlaceholderPage title="Portfolio Gallery" icon={Grid} />;
+const WorkPage = () => <PlaceholderPage title="Work Experience" icon={Briefcase} />;
+const CVPage = () => <PlaceholderPage title="Curriculum Vitae" icon={BookOpen} />;
+const ProcessPage = () => <PlaceholderPage title="Design Process" icon={Palette} />;
+const EducationPage = () => <PlaceholderPage title="Education History" icon={GraduationCap} />;
+const ProjectPage = () => <PlaceholderPage title="Project Detail" icon={Code} />;
+const FallbackPage = () => <PlaceholderPage title="404 - Page Not Found" icon={MapPin} />;
+
+
+// -----------------------------------------------------------
+// NAVIGATION & HEADER
+// -----------------------------------------------------------
+const LogoComponent = ({ setPage }) => (
+    <div onClick={() => setPage('/')} className="fixed top-8 left-4 sm:left-10 z-50 text-2xl md:text-3xl font-bold flex items-center gap-3 cursor-pointer transition-transform hover:scale-105">
+        <div className="w-4 h-4 rounded-full" style={{
+            background: `linear-gradient(135deg, ${Theme.WARM_RED}, ${Theme.MUDDY_BROWN})`,
+            boxShadow: `0 0 25px ${Theme.WARM_RED}40`,
+        }} />
+        JV
+    </div>
+);
+
+const SocialIcons = ({ setPage }) => (
+    <div className="fixed top-8 right-4 sm:right-10 flex gap-4 z-50">
+        <a href="https://instagram.com" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           className="social-hover w-11 h-11 rounded-full flex items-center justify-center transition-all"
+           style={{
+               background: "rgba(251, 233, 208, 0.08)",
+               backdropFilter: "blur(12px)",
+               border: `1.5px solid ${Theme.SOFT_BEIGE}20`,
+               color: Theme.SOFT_BEIGE,
+           }}
+        >
+            <Instagram size={22} />
+        </a>
+        <a href="https://linkedin.com" 
+           target="_blank" 
+           rel="noopener noreferrer"
+           className="social-hover w-11 h-11 rounded-full flex items-center justify-center transition-all"
+           style={{
+               background: "rgba(251, 233, 208, 0.08)",
+               backdropFilter: "blur(12px)",
+               border: `1.5px solid ${Theme.SOFT_BEIGE}20`,
+               color: Theme.SOFT_BEIGE,
+           }}
+        >
+            <Linkedin size={22} />
+        </a>
+    </div>
+);
+
+const PowerButton = ({ setPage }) => (
+    <button onClick={() => setPage('/')} 
+       className="power-hover fixed top-6 left-1/2 -translate-x-1/2 w-14 h-14 rounded-full flex justify-center items-center transition-all"
+       style={{
+           background: `linear-gradient(135deg, ${Theme.WARM_RED} 0%, ${Theme.MUDDY_BROWN} 100%)`,
+           boxShadow: `0 8px 30px ${Theme.WARM_RED}30`,
+           zIndex: 60,
+       }}
+    >
+        <Zap size={26} style={{ color: Theme.CREAM_WHITE }} />
+    </button>
+);
+
+const Navigation = ({ currentPage, setPage }) => {
+    const navItems = [
+        { path: '/', name: 'Home' },
+        { path: '/about', name: 'About' },
+        { path: '/skills', name: 'Skills' },
+        { path: '/portfolio', name: 'Portfolio' },
+        { path: '/work', name: 'Work' },
+        { path: '/cv', name: 'CV' },
+    ];
+
+    return (
+        <div className="fixed bottom-0 md:top-8 md:bottom-auto left-1/2 transform -translate-x-1/2 z-50 p-3 md:p-0">
+            <nav className="flex justify-center rounded-full backdrop-fallback border border-white/20 shadow-lg p-3 md:p-0 md:bg-transparent md:backdrop-filter-none">
+                <ul className="flex space-x-4 text-xs md:text-sm lg:text-base font-semibold">
+                    {navItems.map(item => (
+                        <li key={item.path}>
+                            <button 
+                                onClick={() => setPage(item.path)}
+                                className={`nav-item px-3 py-2 md:px-5 md:py-2 rounded-full transition-all duration-200 ${
+                                    currentPage === item.path 
+                                        ? 'bg-white/10 text-white shadow-inner scale-105' 
+                                        : 'text-white/70 hover:text-white'
+                                }`}
+                            >
+                                {item.name}
+                            </button>
+                        </li>
+                    ))}
+                </ul>
+            </nav>
         </div>
     );
 };
 
-export default AboutPage;
+
+// -----------------------------------------------------------
+// MAIN APP COMPONENT (Router Implementation)
+// -----------------------------------------------------------
+const App = () => {
+    // Simple state-based routing instead of react-router-dom
+    const [currentPage, setCurrentPage] = useState('/about');
+
+    const handleNavigation = (path) => {
+        // Simple logic to handle main pages and project pages
+        if (path.startsWith('/project')) {
+            setCurrentPage('/project/:id');
+        } else if (path === '/main2') {
+            setCurrentPage('/'); // Treat /main2 as navigating to home
+        } else {
+            setCurrentPage(path);
+        }
+    };
+
+    const renderPage = () => {
+        switch (currentPage) {
+            case '/':
+                return <MainPage />;
+            case '/about':
+                return <AboutPageContent />;
+            case '/skills':
+                return <MySkillsPage />;
+            case '/portfolio':
+                return <PortfolioPage />;
+            case '/work':
+                return <WorkPage />;
+            case '/cv':
+                return <CVPage />;
+            case '/process':
+                return <ProcessPage />;
+            case '/education':
+                return <EducationPage />;
+            case '/project/:id':
+                // Note: Real routing would extract the ID, this is a placeholder
+                return <ProjectPage title="Project Detail (ID: XYZ)" icon={Code} />;
+            default:
+                return <FallbackPage />;
+        }
+    };
+
+    return (
+        <div className="min-h-screen relative overflow-x-hidden font-serif text-white antialiased" style={{ background: `linear-gradient(135deg, ${Theme.DARK_TEAL} 0%, #1a3a47 100%)`, color: Theme.SOFT_BEIGE }}>
+            
+            {/* Inject Custom Animations */}
+            <style>{animationsCSS}</style>
+
+            <BackgroundElements />
+            
+            {/* Persistent Header Elements */}
+            <LogoComponent setPage={handleNavigation} />
+            <SocialIcons setPage={handleNavigation} />
+            <PowerButton setPage={handleNavigation} />
+            <Navigation currentPage={currentPage} setPage={handleNavigation} />
+
+            {/* Render the current page content */}
+            {renderPage()}
+        </div>
+    );
+};
+
+export default App;
