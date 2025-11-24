@@ -52,7 +52,7 @@ const SocialIcons = () => (
 
 /* --- UPDATED POWER BUTTON (goes to main2) --- */
 const PowerButton = () => (
-    <a href="/main2" style={PortfolioStyles.PowerButton}>
+    <a href="/#/main2" style={PortfolioStyles.PowerButton}>
         <Zap size={30} style={{ color: DarkTheme.body }} />
     </a>
 );

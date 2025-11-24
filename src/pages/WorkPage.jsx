@@ -1653,7 +1653,7 @@ const SocialIcons = () => (
 );
 
 const PowerButton = () => (
-    <a href="/main2" style={FixedStyles.powerButton} className="power-button-hover animate-fadeInUp" aria-label="Home">
+    <a href="/#/main2" style={FixedStyles.powerButton} className="power-button-hover animate-fadeInUp" aria-label="Home">
         <div style={FixedStyles.powerButtonInner} className="power-button-inner">
             <Zap size={20} />
         </div>

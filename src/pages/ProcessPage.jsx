@@ -564,7 +564,7 @@ const SocialIcons = () => (
 );
 
 const PowerButton = () => (
-    <a href="/Main2" style={ProcessStyles.PowerButton} className="power-hover power-button-mobile" aria-label="Home">
+    <a href="/#/Main2" style={ProcessStyles.PowerButton} className="power-hover power-button-mobile" aria-label="Home">
         <Zap size={26} style={{ color: Theme.CREAM_WHITE }} />
     </a>
 );

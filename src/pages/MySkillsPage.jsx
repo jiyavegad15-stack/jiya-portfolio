@@ -359,7 +359,7 @@ const SocialIcons = () => (
 );
 
 const PowerButton = () => (
-    <a href="/main2" style={SkillsStyles.PowerButton} className="power-button-mobile" aria-label="Home">
+    <a href="/#/main2" style={SkillsStyles.PowerButton} className="power-button-mobile" aria-label="Home">
         <Zap size={30} style={{ color: DarkTheme.body }} />
     </a>
 );
