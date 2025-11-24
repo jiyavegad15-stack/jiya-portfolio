@@ -569,7 +569,7 @@ const SocialIcons = () => (
 );
 
 const PowerButton = () => (
-    <a href="/#/Main2" style={EducationStyles.PowerButton} className="hover-lift power-button-mobile">
+    <a href="/jiya-portfolio/#/main2" style={EducationStyles.PowerButton} className="hover-lift power-button-mobile">
         <Zap size={24} style={{ color: Theme.CREAM_WHITE }} />
     </a>
 );
