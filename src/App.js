@@ -1,5 +1,5 @@
 import React from "react";
-import { HashRouter as Router, Routes, Route } from "react-router-dom";
+import { HashRouter, Routes, Route } from "react-router-dom";
 
 import Main from "./pages/Main";
 import Main2 from "./pages/Main2";
@@ -15,7 +15,7 @@ import ProjectPage from "./pages/ProjectPage";
 
 function App() {
   return (
-    <Router>
+    <HashRouter>
       <Routes>
         <Route path="/" element={<Main />} />
         <Route path="/main2" element={<Main2 />} />
@@ -23,12 +23,13 @@ function App() {
         <Route path="/skills" element={<MySkillsPage />} />
         <Route path="/portfolio" element={<PortfolioPage />} />
         <Route path="/work" element={<WorkPage />} />
+        <Route path="/contact" element={<ContactPage />} />
         <Route path="/cv" element={<CVPage />} />
         <Route path="/process" element={<ProcessPage />} />
         <Route path="/education" element={<EducationPage />} />
         <Route path="/project/:id" element={<ProjectPage />} />
       </Routes>
-    </Router>
+    </HashRouter>
   );
 }
 
