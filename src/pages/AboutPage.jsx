@@ -1,6 +1,13 @@
+[file name]: image.png
+[file content begin]
+Home    About    Scroll to explore    Work    CV
+
+
+[file content end]
+
 import React from "react";
 import { Link } from "react-router-dom";
-import { Zap, Github, Instagram, Linkedin, Sparkles, Palette, Scissors, Heart, ArrowRight, BookOpen, MapPin } from "lucide-react";
+import { Zap, Github, Instagram, Linkedin, Sparkles, Palette, Scissors, Heart, ArrowRight, BookOpen, MapPin, Home, User, Briefcase, FileText } from "lucide-react";
 import ConceptSketch from "../components/ConceptSketch";
 
 // 🎨 REFINED COLOR PALETTE
@@ -58,6 +65,7 @@ const AboutStyles = {
         overflowY: "auto",
         fontFamily: "'Georgia', 'Times New Roman', serif",
         background: `linear-gradient(135deg, ${Theme.DARK_TEAL} 0%, #1a3a47 100%)`,
+        paddingBottom: "100px", // Added padding for bottom navbar
     },
 
     BackgroundElements: {
@@ -223,6 +231,47 @@ const AboutStyles = {
         zIndex: 0,
         fontFamily: "'Georgia', serif",
     },
+
+    // 🌟 NEW BOTTOM NAVBAR STYLES
+    BottomNavbar: {
+        position: "fixed",
+        bottom: "2rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        display: "flex",
+        alignItems: "center",
+        gap: "2rem",
+        padding: "1rem 2.5rem",
+        background: "rgba(36, 72, 85, 0.7)",
+        backdropFilter: "blur(20px)",
+        WebkitBackdropFilter: "blur(20px)",
+        borderRadius: "30px",
+        border: `1px solid ${Theme.MUTED_AQUA}25`,
+        boxShadow: "0 20px 40px rgba(36, 72, 85, 0.4)",
+        zIndex: 100,
+    },
+
+    NavItem: {
+        display: "flex",
+        alignItems: "center",
+        gap: "10px",
+        padding: "0.8rem 1.5rem",
+        borderRadius: "25px",
+        color: Theme.SOFT_BEIGE,
+        textDecoration: "none",
+        fontSize: "1rem",
+        fontWeight: "500",
+        transition: "all 0.3s ease",
+        fontFamily: "'Georgia', serif",
+        position: "relative",
+        overflow: "hidden",
+    },
+
+    ActiveNavItem: {
+        background: `linear-gradient(135deg, ${Theme.WARM_RED}20, ${Theme.MUTED_AQUA}15)`,
+        border: `1px solid ${Theme.WARM_RED}30`,
+        color: Theme.WARM_RED,
+    },
 };
 
 // 🌿 ENHANCED UI COMPONENTS
@@ -280,6 +329,50 @@ const BigTitle = () => (
     <h1 style={AboutStyles.BigTitle}>
         ABOUT
     </h1>
+);
+
+// 🌟 NEW BOTTOM NAVBAR COMPONENT
+const BottomNavbar = () => (
+    <nav style={AboutStyles.BottomNavbar}>
+        <Link 
+            to="/main2" 
+            style={{
+                ...AboutStyles.NavItem,
+                ...AboutStyles.ActiveNavItem
+            }}
+            className="nav-hover"
+        >
+            <Home size={18} />
+            Home
+        </Link>
+        
+        <Link 
+            to="/about" 
+            style={AboutStyles.NavItem}
+            className="nav-hover"
+        >
+            <User size={18} />
+            About
+        </Link>
+        
+        <Link 
+            to="/work" 
+            style={AboutStyles.NavItem}
+            className="nav-hover"
+        >
+            <Briefcase size={18} />
+            Work
+        </Link>
+        
+        <Link 
+            to="/cv" 
+            style={AboutStyles.NavItem}
+            className="nav-hover"
+        >
+            <FileText size={18} />
+            CV
+        </Link>
+    </nav>
 );
 
 const IconBullet = ({ icon: Icon, text }) => (
@@ -345,6 +438,13 @@ const AboutPage = () => {
                     .content-hover:hover {
                         transform: translateY(-2px);
                         box-shadow: 0 30px 60px rgba(36, 72, 85, 0.4);
+                    }
+
+                    .nav-hover:hover {
+                        transform: translateY(-2px);
+                        background: rgba(251, 233, 208, 0.1);
+                        border: 1px solid ${Theme.MUTED_AQUA}30;
+                        box-shadow: 0 8px 20px rgba(144, 174, 173, 0.2);
                     }
 
                     /* Fallback for browsers that don't support backdrop-filter */
@@ -469,10 +569,13 @@ const AboutPage = () => {
                 </div>
             </div>
 
+            {/* 🌟 NEW BOTTOM NAVBAR */}
+            <BottomNavbar />
+
             {/* Elegant Scroll Indicator */}
             <div style={{
                 position: "fixed",
-                bottom: "3rem",
+                bottom: "7rem", // Adjusted position to account for navbar
                 left: "50%",
                 transform: "translateX(-50%)",
                 color: Theme.MUTED_AQUA,
