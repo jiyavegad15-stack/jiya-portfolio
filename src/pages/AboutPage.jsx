@@ -5,12 +5,12 @@ import ConceptSketch from "../components/ConceptSketch";
 
 // 🎨 REFINED COLOR PALETTE
 const Theme = {
-    DARK_TEAL: "#244855",
-    WARM_RED: "#E64833",
-    MUDDY_BROWN: "#874F41",
-    MUTED_AQUA: "#90AEAD",
-    SOFT_BEIGE: "#FBE9D0",
-    CREAM_WHITE: "#FFFDF8"
+    DARK_TEAL:   "#52aacdff",   // lighter + softer teal
+    WARM_RED:    "#F16D55",   // gentler coral-red
+    MUDDY_BROWN: "#A96B58",   // warmer, softer earthy brown
+    MUTED_AQUA:  "#A9C4C3",   // lighter aqua / sage tone
+    SOFT_BEIGE:  "#FAF0E0",   // lighter warm beige
+    CREAM_WHITE: "#FFFEFB"    // slightly brighter creamy white
 };
 
 // 🌿 ELEGANT ANIMATIONS
