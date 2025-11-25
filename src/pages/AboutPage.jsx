@@ -1,10 +1,3 @@
-[file name]: image.png
-[file content begin]
-Home    About    Scroll to explore    Work    CV
-
-
-[file content end]
-
 import React from "react";
 import { Link } from "react-router-dom";
 import { Zap, Github, Instagram, Linkedin, Sparkles, Palette, Scissors, Heart, ArrowRight, BookOpen, MapPin, Home, User, Briefcase, FileText } from "lucide-react";
