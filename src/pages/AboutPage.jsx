@@ -1,16 +1,15 @@
 import React from "react";
 import { Link } from "react-router-dom";
-import { Zap, Github, Instagram, Linkedin, Sparkles, Palette, Scissors, Heart, ArrowRight, BookOpen, MapPin, Home, User, Briefcase, FileText } from "lucide-react";
-import ConceptSketch from "../components/ConceptSketch";
+import { Zap, Instagram, Linkedin, Sparkles, Palette, Scissors, Heart, ArrowRight, BookOpen, MapPin, Home, User, Briefcase, FileText } from "lucide-react";
 
 // 🎨 REFINED COLOR PALETTE
 const Theme = {
-    DARK_TEAL:   "#52aacdff",   // lighter + softer teal
-    WARM_RED:    "#F16D55",   // gentler coral-red
-    MUDDY_BROWN: "#A96B58",   // warmer, softer earthy brown
-    MUTED_AQUA:  "#A9C4C3",   // lighter aqua / sage tone
-    SOFT_BEIGE:  "#FAF0E0",   // lighter warm beige
-    CREAM_WHITE: "#FFFEFB"    // slightly brighter creamy white
+    DARK_TEAL: "#52aacdff",
+    WARM_RED: "#F16D55",
+    MUDDY_BROWN: "#A96B58",
+    MUTED_AQUA: "#A9C4C3",
+    SOFT_BEIGE: "#FAF0E0",
+    CREAM_WHITE: "#FFFEFB"
 };
 
 // 🌿 ELEGANT ANIMATIONS
@@ -35,15 +34,205 @@ const animationsCSS = `
   50% { transform: scale(1.02); }
 }
 
-@keyframes shimmer {
-  0% { background-position: -200% center; }
-  100% { background-position: 200% center; }
-}
-
 .animate-fadeInUp { animation: fadeInUp 0.8s ease-out forwards; }
 .animate-fadeInLeft { animation: fadeInLeft 0.8s ease-out forwards; }
 .animate-fadeInRight { animation: fadeInRight 0.8s ease-out forwards; }
 .animate-pulse { animation: gentlePulse 3s ease-in-out infinite; }
+
+/* Profile Image Styles */
+.profile-image-container {
+  position: absolute;
+  right: 5%;
+  top: 10%;
+  width: 420px;
+  height: auto;
+  z-index: 2;
+  overflow: hidden;
+  border-radius: 18px;
+  mask-image: linear-gradient(to left, black 70%, transparent);
+  -webkit-mask-image: linear-gradient(to left, black 70%, transparent);
+  transition: transform 0.4s ease, filter 0.4s ease;
+}
+
+.profile-image-container:hover {
+  transform: translateY(-6px);
+  filter: brightness(1.1);
+}
+
+.profile-image {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+  display: block;
+}
+
+.profile-image-label {
+  position: absolute;
+  bottom: 1.6rem;
+  left: 1.2rem;
+  background: rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(6px);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 12px;
+  font-size: 0.9rem;
+}
+
+
+/* Mobile Responsive Styles */
+@media (max-width: 1200px) {
+  .profile-image-container {
+    width: 350px;
+    height: 450px;
+    right: 5%;
+  }
+}
+
+@media (max-width: 1024px) {
+  .profile-image-container {
+    position: relative;
+    right: auto;
+    top: auto;
+    transform: none;
+    width: 300px;
+    height: 380px;
+    margin: 2rem auto;
+    display: block;
+  }
+  
+  .content-area-mobile {
+    width: 90% !important;
+    left: 5% !important;
+  }
+}
+
+@media (max-width: 768px) {
+  .about-container-mobile {
+    padding: 6rem 1rem 7rem 1rem !important;
+  }
+  
+  .content-area-mobile {
+    width: 100% !important;
+    left: 0 !important;
+    padding: 0 1rem !important;
+  }
+  
+  .main-content-box-mobile {
+    padding: 2rem 1.5rem !important;
+    margin-bottom: 2rem !important;
+  }
+  
+  .interests-content-box-mobile {
+    width: 100% !important;
+    padding: 2rem 1.5rem !important;
+  }
+  
+  .heading-mobile {
+    font-size: 2.5rem !important;
+    margin-bottom: 1.5rem !important;
+  }
+  
+  .sub-heading-mobile {
+    font-size: 1.4rem !important;
+    margin-top: 2rem !important;
+  }
+  
+  .profile-image-container {
+    width: 280px !important;
+    height: 350px !important;
+    margin: 1.5rem auto !important;
+  }
+  
+  /* Fixed Elements Mobile */
+  .logo-mobile {
+    left: 1.5rem !important;
+    top: 1.5rem !important;
+    font-size: 1.8rem !important;
+  }
+  
+  .social-icons-mobile {
+    right: 1.5rem !important;
+    top: 1.5rem !important;
+    gap: 0.8rem !important;
+  }
+  
+  .social-icon-mobile {
+    width: 40px !important;
+    height: 40px !important;
+  }
+  
+  .power-button-mobile {
+    top: 1rem !important;
+    width: 45px !important;
+    height: 45px !important;
+  }
+  
+  .scroll-indicator-mobile {
+    display: none !important;
+  }
+  
+  .big-title-mobile {
+    display: none !important;
+  }
+  
+  /* Bottom Navbar Mobile */
+  .bottom-navbar-mobile {
+    padding: 0.8rem 1rem !important;
+    gap: 0.5rem !important;
+    bottom: 1rem !important;
+  }
+  
+  .nav-item-mobile {
+    min-width: auto !important;
+    padding: 0.5rem 0.8rem !important;
+    font-size: 0.8rem !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .about-container-mobile {
+    padding: 5rem 0.5rem 6rem 0.5rem !important;
+  }
+  
+  .main-content-box-mobile, .interests-content-box-mobile {
+    padding: 1.5rem 1rem !important;
+  }
+  
+  .heading-mobile {
+    font-size: 2rem !important;
+  }
+  
+  .sub-heading-mobile {
+    font-size: 1.2rem !important;
+  }
+  
+  .profile-image-container {
+    width: 250px !important;
+    height: 320px !important;
+    margin: 1rem auto !important;
+  }
+  
+  .logo-mobile {
+    left: 1rem !important;
+    top: 1rem !important;
+  }
+  
+  .social-icons-mobile {
+    right: 1rem !important;
+    top: 1rem !important;
+  }
+  
+  .bottom-navbar-mobile {
+    padding: 0.6rem 0.8rem !important;
+    gap: 0.3rem !important;
+  }
+  
+  .nav-item-mobile {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.75rem !important;
+    gap: 0.3rem !important;
+  }
+}
 `;
 
 // 🌿 PREMIUM STYLES
@@ -58,7 +247,7 @@ const AboutStyles = {
         overflowY: "auto",
         fontFamily: "'Georgia', 'Times New Roman', serif",
         background: `linear-gradient(135deg, ${Theme.DARK_TEAL} 0%, #1a3a47 100%)`,
-        paddingBottom: "100px", // Added padding for bottom navbar
+        paddingBottom: "100px",
     },
 
     BackgroundElements: {
@@ -225,39 +414,42 @@ const AboutStyles = {
         fontFamily: "'Georgia', serif",
     },
 
-    // 🌟 NEW BOTTOM NAVBAR STYLES
+    // 🌟 BOTTOM NAVBAR STYLES
     BottomNavbar: {
         position: "fixed",
         bottom: "2rem",
         left: "50%",
         transform: "translateX(-50%)",
         display: "flex",
+        justifyContent: "center",
         alignItems: "center",
-        gap: "2rem",
-        padding: "1rem 2.5rem",
-        background: "rgba(36, 72, 85, 0.7)",
-        backdropFilter: "blur(20px)",
-        WebkitBackdropFilter: "blur(20px)",
-        borderRadius: "30px",
-        border: `1px solid ${Theme.MUTED_AQUA}25`,
-        boxShadow: "0 20px 40px rgba(36, 72, 85, 0.4)",
+        gap: "1.2rem",
+        padding: "1rem 1.8rem",
+        background: "rgba(36, 72, 85, 0.25)",
+        backdropFilter: "blur(18px)",
+        WebkitBackdropFilter: "blur(18px)",
+        borderRadius: "40px",
+        border: `1px solid ${Theme.MUTED_AQUA}40`,
+        boxShadow: "0 10px 35px rgba(0,0,0,0.25)",
         zIndex: 100,
     },
 
     NavItem: {
+        minWidth: "120px",
+        textAlign: "center",
         display: "flex",
+        justifyContent: "center",
         alignItems: "center",
-        gap: "10px",
-        padding: "0.8rem 1.5rem",
-        borderRadius: "25px",
-        color: Theme.SOFT_BEIGE,
+        gap: "8px",
+        padding: "0.7rem 1.2rem",
+        borderRadius: "20px",
+        fontSize: "1.05rem",
+        fontWeight: "600",
+        color: Theme.CREAM_WHITE,
         textDecoration: "none",
-        fontSize: "1rem",
-        fontWeight: "500",
         transition: "all 0.3s ease",
         fontFamily: "'Georgia', serif",
-        position: "relative",
-        overflow: "hidden",
+        whiteSpace: "nowrap",
     },
 
     ActiveNavItem: {
@@ -269,7 +461,7 @@ const AboutStyles = {
 
 // 🌿 ENHANCED UI COMPONENTS
 const LogoComponent = () => (
-    <Link to="/" style={AboutStyles.Logo}>
+    <Link to="/" style={AboutStyles.Logo} className="logo-mobile">
         <div style={{
             width: "14px",
             height: "14px",
@@ -282,13 +474,13 @@ const LogoComponent = () => (
 );
 
 const SocialIcons = () => (
-    <div style={AboutStyles.SocialIcons}>
+    <div style={AboutStyles.SocialIcons} className="social-icons-mobile">
         <a 
             href="https://instagram.com" 
             target="_blank" 
             rel="noopener noreferrer"
             style={AboutStyles.SocialIcon} 
-            className="social-hover"
+            className="social-hover social-icon-mobile"
         >
             <Instagram size={22} />
         </a>
@@ -297,7 +489,7 @@ const SocialIcons = () => (
             target="_blank" 
             rel="noopener noreferrer"
             style={AboutStyles.SocialIcon} 
-            className="social-hover"
+            className="social-hover social-icon-mobile"
         >
             <Linkedin size={22} />
         </a>
@@ -305,7 +497,7 @@ const SocialIcons = () => (
 );
 
 const PowerButton = () => (
-    <Link to="/main2" style={AboutStyles.PowerButton} className="power-hover">
+    <Link to="/main2" style={AboutStyles.PowerButton} className="power-hover power-button-mobile">
         <Zap size={26} style={{ color: Theme.CREAM_WHITE }} />
     </Link>
 );
@@ -319,21 +511,38 @@ const BackgroundElements = () => (
 );
 
 const BigTitle = () => (
-    <h1 style={AboutStyles.BigTitle}>
+    <h1 style={AboutStyles.BigTitle} className="big-title-mobile">
         ABOUT
     </h1>
 );
 
-// 🌟 NEW BOTTOM NAVBAR COMPONENT
+// Profile Image Component
+// Profile Image Component — NEW VERSION
+import ProfilePic from "../assets/profile2.png";
+
+const ProfileImage = () => (
+  <div className="profile-art-container animate-portrait">
+    <img 
+      src={ProfilePic}
+      alt="Jiya Vegad - Fashion Designer Avatar"
+      className="profile-art"
+    />
+
+    {/* Floating Label */}
+    <div className="profile-art-tag">
+      <span className="profile-art-title">Jiya Vegad</span>
+      <span className="profile-art-sub">Fashion Designer & Creative Visionary</span>
+    </div>
+  </div>
+);
+
+// 🌟 BOTTOM NAVBAR COMPONENT
 const BottomNavbar = () => (
-    <nav style={AboutStyles.BottomNavbar}>
+    <nav style={AboutStyles.BottomNavbar} className="bottom-navbar-mobile">
         <Link 
             to="/main2" 
-            style={{
-                ...AboutStyles.NavItem,
-                ...AboutStyles.ActiveNavItem
-            }}
-            className="nav-hover"
+            style={AboutStyles.NavItem}
+            className="nav-hover nav-item-mobile"
         >
             <Home size={18} />
             Home
@@ -341,8 +550,11 @@ const BottomNavbar = () => (
         
         <Link 
             to="/about" 
-            style={AboutStyles.NavItem}
-            className="nav-hover"
+            style={{
+                ...AboutStyles.NavItem,
+                ...AboutStyles.ActiveNavItem
+            }}
+            className="nav-hover nav-item-mobile"
         >
             <User size={18} />
             About
@@ -351,19 +563,28 @@ const BottomNavbar = () => (
         <Link 
             to="/work" 
             style={AboutStyles.NavItem}
-            className="nav-hover"
+            className="nav-hover nav-item-mobile"
         >
             <Briefcase size={18} />
-            Work
+            Portfolio
         </Link>
         
         <Link 
             to="/cv" 
             style={AboutStyles.NavItem}
-            className="nav-hover"
+            className="nav-hover nav-item-mobile"
         >
             <FileText size={18} />
             CV
+        </Link>
+
+        <Link 
+            to="/process" 
+            style={AboutStyles.NavItem}
+            className="nav-hover nav-item-mobile"
+        >
+            <Palette size={18} />
+            Design Process
         </Link>
     </nav>
 );
@@ -410,12 +631,100 @@ const HighlightText = ({ children }) => (
 // 🌿 PREMIUM ABOUT PAGE
 const AboutPage = () => {
     return (
-        <div style={AboutStyles.Box}>
+        <div style={AboutStyles.Box} className="about-container-mobile">
             <style>{animationsCSS}</style>
 
             {/* Enhanced Hover Effects */}
             <style>
                 {`
+                    /* 🔥 Floating Portrait Art Styles */
+                    .profile-art-container {
+                    position: absolute;
+                    right: 6%;
+                    top: 16%;
+                    width: 420px;
+                    z-index: 3;
+                    pointer-events: none;
+                    animation: portraitFloat 16s ease-in-out infinite;
+                    filter: drop-shadow(0 35px 50px rgba(0,0,0,0.35));
+                    }
+
+                    .profile-art {
+                    width: 100%;
+                    height: auto;
+                    object-fit: contain;
+                    pointer-events: auto;
+                    transition: transform 0.4s ease, filter 0.4s ease;
+                    }
+
+                    .profile-art-container:hover .profile-art {
+                    transform: translateY(-10px) scale(1.03);
+                    filter: brightness(1.1);
+                    }
+
+                    /* Soft floating animation */
+                    @keyframes portraitFloat {
+                    0% { transform: translateY(0px) }
+                    50% { transform: translateY(-14px) }
+                    100% { transform: translateY(0px) }
+                    }
+
+                    /* Label */
+                    .profile-art-tag {
+                    position: absolute;
+                    bottom: -22px;
+                    right: 18px;
+                    padding: 0.6rem 1.2rem;
+                    border-radius: 16px;
+                    background: rgba(36, 72, 85, 0.55);
+                    backdrop-filter: blur(10px);
+                    border: 1px solid rgba(250, 240, 224, 0.25);
+                    display: flex;
+                    flex-direction: column;
+                    gap: 4px;
+                    pointer-events: auto;
+                    }
+
+                    .profile-art-title {
+                    font-size: 1.05rem;
+                    font-weight: 600;
+                    color: ${Theme.SOFT_BEIGE};
+                    }
+
+                    .profile-art-sub {
+                    font-size: 0.85rem;
+                    color: ${Theme.CREAM_WHITE}cc;
+                    }
+
+                    /* RESPONSIVE */
+                    @media(max-width: 1024px) {
+                    .profile-art-container {
+                        position: relative;
+                        margin: 3rem auto;
+                        top: 0;
+                        right: 0;
+                        width: 350px;
+                    }
+
+                    .profile-art-tag {
+                        bottom: -18px;
+                        right: 50%;
+                        transform: translateX(50%);
+                    }
+                    }
+
+                    @media(max-width: 768px) {
+                    .profile-art-container {
+                        width: 300px;
+                    }
+                    }
+
+                    @media(max-width: 480px) {
+                    .profile-art-container {
+                        width: 250px;
+                    }
+                    }
+
                     .social-hover:hover {
                         transform: translateY(-2px);
                         background: rgba(251, 233, 208, 0.15);
@@ -434,18 +743,19 @@ const AboutPage = () => {
                     }
 
                     .nav-hover:hover {
+                        background: rgba(255,255,255,0.08);
+                        box-shadow: 0 8px 20px rgba(36,72,85,0.3);
+                        color: ${Theme.WARM_RED};
                         transform: translateY(-2px);
-                        background: rgba(251, 233, 208, 0.1);
-                        border: 1px solid ${Theme.MUTED_AQUA}30;
-                        box-shadow: 0 8px 20px rgba(144, 174, 173, 0.2);
                     }
 
-                    /* Fallback for browsers that don't support backdrop-filter */
-                    @supports not (backdrop-filter: blur(12px)) {
-                        .backdrop-fallback {
-                            background: rgba(36, 72, 85, 0.95);
+                    @media (hover: none) {
+                        .social-hover:hover, .power-hover:hover, 
+                        .content-hover:hover, .nav-hover:hover {
+                            transform: none;
                         }
                     }
+
                 `}
             </style>
 
@@ -455,14 +765,13 @@ const AboutPage = () => {
             <PowerButton />
             <BigTitle />
 
-            {/* Right side Concept Sketch */}
-            <ConceptSketch />
+            {/* Right side Profile Image */}
+            <ProfileImage />
 
             {/* Main Content Containers */}
-            <div style={AboutStyles.ContentArea}>
-                
+            <div style={AboutStyles.ContentArea} className="content-area-mobile">
                 {/* 1. Main Bio and Philosophy Box */}
-                <div style={AboutStyles.MainContentBox} className="content-hover">
+                <div style={AboutStyles.MainContentBox} className="content-hover main-content-box-mobile">
                     {/* Decorative Top Line */}
                     <div style={{
                         position: "absolute",
@@ -473,7 +782,7 @@ const AboutPage = () => {
                         background: `linear-gradient(90deg, transparent, ${Theme.WARM_RED}50, transparent)`,
                     }}></div>
                     
-                    <h2 style={AboutStyles.Heading}>About Me</h2>
+                    <h2 style={AboutStyles.Heading} className="heading-mobile">About Me</h2>
 
                     <p style={{ fontSize: "1.25rem", marginBottom: "2rem", opacity: 0.95, lineHeight: "1.8" }}>
                         I'm <HighlightText>Jiya Vegad</HighlightText>, a designer who weaves emotion, culture, 
@@ -486,7 +795,7 @@ const AboutPage = () => {
                         with <HighlightText>contemporary design</HighlightText> sensibilities.
                     </p>
                     
-                    <h3 style={AboutStyles.SubHeading}>
+                    <h3 style={AboutStyles.SubHeading} className="sub-heading-mobile">
                         <Palette size={28} />
                         Design Philosophy
                     </h3>
@@ -530,8 +839,8 @@ const AboutPage = () => {
                 </div>
 
                 {/* 2. Personal Interests Card */}
-                <div style={AboutStyles.InterestsContentBox} className="content-hover">
-                    <h3 style={AboutStyles.SubHeading}>
+                <div style={AboutStyles.InterestsContentBox} className="content-hover interests-content-box-mobile">
+                    <h3 style={AboutStyles.SubHeading} className="sub-heading-mobile">
                         <Sparkles size={24} />
                         Personal Interests
                     </h3>
@@ -562,13 +871,13 @@ const AboutPage = () => {
                 </div>
             </div>
 
-            {/* 🌟 NEW BOTTOM NAVBAR */}
+            {/* 🌟 BOTTOM NAVBAR */}
             <BottomNavbar />
 
             {/* Elegant Scroll Indicator */}
             <div style={{
                 position: "fixed",
-                bottom: "7rem", // Adjusted position to account for navbar
+                bottom: "7rem",
                 left: "50%",
                 transform: "translateX(-50%)",
                 color: Theme.MUTED_AQUA,
@@ -583,7 +892,7 @@ const AboutPage = () => {
                 borderRadius: "25px",
                 backdropFilter: "blur(12px)",
                 border: `1px solid ${Theme.MUTED_AQUA}25`,
-            }}>
+            }} className="scroll-indicator-mobile">
                 <span style={{ fontWeight: "500" }}>Scroll to explore</span>
                 <div style={{ 
                     animation: "gentlePulse 2s ease-in-out infinite",

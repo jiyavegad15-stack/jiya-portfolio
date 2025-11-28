@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Zap, Github, Linkedin, Palette, Scissors, Ruler, Sparkles, Heart, ArrowRight, ChevronDown, Lightbulb, FileText, Target, CheckCircle } from "lucide-react";
+import { Zap, Github, Linkedin, Palette, Scissors, Ruler, Sparkles, Heart, ArrowRight, ChevronDown, Lightbulb, FileText, Target, CheckCircle, Home, User, Briefcase, BookOpen } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // 🎨 COLOR PALETTE
 const Theme = {
@@ -74,10 +75,38 @@ const animationsCSS = `
 .animate-slideRight { animation: slideInFromRight 1s ease-out forwards; }
 .animate-pulse { animation: gentlePulse 3s ease-in-out infinite; }
 
+/* Navigation Styles */
+.nav-hover:hover {
+    background: rgba(255,255,255,0.08);
+    box-shadow: 0 8px 20px rgba(36,72,85,0.3);
+    color: ${Theme.WARM_RED};
+    transform: translateY(-2px);
+}
+
+.social-hover:hover {
+    transform: translateY(-2px);
+    background: rgba(36, 72, 85, 0.15);
+    border-color: ${Theme.WARM_RED}40;
+    box-shadow: 0 8px 25px rgba(230, 72, 51, 0.2);
+}
+
+.power-hover:hover {
+    transform: translateX(-50%) scale(1.05);
+    box-shadow: 0 12px 35px ${Theme.WARM_RED}40;
+}
+
+.step-hover:hover {
+    transform: translateY(-8px) scale(1.02);
+    box-shadow: 
+        0 35px 70px rgba(36, 72, 85, 0.25),
+        inset 0 1px 0 rgba(255, 255, 255, 0.9);
+    border-color: ${Theme.WARM_RED}30;
+}
+
 /* Mobile Responsive Styles */
 @media (max-width: 768px) {
   .process-container-mobile {
-    padding: 6rem 1rem 3rem 1rem !important;
+    padding: 6rem 1rem 7rem 1rem !important;
   }
   
   .content-wrapper-mobile {
@@ -182,11 +211,23 @@ const animationsCSS = `
   .floating-shape-mobile {
     display: none !important;
   }
+
+  /* Bottom Navbar Mobile */
+  .bottom-navbar-mobile {
+    padding: 0.8rem 1rem !important;
+    gap: 0.5rem !important;
+  }
+  
+  .nav-item-mobile {
+    min-width: auto !important;
+    padding: 0.5rem 0.8rem !important;
+    font-size: 0.8rem !important;
+  }
 }
 
 @media (max-width: 480px) {
   .process-container-mobile {
-    padding: 5rem 0.5rem 2rem 0.5rem !important;
+    padding: 5rem 0.5rem 6rem 0.5rem !important;
   }
   
   .process-step-mobile {
@@ -217,6 +258,17 @@ const animationsCSS = `
     padding: 0.4rem 0.8rem !important;
     font-size: 0.75rem !important;
   }
+
+  .bottom-navbar-mobile {
+    padding: 0.6rem 0.8rem !important;
+    gap: 0.3rem !important;
+  }
+  
+  .nav-item-mobile {
+    padding: 0.4rem 0.6rem !important;
+    font-size: 0.75rem !important;
+    gap: 0.3rem !important;
+  }
 }
 
 @media (max-width: 320px) {
@@ -234,63 +286,14 @@ const animationsCSS = `
   }
 }
 
-/* High zoom level support */
-@media (max-width: 240px) {
-  body {
-    font-size: 14px;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* High contrast support */
-@media (prefers-contrast: high) {
-  .process-container {
-    background: #000 !important;
-    color: #fff !important;
-  }
-  
-  .process-step {
-    background: #111 !important;
-    border: 2px solid #fff !important;
-  }
-  
-  .social-icon, .feature-chip {
-    border: 2px solid #fff !important;
-    background: #111 !important;
-  }
-}
-
 /* Touch device optimizations */
 @media (hover: none) and (pointer: coarse) {
   .step-hover:active {
     transform: scale(0.98) !important;
   }
   
-  .social-hover:active, .power-hover:active {
+  .social-hover:active, .power-hover:active, .nav-hover:active {
     transform: scale(0.95) !important;
-  }
-}
-
-/* Orientation support */
-@media (orientation: landscape) and (max-height: 500px) {
-  .process-container-mobile {
-    padding: 4rem 1rem 1rem 1rem !important;
-  }
-  
-  .process-step-mobile {
-    min-height: auto !important;
-    padding: 1.5rem !important;
-  }
-  
-  .header-section-mobile {
-    margin-bottom: 2rem !important;
   }
 }
 `;
@@ -306,6 +309,7 @@ const ProcessStyles = {
         fontFamily: "'Georgia', 'Times New Roman', serif",
         position: "relative",
         overflow: "hidden",
+        paddingBottom: "100px", // Added padding for bottom navbar
     },
 
     BackgroundElements: {
@@ -536,6 +540,53 @@ const ProcessStyles = {
         transition: "all 0.3s ease",
         animation: "floatInStagger 1s ease both",
     },
+
+    // 🌟 BOTTOM NAVBAR STYLES
+    BottomNavbar: {
+            position: "fixed",
+            bottom: "2rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "1.2rem",
+            padding: "1rem 1.8rem",
+
+            // 🌟 Transparent Glass Blur Background
+            background: "rgba(36, 72, 85, 0.25)", // slight tint only
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+
+            borderRadius: "40px",
+            border: `1px solid ${Theme.MUTED_AQUA}40`, // softened border highlight
+            boxShadow: "0 10px 35px rgba(0,0,0,0.25)", // softened shadow
+            zIndex: 100,
+    },
+
+    NavItem: {
+        minWidth: "120px",
+        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "8px",
+        padding: "0.7rem 1.2rem",
+        borderRadius: "20px",
+        fontSize: "1.05rem",
+        fontWeight: "600",
+        color: Theme.CREAM_WHITE,
+        textDecoration: "none",
+        transition: "all 0.3s ease",
+        fontFamily: "'Georgia', serif",
+        whiteSpace: "nowrap",
+    },
+
+    ActiveNavItem: {
+        background: `linear-gradient(135deg, ${Theme.WARM_RED}20, ${Theme.MUTED_AQUA}15)`,
+        border: `1px solid ${Theme.WARM_RED}30`,
+        color: Theme.WARM_RED,
+    },
 };
 
 // 🎨 COMPONENTS
@@ -554,19 +605,71 @@ const LogoComponent = () => (
 
 const SocialIcons = () => (
     <div style={ProcessStyles.SocialIcons} className="social-icons-mobile">
-        <div style={ProcessStyles.SocialIcon} className="social-hover social-icon-mobile">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" style={ProcessStyles.SocialIcon} className="social-hover social-icon-mobile">
             <Github size={22} />
-        </div>
-        <div style={ProcessStyles.SocialIcon} className="social-hover social-icon-mobile">
+        </a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={ProcessStyles.SocialIcon} className="social-hover social-icon-mobile">
             <Linkedin size={22} />
-        </div>
+        </a>
     </div>
 );
 
 const PowerButton = () => (
-    <a href="/jiya-portfolio/#/Main2" style={ProcessStyles.PowerButton} className="power-hover power-button-mobile" aria-label="Home">
+    <a href="/" style={ProcessStyles.PowerButton} className="power-hover power-button-mobile" aria-label="Home">
         <Zap size={26} style={{ color: Theme.CREAM_WHITE }} />
     </a>
+);
+
+const BottomNavbar = () => (
+    <nav style={ProcessStyles.BottomNavbar} className="bottom-navbar-mobile">
+        <Link 
+            to="/main2" 
+            style={ProcessStyles.NavItem}
+            className="nav-hover nav-item-mobile"
+        >
+            <Home size={18} />
+            Home
+        </Link>
+        
+        <Link 
+            to="/education" 
+            style={ProcessStyles.NavItem}
+            className="nav-hover nav-item-mobile"
+        >
+            <User size={18} />
+            Education
+        </Link>
+        
+        <Link 
+            to="/work" 
+            style={ProcessStyles.NavItem}
+            className="nav-hover nav-item-mobile"
+        >
+            <Briefcase size={18} />
+            Portfolio
+        </Link>
+        
+        <Link 
+            to="/cv" 
+            style={ProcessStyles.NavItem}
+            className="nav-hover nav-item-mobile"
+        >
+            <BookOpen size={18} />
+            CV
+        </Link>
+
+        <Link 
+            to="/process" 
+            style={{
+                ...ProcessStyles.NavItem,
+                ...ProcessStyles.ActiveNavItem
+            }}
+            className="nav-hover nav-item-mobile"
+        >
+            <Palette size={18} />
+            Design Process
+        </Link>
+    </nav>
 );
 
 const BackgroundElements = () => {
@@ -719,42 +822,12 @@ export default function ProcessPage() {
     return (
         <div style={ProcessStyles.Container} className="process-container-mobile">
             <style>{animationsCSS}</style>
-            
-            {/* Enhanced Hover Effects */}
-            <style>
-                {`
-                    .social-hover:hover {
-                        transform: translateY(-2px);
-                        background: rgba(36, 72, 85, 0.15);
-                        border-color: ${Theme.WARM_RED}40;
-                        box-shadow: 0 8px 25px rgba(230, 72, 51, 0.2);
-                    }
-
-                    .power-hover:hover {
-                        transform: translateX(-50%) scale(1.05);
-                        box-shadow: 0 12px 35px ${Theme.WARM_RED}40;
-                    }
-
-                    .step-hover:hover {
-                        transform: translateY(-8px) scale(1.02);
-                        box-shadow: 
-                            0 35px 70px rgba(36, 72, 85, 0.25),
-                            inset 0 1px 0 rgba(255, 255, 255, 0.9);
-                        border-color: ${Theme.WARM_RED}30;
-                    }
-
-                    @media (hover: none) {
-                        .step-hover:hover {
-                            transform: none;
-                        }
-                    }
-                `}
-            </style>
 
             <BackgroundElements />
             <LogoComponent />
             <SocialIcons />
             <PowerButton />
+            <BottomNavbar />
 
             <div style={ProcessStyles.ContentWrapper} className="content-wrapper-mobile">
                 {/* Header Section */}
@@ -780,7 +853,7 @@ export default function ProcessPage() {
             {!isMobile && (
                 <div style={{
                     position: "fixed",
-                    bottom: "3rem",
+                    bottom: "6rem",
                     left: "50%",
                     transform: "translateX(-50%)",
                     color: Theme.MUDDY_BROWN,

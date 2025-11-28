@@ -1,281 +1,509 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
+import { Zap, Github, Linkedin, Scissors, Paintbrush } from "lucide-react";
+
+// --- 1. THEME & MOCK DATA ---
+const ColorPalette = {
+    IVORY: "#FFFFF0",
+    CHARCOAL: "#4A4A48",
+    SAGE_GREEN: "#9CAF88",
+    DUSTY_ROSE: "#C4A69F",
+    PALE_GRAY: "#D8D8D8",
+    WARM_BEIGE: "#D7C7B6",
+};
 
 const DarkTheme = {
-  body: "#4A4A48",
-  text: "#FFFFF0",
-  accent: "#9CAF88",
+    body: ColorPalette.CHARCOAL,
+    text: ColorPalette.IVORY,
+    accent: ColorPalette.DUSTY_ROSE,
 };
 
-const Styles = {
-  Container: {
-    minHeight: "100vh",
-    width: "100%",
-    backgroundColor: DarkTheme.body,
-    color: DarkTheme.text,
-    fontFamily: "'Georgia', serif",
-    padding: "2rem 1rem",
-    position: "relative",
-    overflowY: "auto",
-    boxSizing: "border-box",
-  },
-  Title: {
-    fontSize: "clamp(2rem, 8vw, 3.5rem)",
-    fontWeight: "900",
-    marginBottom: "1.5rem",
-    letterSpacing: "1px",
-    color: DarkTheme.accent,
-    textAlign: "center",
-    lineHeight: "1.2",
-  },
-  Section: {
-    marginBottom: "2.5rem",
-    maxWidth: "1200px",
-    marginLeft: "auto",
-    marginRight: "auto",
-  },
-  SectionTitle: {
-    fontSize: "clamp(1.5rem, 5vw, 2rem)",
-    fontWeight: "700",
-    borderBottom: `3px solid ${DarkTheme.accent}`,
-    paddingBottom: "0.5rem",
-    marginBottom: "1.5rem",
-    lineHeight: "1.3",
-  },
-  ItemTitle: {
-    fontSize: "clamp(1.2rem, 4vw, 1.5rem)",
-    fontWeight: "700",
-    marginBottom: "0.5rem",
-    lineHeight: "1.3",
-  },
-  ItemSubTitle: {
-    fontSize: "clamp(1rem, 3vw, 1.1rem)",
-    fontWeight: "600",
-    fontStyle: "italic",
-    marginBottom: "0.5rem",
-    color: DarkTheme.accent,
-    lineHeight: "1.4",
-  },
-  ItemDate: {
-    fontSize: "clamp(0.8rem, 2.5vw, 0.9rem)",
-    fontWeight: "400",
-    marginBottom: "0.8rem",
-    color: "#B1B1B0",
-  },
-  ItemDescription: {
-    fontSize: "clamp(1rem, 3vw, 1.1rem)",
-    lineHeight: "1.6",
-    whiteSpace: "pre-line",
-    marginBottom: "1.5rem",
-  },
-  List: {
-    fontSize: "clamp(1rem, 3vw, 1.1rem)",
-    lineHeight: "1.8",
-    paddingLeft: "1.2rem",
-    margin: "0",
-  },
-  ContactText: {
-    fontSize: "clamp(1rem, 3vw, 1.2rem)",
-    lineHeight: "1.6",
-    marginBottom: "0.8rem",
-  },
-  Link: {
-    color: DarkTheme.accent,
-    textDecoration: "none",
-    transition: "color 0.3s ease",
-    wordBreak: "break-all",
-  },
-};
+// --- 2. CSS Keyframes ---
+const tiltKeyframes = `
+@keyframes tilt {
+    0%, 100% {
+        transform: rotateX(0deg) rotateY(0deg);
+        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    }
+    50% {
+        transform: rotateX(1deg) rotateY(1deg);
+        box-shadow: 0 20px 50px ${DarkTheme.accent}55;
+    }
+}
 
-// Responsive CSS for different screen sizes
-const ResponsiveCSS = `
-  @media (min-width: 768px) {
-    .cv-container {
-      padding: 4rem 3rem !important;
+/* Mobile Responsive Styles */
+@media (max-width: 768px) {
+    .skills-box-mobile {
+        padding: 6rem 1rem 2rem 1rem !important;
+        gap: 2rem !important;
     }
-  }
-  
-  @media (min-width: 1024px) {
-    .cv-container {
-      padding: 6rem 8rem !important;
+    
+    .cards-wrapper-mobile {
+        flex-direction: column !important;
+        gap: 2rem !important;
+        align-items: center !important;
     }
-  }
-  
-  @media (min-width: 1440px) {
-    .cv-container {
-      padding: 6rem 12rem !important;
+    
+    .card-mobile {
+        max-width: 100% !important;
+        min-height: auto !important;
+        padding: 2rem 1.5rem !important;
+        margin-bottom: 0 !important;
     }
-  }
-  
-  @media (max-width: 480px) {
-    .cv-container {
-      padding: 1.5rem 1rem !important;
+    
+    .logo-mobile {
+        left: 1.5rem !important;
+        top: 1.5rem !important;
+        font-size: 1.5rem !important;
     }
-  }
-  
-  @media (max-width: 320px) {
-    .cv-container {
-      padding: 1rem 0.5rem !important;
+    
+    .social-icons-mobile {
+        right: 1.5rem !important;
+        top: 1.5rem !important;
+        gap: 0.8rem !important;
     }
-  }
-  
-  /* High zoom level support */
-  @media (max-width: 240px) {
+    
+    .social-icon-mobile {
+        width: 20px !important;
+        height: 20px !important;
+    }
+    
+    .power-button-mobile {
+        top: 0.8rem !important;
+        width: 45px !important;
+        height: 45px !important;
+    }
+    
+    .big-title-mobile {
+        display: none !important;
+    }
+    
+    .card-title-mobile {
+        font-size: 1.5rem !important;
+    }
+    
+    .card-icon-mobile {
+        width: 30px !important;
+        height: 30px !important;
+    }
+}
+
+@media (max-width: 480px) {
+    .skills-box-mobile {
+        padding: 5rem 1rem 1.5rem 1rem !important;
+    }
+    
+    .card-mobile {
+        padding: 1.5rem 1rem !important;
+    }
+    
+    .logo-mobile {
+        left: 1rem !important;
+        top: 1rem !important;
+    }
+    
+    .social-icons-mobile {
+        right: 1rem !important;
+        top: 1rem !important;
+    }
+    
+    .card-title-mobile {
+        font-size: 1.3rem !important;
+    }
+    
+    .description-mobile {
+        font-size: 0.9rem !important;
+        line-height: 1.5 !important;
+    }
+}
+
+@media (max-width: 320px) {
+    .skills-box-mobile {
+        padding: 4rem 0.5rem 1rem 0.5rem !important;
+    }
+    
+    .card-mobile {
+        padding: 1rem 0.8rem !important;
+    }
+    
+    .card-title-mobile {
+        font-size: 1.2rem !important;
+    }
+    
+    .list-mobile {
+        margin-left: 1rem !important;
+        font-size: 0.8rem !important;
+    }
+}
+
+/* High zoom level support */
+@media (max-width: 240px) {
     body {
-      font-size: 14px;
+        font-size: 14px;
     }
-  }
-  
-  /* Print styles */
-  @media print {
-    .cv-container {
-      padding: 1rem !important;
-      color: #000 !important;
-      background: white !important;
-    }
-    
-    .section-title {
-      color: #333 !important;
-      border-color: #333 !important;
-    }
-    
-    .link {
-      color: #333 !important;
-    }
-  }
-  
-  /* Reduced motion support */
-  @media (prefers-reduced-motion: reduce) {
+}
+
+/* Reduced motion support */
+@media (prefers-reduced-motion: reduce) {
     * {
-      transition: none !important;
+        animation: none !important;
+        transition: none !important;
     }
-  }
-  
-  /* High contrast support */
-  @media (prefers-contrast: high) {
-    .cv-container {
-      background: #000 !important;
-      color: #fff !important;
+}
+
+/* High contrast support */
+@media (prefers-contrast: high) {
+    .skills-box {
+        background: #000 !important;
+        color: #fff !important;
     }
     
-    .accent {
-      color: #fff !important;
-      border-color: #fff !important;
+    .card {
+        border: 2px solid #fff !important;
+        background: #111 !important;
     }
-  }
-  
-  /* Link hover effects */
-  .link:hover {
-    color: #FFFFF0 !important;
-    text-decoration: underline;
-  }
-  
-  /* Ensure text remains readable on very small screens */
-  @media (max-width: 360px) {
-    .item-description {
-      text-align: justify;
+    
+    .card-hover {
+        background: #fff !important;
+        color: #000 !important;
     }
-  }
-  
-  /* Touch device optimizations */
-  @media (hover: none) and (pointer: coarse) {
-    .link {
-      min-height: 44px;
-      display: inline-flex;
-      align-items: center;
+}
+
+/* Touch device optimizations */
+@media (hover: none) and (pointer: coarse) {
+    .card-hover:active {
+        transform: scale(0.98) !important;
     }
-  }
+}
+
+/* Orientation support */
+@media (orientation: landscape) and (max-height: 500px) {
+    .skills-box-mobile {
+        padding: 4rem 1rem 1rem 1rem !important;
+    }
+    
+    .card-mobile {
+        min-height: 400px !important;
+        padding: 1.5rem !important;
+    }
+}
 `;
 
-const CV = () => (
-  <div style={Styles.Container} className="cv-container">
-    <style>{ResponsiveCSS}</style>
-    
-    <h1 style={Styles.Title}>Curriculum Vitae</h1>
+// --- 3. RESPONSIVE STYLES ---
+const SkillsStyles = {
+    Box: {
+        backgroundColor: DarkTheme.body,
+        width: "100%",
+        minHeight: "100vh",
+        position: "relative",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        fontFamily: "sans-serif",
+        overflowY: "auto",
+        padding: "8rem 2rem 4rem 2rem",
+        gap: "3rem",
+        boxSizing: "border-box",
+    },
 
-    {/* Education Section */}
-    <section style={Styles.Section}>
-      <h2 style={Styles.SectionTitle} className="section-title">Education</h2>
+    FixedElement: {
+        position: "fixed",
+        zIndex: 50,
+        color: DarkTheme.text,
+    },
 
-      <div>
-        <h3 style={Styles.ItemTitle}>Bachelor of Science in Computer Science</h3>
-        <div style={Styles.ItemSubTitle} className="accent">Punjab University</div>
-        <div style={Styles.ItemDate}>2019 - 2023</div>
-        <p style={Styles.ItemDescription} className="item-description">
-          Graduated with honors focusing on software engineering, data science, and cybersecurity.{"\n"}
-          Relevant Coursework: Machine Learning, Data Structures, Network Security, Power Systems.
-        </p>
-      </div>
-    </section>
+    Logo: {
+        top: "2rem",
+        left: "3rem",
+        fontSize: "clamp(1.5rem, 3vw, 2rem)",
+        fontWeight: 700,
+        fontFamily: "serif",
+    },
 
-    {/* Professional Experience Section */}
-    <section style={Styles.Section}>
-      <h2 style={Styles.SectionTitle} className="section-title">Professional Experience</h2>
+    SocialIcons: {
+        top: "2rem",
+        right: "3rem",
+        display: "flex",
+        gap: "1rem",
+    },
 
-      <div>
-        <h3 style={Styles.ItemTitle}>Software Developer Intern</h3>
-        <div style={Styles.ItemSubTitle} className="accent">Indian Oil Corporation Limited (IOCL)</div>
-        <div style={Styles.ItemDate}>Summer 2022</div>
-        <p style={Styles.ItemDescription} className="item-description">
-          Developed a Network Status Management System dashboard. Participated in design and implementation of real-time status monitoring for network infrastructure.
-        </p>
-      </div>
+    PowerButton: {
+        position: "fixed",
+        top: "1rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        width: "50px",
+        height: "50px",
+        borderRadius: "50%",
+        backgroundColor: DarkTheme.text,
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        textDecoration: "none",
+        zIndex: 60,
+        minWidth: "44px",
+        minHeight: "44px",
+    },
 
-      <div>
-        <h3 style={Styles.ItemTitle}>Junior Full-Stack Developer</h3>
-        <div style={Styles.ItemSubTitle} className="accent">Central CoalFields Limited</div>
-        <div style={Styles.ItemDate}>2023 - 2024</div>
-        <p style={Styles.ItemDescription} className="item-description">
-          Designed and deployed live link monitoring dashboards utilizing React and Django. Created efficient RESTful APIs and integrated them with frontend components.
-        </p>
-      </div>
-    </section>
+    CardsWrapper: {
+        display: "flex",
+        flexDirection: "row",
+        justifyContent: "center",
+        alignItems: "flex-start",
+        gap: "4rem",
+        width: "100%",
+        maxWidth: "1200px",
+        flexWrap: "wrap",
+    },
 
-    {/* Skills Section */}
-    <section style={Styles.Section}>
-      <h2 style={Styles.SectionTitle} className="section-title">Technical Skills</h2>
-      <ul style={Styles.List}>
-        <li><strong>Languages:</strong> Python, JavaScript/TypeScript, Java, SQL, PHP, C++</li>
-        <li><strong>Frameworks & Libraries:</strong> React, Django, Flask, Framer Motion</li>
-        <li><strong>Tools & Platforms:</strong> Git, Docker, AWS EC2, MySQL, Linux/Ubuntu, VS Code</li>
-        <li><strong>Domains:</strong> Full-Stack Development, DevOps, Cybersecurity, Machine Learning</li>
-      </ul>
-    </section>
+    Card: {
+        width: "100%",
+        maxWidth: "450px",
+        minHeight: "550px",
+        padding: "2.5rem",
+        borderWidth: "2px",
+        borderStyle: "solid",
+        borderColor: DarkTheme.text,
+        color: DarkTheme.text,
+        backgroundColor: DarkTheme.body,
+        borderRadius: "12px",
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "space-between",
+        transition: "all 0.4s ease-in-out",
+        cursor: "pointer",
+        transformStyle: "preserve-3d",
+        boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
+        animation: "tilt 4s ease-in-out infinite",
+        boxSizing: "border-box",
+    },
 
-    {/* Projects Section */}
-    <section style={Styles.Section}>
-      <h2 style={Styles.SectionTitle} className="section-title">Projects</h2>
+    CardHover: {
+        backgroundColor: DarkTheme.text,
+        color: DarkTheme.body,
+        borderColor: DarkTheme.accent,
+        boxShadow: `0 20px 50px ${DarkTheme.accent}80`,
+    },
 
-      <div>
-        <h3 style={Styles.ItemTitle}>Portfolio Website for Fashion Designer</h3>
-        <div style={Styles.ItemSubTitle} className="accent">React, Styled Components, Framer Motion</div>
-        <p style={Styles.ItemDescription} className="item-description">
-          Developed a highly customized, color-themed portfolio website designed for visual storytelling and unique user interaction experience.
-        </p>
-      </div>
+    Title: {
+        display: "flex",
+        alignItems: "center",
+        fontSize: "clamp(1.5rem, 3vw, 2rem)",
+        fontWeight: 700,
+        marginBottom: "1rem",
+        color: DarkTheme.accent,
+    },
 
-      <div>
-        <h3 style={Styles.ItemTitle}>Network Monitoring Dashboard</h3>
-        <div style={Styles.ItemSubTitle} className="accent">React, Django, REST API</div>
-        <p style={Styles.ItemDescription} className="item-description">
-          Created interactive dashboards to provide real-time ISP network status with intuitive UI and backend integration.
-        </p>
-      </div>
-    </section>
+    TitleIcon: {
+        marginRight: "1rem",
+        width: "clamp(30px, 5vw, 40px)",
+        height: "clamp(30px, 5vw, 40px)",
+        transition: "fill 0.3s ease",
+    },
 
-    {/* Contact Section */}
-    <section style={Styles.Section}>
-      <h2 style={Styles.SectionTitle} className="section-title">Contact</h2>
-      <p style={Styles.ContactText}>
-        Email: <a href="mailto:jiya@example.com" style={Styles.Link} className="link">jiya@example.com</a>
-      </p>
-      <p style={Styles.ContactText}>
-        GitHub: <a href="https://github.com/jiya" target="_blank" rel="noopener noreferrer" style={Styles.Link} className="link">github.com/jiya</a>
-      </p>
-      <p style={Styles.ContactText}>
-        LinkedIn: <a href="https://linkedin.com/in/jiya" target="_blank" rel="noopener noreferrer" style={Styles.Link} className="link">linkedin.com/in/jiya</a>
-      </p>
-    </section>
-  </div>
+    Description: {
+        fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
+        lineHeight: 1.6,
+        paddingBottom: "1rem",
+        flexGrow: 1,
+    },
+
+    Strong: {
+        textTransform: "uppercase",
+        fontWeight: 700,
+        color: DarkTheme.accent,
+    },
+
+    List: {
+        marginTop: "1rem",
+        marginLeft: "2rem",
+        listStyleType: "disc",
+        fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
+        lineHeight: 1.5,
+    },
+};
+
+// --- MOCK COMPONENTS ---
+const BigTitle = ({ text, top, right }) => (
+    <h1 style={{ 
+        ...BigTitleStyles.Text, 
+        top, 
+        right,
+        fontSize: "clamp(8rem, 15vw, 18vh)"
+    }} className="big-title-mobile">
+        {text}
+    </h1>
 );
 
-export default CV;
+const BigTitleStyles = {
+    Text: {
+        position: "absolute",
+        opacity: 0.1,
+        color: DarkTheme.text,
+        zIndex: 0,
+        fontWeight: "900",
+        pointerEvents: "none",
+    },
+};
+
+const LogoComponent = () => (
+    <div style={{ ...SkillsStyles.FixedElement, ...SkillsStyles.Logo }} className="logo-mobile">
+        JV
+    </div>
+);
+
+const SocialIcons = () => (
+    <div style={{ ...SkillsStyles.FixedElement, ...SkillsStyles.SocialIcons }} className="social-icons-mobile">
+        <Github size={24} className="social-icon-mobile" />
+        <Linkedin size={24} className="social-icon-mobile" />
+    </div>
+);
+
+const PowerButton = () => (
+    <a href="/jiya-portfolio/#/main2" style={SkillsStyles.PowerButton} className="power-button-mobile" aria-label="Home">
+        <Zap size={30} style={{ color: DarkTheme.body }} />
+    </a>
+);
+
+// Particle background
+const ParticleComponent = () => (
+    <div style={{ position: "fixed", inset: 0, opacity: 0.08, pointerEvents: "none" }}>
+        <div
+            style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                    "radial-gradient(circle at 10% 20%, rgba(255,255,255,0.35), transparent 40%)",
+            }}
+        ></div>
+        <div
+            style={{
+                position: "absolute",
+                inset: 0,
+                background:
+                    "radial-gradient(circle at 90% 80%, rgba(255,255,255,0.35), transparent 40%)",
+            }}
+        ></div>
+    </div>
+);
+
+// --- SKILLS CARD ---
+const SkillsCard = ({ title, icon: Icon, mainText, skills }) => {
+    const [isHovered, setIsHovered] = useState(false);
+    const [isMobile, setIsMobile] = useState(false);
+
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768);
+        };
+        
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
+
+    const cardStyle = {
+        ...SkillsStyles.Card,
+        ...(isHovered && !isMobile ? SkillsStyles.CardHover : {}),
+        transform: isHovered && !isMobile
+            ? "rotateX(1deg) rotateY(1deg) scale(1.03)"
+            : "rotateX(0deg) rotateY(0deg) scale(1)",
+    };
+
+    const finalCardStyle = isMobile
+        ? { 
+            ...cardStyle, 
+            maxWidth: "100%", 
+            marginBottom: "0",
+            minHeight: "auto",
+            animation: "none"
+          }
+        : cardStyle;
+
+    return (
+        <div
+            style={finalCardStyle}
+            className="card-mobile card-hover"
+            onMouseEnter={() => !isMobile && setIsHovered(true)}
+            onMouseLeave={() => !isMobile && setIsHovered(false)}
+            onTouchStart={() => isMobile && setIsHovered(true)}
+            onTouchEnd={() => isMobile && setTimeout(() => setIsHovered(false), 150)}
+        >
+            <h2 style={{ 
+                ...SkillsStyles.Title, 
+                color: isHovered ? DarkTheme.body : DarkTheme.accent 
+            }} className="card-title-mobile">
+                <Icon style={{ 
+                    ...SkillsStyles.TitleIcon,
+                    width: isMobile ? "30px" : "40px",
+                    height: isMobile ? "30px" : "40px"
+                }} className="card-icon-mobile" />
+                {title}
+            </h2>
+
+            <p style={SkillsStyles.Description} className="description-mobile">
+                {mainText}
+            </p>
+
+            <div style={SkillsStyles.Description} className="description-mobile">
+                <strong style={SkillsStyles.Strong}>Skills</strong>
+                <ul style={SkillsStyles.List} className="list-mobile">
+                    {skills.map((skill, idx) => (
+                        <li key={idx}>{skill}</li>
+                    ))}
+                </ul>
+            </div>
+        </div>
+    );
+};
+
+// --- MAIN PAGE ---
+const CVPage = () => {
+    const fashionDesign = {
+        title: "Fashion Designer",
+        icon: Scissors,
+        mainText:
+            "I create expressive, meaningful fashion blending comfort, culture and modern craftsmanship.",
+        skills: [
+            "Illustration & Sketching",
+            "Pattern Making & Draping",
+            "Garment Construction",
+            "Surface Embellishment",
+            "Textile Knowledge",
+            "Moodboard Creation & Curation",
+        ],
+    };
+
+    const creativeSkills = {
+        title: "Creative Direction",
+        icon: Paintbrush,
+        mainText:
+            "Visual storytelling, brand identity creation, and strategic presentation across digital and editorial platforms.",
+        skills: [
+            "Trend Forecasting",
+            "Editorial Design & Layout",
+            "Styling & Merchandising",
+            "Digital Content Creation",
+            "Visual Branding Strategy",
+        ],
+    };
+
+    return (
+        <div style={SkillsStyles.Box} className="skills-box-mobile">
+            <style>{tiltKeyframes}</style>
+
+            <LogoComponent />
+            <SocialIcons />
+            <PowerButton />
+            <ParticleComponent />
+
+            <div style={SkillsStyles.CardsWrapper} className="cards-wrapper-mobile">
+                <SkillsCard {...fashionDesign} />
+                <SkillsCard {...creativeSkills} />
+            </div>
+
+            <BigTitle text="SKILLS" top="82%" right="30%" />
+        </div>
+    );
+};
+
+export default CVPage;

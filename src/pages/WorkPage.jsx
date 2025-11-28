@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Zap, Github, Linkedin, ArrowRight, Eye, Sparkles, X, Aperture, BookOpen } from "lucide-react";
+import { Zap, Github, Linkedin, ArrowRight, Eye, Sparkles, X, Aperture, BookOpen, Menu, Home, User, Code, Briefcase, FileText } from "lucide-react";
 
 // ---- GORGEOUS NEW COLOR PALETTE ----
 const ColorPalette = {
@@ -22,12 +22,327 @@ const Theme = {
     red: ColorPalette.WARM_RED
 };
 
+// ---- NAVIGATION BAR COMPONENT ----
+const NavigationBar = () => {
+    const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [activeSection, setActiveSection] = useState('work');
+
+    const navItems = [
+        { id: 'home', label: 'Home', icon: Home, href: '/jiya-portfolio/#/main2' },
+        { id: 'about', label: 'About', icon: User, href: '#about' },
+        { id: 'skills', label: 'Skills', icon: Code, href: '#skills' },
+        { id: 'work', label: 'Work', icon: Briefcase, href: '#work' },
+        { id: 'portfolio', label: 'Portfolio', icon: BookOpen, href: '#portfolio' },
+        { id: 'cv', label: 'CV', icon: FileText, href: '#cv' }
+    ];
+
+    const toggleMenu = () => {
+        setIsMenuOpen(!isMenuOpen);
+    };
+
+    const handleNavClick = (itemId, href) => {
+        setActiveSection(itemId);
+        setIsMenuOpen(false);
+        
+        if (href.startsWith('/')) {
+            window.location.href = href;
+        } else {
+            // Smooth scroll to section
+            const element = document.querySelector(href);
+            if (element) {
+                element.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    };
+
+    return (
+        <>
+            {/* Navigation Bar */}
+            <nav style={NavStyles.navbar}>
+                <div style={NavStyles.navContainer}>
+                    {/* Logo */}
+                    <div style={NavStyles.logo}>
+                        <div style={NavStyles.logoIcon}>✦</div>
+                        <span style={NavStyles.logoText}>JV</span>
+                    </div>
+
+                    {/* Desktop Navigation */}
+                    <div style={NavStyles.navItems}>
+                        {navItems.map((item) => {
+                            const IconComponent = item.icon;
+                            return (
+                                <a
+                                    key={item.id}
+                                    href={item.href}
+                                    style={{
+                                        ...NavStyles.navItem,
+                                        ...(activeSection === item.id ? NavStyles.navItemActive : {})
+                                    }}
+                                    onClick={(e) => {
+                                        e.preventDefault();
+                                        handleNavClick(item.id, item.href);
+                                    }}
+                                    className="nav-item"
+                                >
+                                    <IconComponent size={16} />
+                                    <span>{item.label}</span>
+                                </a>
+                            );
+                        })}
+                    </div>
+
+                    {/* Mobile Menu Button */}
+                    <button
+                        style={NavStyles.menuButton}
+                        onClick={toggleMenu}
+                        className="menu-button"
+                        aria-label="Toggle menu"
+                    >
+                        <Menu size={24} />
+                    </button>
+                </div>
+            </nav>
+
+            {/* Mobile Menu Overlay */}
+            {isMenuOpen && (
+                <div style={NavStyles.mobileOverlay}>
+                    <div style={NavStyles.mobileMenu}>
+                        <div style={NavStyles.mobileHeader}>
+                            <div style={NavStyles.logo}>
+                                <div style={NavStyles.logoIcon}>✦</div>
+                                <span style={NavStyles.logoText}>JV</span>
+                            </div>
+                            <button
+                                style={NavStyles.closeButton}
+                                onClick={toggleMenu}
+                                aria-label="Close menu"
+                            >
+                                <X size={24} />
+                            </button>
+                        </div>
+                        
+                        <div style={NavStyles.mobileNavItems}>
+                            {navItems.map((item) => {
+                                const IconComponent = item.icon;
+                                return (
+                                    <a
+                                        key={item.id}
+                                        href={item.href}
+                                        style={{
+                                            ...NavStyles.mobileNavItem,
+                                            ...(activeSection === item.id ? NavStyles.mobileNavItemActive : {})
+                                        }}
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            handleNavClick(item.id, item.href);
+                                        }}
+                                        className="mobile-nav-item"
+                                    >
+                                        <IconComponent size={20} />
+                                        <span>{item.label}</span>
+                                    </a>
+                                );
+                            })}
+                        </div>
+
+                        {/* Social Icons in Mobile Menu */}
+                        <div style={NavStyles.mobileSocial}>
+                            <a href="#" style={NavStyles.socialIcon} aria-label="GitHub">
+                                <Github size={20} />
+                            </a>
+                            <a href="#" style={NavStyles.socialIcon} aria-label="LinkedIn">
+                                <Linkedin size={20} />
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            )}
+        </>
+    );
+};
+
+// ---- NAVIGATION STYLES ----
+const NavStyles = {
+    navbar: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        zIndex: 1000,
+        background: `${Theme.cardBg}e6`,
+        backdropFilter: 'blur(20px)',
+        borderBottom: `1px solid ${Theme.dark}10`,
+        boxShadow: `0 2px 30px ${Theme.dark}08`,
+    },
+    navContainer: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '1rem 2rem',
+        maxWidth: '1400px',
+        margin: '0 auto',
+    },
+    
+    logo: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        fontFamily: "'Playfair Display', serif",
+    },
+    logoIcon: {
+        fontSize: '1.2rem',
+        color: Theme.red,
+        animation: 'logoPulse 2s ease-in-out infinite',
+    },
+    logoText: {
+        fontSize: '1.5rem',
+        fontWeight: 800,
+        color: Theme.dark,
+        letterSpacing: '1px',
+    },
+    navItems: {
+        display: 'flex',
+        gap: '2rem',
+        alignItems: 'center',
+    },
+    navItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '8px',
+        padding: '0.5rem 1rem',
+        borderRadius: '25px',
+        textDecoration: 'none',
+        color: Theme.text,
+        fontSize: '0.9rem',
+        fontWeight: '500',
+        transition: 'all 0.3s ease',
+        fontFamily: "'Lora', serif",
+        minHeight: '44px',
+        minWidth: '44px',
+        justifyContent: 'center',
+    },
+    navItemActive: {
+        background: `linear-gradient(135deg, ${Theme.accent}, ${Theme.secondary})`,
+        color: Theme.cardBg,
+        boxShadow: `0 4px 15px ${Theme.accent}40`,
+    },
+    menuButton: {
+        display: 'none',
+        background: 'transparent',
+        border: 'none',
+        color: Theme.dark,
+        cursor: 'pointer',
+        padding: '8px',
+        borderRadius: '8px',
+        transition: 'all 0.3s ease',
+        minHeight: '44px',
+        minWidth: '44px',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    mobileOverlay: {
+        position: 'fixed',
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        background: `${Theme.dark}e6`,
+        backdropFilter: 'blur(20px)',
+        zIndex: 999,
+        animation: 'fadeIn 0.3s ease-out both',
+    },
+    mobileMenu: {
+        position: 'absolute',
+        top: 0,
+        left: 0,
+        right: 0,
+        background: Theme.cardBg,
+        borderBottom: `1px solid ${Theme.dark}10`,
+        boxShadow: `0 5px 40px ${Theme.dark}20`,
+        animation: 'slideDown 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both',
+    },
+    mobileHeader: {
+        display: 'flex',
+        justifyContent: 'space-between',
+        alignItems: 'center',
+        padding: '1rem 2rem',
+        borderBottom: `1px solid ${Theme.dark}10`,
+    },
+    closeButton: {
+        background: 'transparent',
+        border: 'none',
+        color: Theme.dark,
+        cursor: 'pointer',
+        padding: '8px',
+        borderRadius: '8px',
+        transition: 'all 0.3s ease',
+        minHeight: '44px',
+        minWidth: '44px',
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+    },
+    mobileNavItems: {
+        display: 'flex',
+        flexDirection: 'column',
+        padding: '1rem 0',
+    },
+    mobileNavItem: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '12px',
+        padding: '1rem 2rem',
+        textDecoration: 'none',
+        color: Theme.text,
+        fontSize: '1rem',
+        fontWeight: '500',
+        transition: 'all 0.3s ease',
+        fontFamily: "'Lora', serif",
+        minHeight: '44px',
+    },
+    mobileNavItemActive: {
+        background: `linear-gradient(135deg, ${Theme.accent}15, ${Theme.secondary}10)`,
+        color: Theme.accent,
+        borderRight: `3px solid ${Theme.accent}`,
+    },
+    mobileSocial: {
+        display: 'flex',
+        justifyContent: 'center',
+        gap: '1rem',
+        padding: '1.5rem 2rem',
+        borderTop: `1px solid ${Theme.dark}10`,
+    },
+    socialIcon: {
+        display: 'flex',
+        alignItems: 'center',
+        justifyContent: 'center',
+        width: '44px',
+        height: '44px',
+        borderRadius: '50%',
+        background: `${Theme.dark}10`,
+        color: Theme.dark,
+        textDecoration: 'none',
+        transition: 'all 0.3s ease',
+    },
+};
+
 // ---- PLACEHOLDER URL FOR GITHUB PAGES ----
 const BASE_PLACEHOLDER_URL = "https://placehold.co";
 
 // ---- FONT IMPORTS ----
 const FontStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
+
+@keyframes slideDown {
+    from {
+        transform: translateY(-100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
 `;
 
 // --- COLLECTION DATA SIMULATION ---
@@ -961,57 +1276,62 @@ const ModalStyles = {
         margin: 0,
         fontFamily: "'Lora', serif",
     },
+    detailHeader: {
+        display: 'flex',
+        alignItems: 'center',
+        gap: '16px',
+        marginBottom: '24px',
+        borderBottom: `2px solid ${Theme.tertiary}50`,
+        paddingBottom: '16px',
+    },
+    detailTitle: {
+        fontSize: '2rem',
+        fontWeight: 800,
+        color: Theme.dark,
+        fontFamily: "'Playfair Display', serif",
+        margin: 0,
+    },
+    detailDescription: {
+        fontSize: '1.1rem',
+        lineHeight: '1.6',
+        color: Theme.text,
+        marginBottom: '24px',
+        fontFamily: "'Lora', serif",
+    },
+    detailTags: {
+        display: 'flex',
+        flexWrap: 'wrap',
+        gap: '12px',
+        marginBottom: '24px',
+    },
+    detailTagItem: {
+        padding: '10px 20px',
+        borderRadius: '25px',
+        background: `linear-gradient(45deg, ${Theme.accent}, ${Theme.secondary})`,
+        color: Theme.cardBg,
+        fontSize: '1rem',
+        fontWeight: 700,
+        boxShadow: `0 4px 10px ${Theme.accent}30`,
+        fontFamily: "'Lora', serif",
+    },
+    exploreLink: {
+        display: 'inline-flex',
+        alignItems: 'center',
+        padding: '12px 24px',
+        background: `linear-gradient(135deg, ${Theme.accent}, ${Theme.secondary})`,
+        color: Theme.cardBg,
+        borderRadius: '25px',
+        textDecoration: 'none',
+        fontWeight: 700,
+        fontSize: '1rem',
+        transition: 'all 0.3s ease',
+        minHeight: '44px',
+        fontFamily: "'Playfair Display', serif",
+    },
 };
 
 // ---- FIXED STYLES (Responsive) ----
 const FixedStyles = {
-    logo: {
-        position: 'fixed',
-        left: '2rem',
-        top: '2rem',
-        display: 'flex',
-        alignItems: 'center',
-        gap: '10px',
-        zIndex: 50,
-        fontFamily: "'Playfair Display', serif",
-        animation: 'fadeInUp 1s ease-out 0.3s both',
-    },
-    logoIcon: {
-        fontSize: '1.2rem',
-        color: Theme.red,
-        animation: 'logoPulse 2s ease-in-out infinite',
-    },
-    logoText: {
-        fontSize: '1.8rem',
-        fontWeight: 800,
-        color: Theme.dark,
-        letterSpacing: '1px',
-        fontFamily: "'Playfair Display', serif",
-    },
-    social: {
-        position: 'fixed',
-        right: '2rem',
-        top: '2rem',
-        display: 'flex',
-        gap: '12px',
-        zIndex: 50,
-        animation: 'fadeInUp 1s ease-out 0.3s both',
-    },
-    socialIcon: {
-        width: '44px',
-        height: '44px',
-        borderRadius: '50%',
-        backgroundColor: `${Theme.cardBg}80`,
-        display: 'flex',
-        alignItems: 'center',
-        justifyContent: 'center',
-        color: Theme.dark,
-        cursor: 'pointer',
-        transition: 'all 0.3s ease',
-        backdropFilter: 'blur(10px)',
-        border: `1px solid ${Theme.dark}20`,
-        boxShadow: `0 4px 10px ${Theme.dark}10`,
-    },
     powerButton: {
         position: "fixed",
         top: "2rem",
@@ -1177,10 +1497,26 @@ const fullCSS = FontStyles + `
     opacity: 1 !important;
     transform: scale(1.05);
 }
-.social-icon-hover:hover {
+
+/* Navigation Hover Effects */
+.nav-item:hover {
+    background-color: ${Theme.dark}10;
+    transform: translateY(-2px);
+}
+.menu-button:hover {
+    background-color: ${Theme.dark}10;
+}
+.close-button:hover {
+    background-color: ${Theme.dark}10;
+}
+.mobile-nav-item:hover {
+    background-color: ${Theme.dark}08;
+}
+.social-icon:hover {
     background-color: ${Theme.dark}20;
     transform: translateY(-2px);
 }
+
 .power-button-hover:hover .power-button-inner {
     transform: scale(1.1);
     box-shadow: 0 12px 40px ${Theme.red}90;
@@ -1241,6 +1577,27 @@ const fullCSS = FontStyles + `
         display: none !important; 
     }
     
+    /* Navigation Mobile Styles */
+    .nav-container {
+        padding: 1rem !important;
+    }
+    
+    .nav-items {
+        display: none !important;
+    }
+    
+    .menu-button {
+        display: flex !important;
+    }
+    
+    .mobile-menu {
+        padding: 1rem !important;
+    }
+    
+    .mobile-nav-item {
+        padding: 1rem 1.5rem !important;
+    }
+    
     /* Mobile Gallery Styles */
     .gallery-container {
         gap: 20px !important;
@@ -1289,34 +1646,6 @@ const fullCSS = FontStyles + `
         font-size: 0.9rem !important;
     }
     
-    /* Mobile Fixed Elements */
-    .fixed-logo { 
-        left: 1.5rem !important; 
-        top: 1.5rem !important; 
-    }
-    
-    .fixed-social { 
-        right: 1.5rem !important; 
-        top: 1.5rem !important; 
-    }
-    
-    .logo-text-mobile { 
-        font-size: 1.5rem !important; 
-    }
-    
-    .logo-line-mobile { 
-        display: none; 
-    }
-    
-    .social-icons-mobile { 
-        gap: 8px; 
-    }
-    
-    .social-icon-mobile { 
-        width: 40px; 
-        height: 40px; 
-    }
-    
     .power-button {
         top: 1.5rem !important;
     }
@@ -1358,17 +1687,15 @@ const fullCSS = FontStyles + `
         font-size: 1.3rem !important;
     }
     
-    .fixed-logo { 
-        left: 1rem !important; 
-        top: 1rem !important; 
+    .nav-container { 
+        padding: 1rem !important; 
     }
     
-    .fixed-social { 
-        right: 1rem !important; 
-        top: 1rem !important; 
+    .mobile-header {
+        padding: 1rem 1.5rem !important;
     }
     
-    .social-icon-mobile {
+    .social-icon {
         width: 38px;
         height: 38px;
     }
@@ -1584,8 +1911,9 @@ const WorkPage = () => {
         >
             <style>{fullCSS}</style>
 
-            <LogoComponent />
-            <SocialIcons />
+            {/* Add Navigation Bar */}
+            <NavigationBar />
+
             <PowerButton />
 
             {!isMobile && <BigTitle text="WORK" top="12%" right="8%" />}
@@ -1633,25 +1961,7 @@ const WorkPage = () => {
     );
 };
 
-// ---- FIXED COMPONENTS ----
-const LogoComponent = () => (
-    <div style={FixedStyles.logo} className="fixed-logo animate-fadeInUp">
-        <div style={FixedStyles.logoIcon} className="logo-icon-mobile">✦</div>
-        <span style={FixedStyles.logoText} className="logo-text-mobile">JV</span>
-    </div>
-);
-
-const SocialIcons = () => (
-    <div style={FixedStyles.social} className="fixed-social social-icons-mobile animate-fadeInUp">
-        <a href="#" style={FixedStyles.socialIcon} className="social-icon-hover social-icon-mobile" aria-label="GitHub">
-            <Github size={18} />
-        </a>
-        <a href="#" style={FixedStyles.socialIcon} className="social-icon-hover social-icon-mobile" aria-label="LinkedIn">
-            <Linkedin size={18} />
-        </a>
-    </div>
-);
-
+// ---- SIMPLIFIED FIXED COMPONENTS ----
 const PowerButton = () => (
     <a href="/jiya-portfolio/#/main2" style={FixedStyles.powerButton} className="power-button-hover animate-fadeInUp" aria-label="Home">
         <div style={FixedStyles.powerButtonInner} className="power-button-inner">
@@ -1691,60 +2001,6 @@ const ProjectDetailModal = ({ project, onClose }) => {
             </div>
         </ModalBase>
     );
-};
-
-// Add missing ModalStyles for ProjectDetailModal
-ModalStyles.detailHeader = {
-    display: 'flex',
-    alignItems: 'center',
-    gap: '16px',
-    marginBottom: '24px',
-    borderBottom: `2px solid ${Theme.tertiary}50`,
-    paddingBottom: '16px',
-};
-ModalStyles.detailTitle = {
-    fontSize: '2rem',
-    fontWeight: 800,
-    color: Theme.dark,
-    fontFamily: "'Playfair Display', serif",
-    margin: 0,
-};
-ModalStyles.detailDescription = {
-    fontSize: '1.1rem',
-    lineHeight: '1.6',
-    color: Theme.text,
-    marginBottom: '24px',
-    fontFamily: "'Lora', serif",
-};
-ModalStyles.detailTags = {
-    display: 'flex',
-    flexWrap: 'wrap',
-    gap: '12px',
-    marginBottom: '24px',
-};
-ModalStyles.detailTagItem = {
-    padding: '10px 20px',
-    borderRadius: '25px',
-    background: `linear-gradient(45deg, ${Theme.accent}, ${Theme.secondary})`,
-    color: Theme.cardBg,
-    fontSize: '1rem',
-    fontWeight: 700,
-    boxShadow: `0 4px 10px ${Theme.accent}30`,
-    fontFamily: "'Lora', serif",
-};
-ModalStyles.exploreLink = {
-    display: 'inline-flex',
-    alignItems: 'center',
-    padding: '12px 24px',
-    background: `linear-gradient(135deg, ${Theme.accent}, ${Theme.secondary})`,
-    color: Theme.cardBg,
-    borderRadius: '25px',
-    textDecoration: 'none',
-    fontWeight: 700,
-    fontSize: '1rem',
-    transition: 'all 0.3s ease',
-    minHeight: '44px',
-    fontFamily: "'Playfair Display', serif",
 };
 
 export default WorkPage;

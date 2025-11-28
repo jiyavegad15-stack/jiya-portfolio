@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Zap, Github, Linkedin, Award, BookOpen, GraduationCap, Calendar, MapPin, Sparkles, ChevronDown } from "lucide-react";
+import { Zap, Github, Linkedin, Award, BookOpen, GraduationCap, Calendar, MapPin, Sparkles, ChevronDown, Home, User, Briefcase, FileText } from "lucide-react";
+import { Link } from "react-router-dom";
 
 // 🎨 COLOR PALETTE
 const Theme = {
@@ -204,63 +205,6 @@ const animationsCSS = `
     padding: 6rem 5rem 4rem 5rem !important;
   }
 }
-
-/* High zoom level support */
-@media (max-width: 320px) {
-  .education-card {
-    margin-bottom: 1.5rem !important;
-  }
-  
-  .detail-item {
-    padding: 0.6rem 1rem !important;
-  }
-  
-  body {
-    font-size: 14px;
-  }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation: none !important;
-    transition: none !important;
-  }
-}
-
-/* High contrast support */
-@media (prefers-contrast: high) {
-  .education-box {
-    background: #000 !important;
-  }
-  
-  .education-card {
-    border: 2px solid #fff !important;
-    background: #111 !important;
-  }
-}
-
-/* Orientation support */
-@media (orientation: landscape) and (max-height: 500px) {
-  .education-box {
-    min-height: 120vh !important;
-  }
-  
-  .main-heading {
-    font-size: 2.5rem !important;
-  }
-}
-
-/* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
-  .hover-lift:active {
-    transform: translateY(-2px) scale(1.02);
-  }
-  
-  .card-hover:active {
-    transform: translateY(-5px) scale(1.01);
-  }
-}
 `;
 
 // 🎓 MODERN STYLES
@@ -276,6 +220,7 @@ const EducationStyles = {
         background: `linear-gradient(-45deg, ${Theme.DARK_TEAL}, #1a3a47, #2d5366, ${Theme.DARK_TEAL})`,
         backgroundSize: "400% 400%",
         animation: "gradientShift 15s ease infinite",
+        paddingBottom: "100px", // Added padding for bottom navbar
     },
 
     // Responsive Layout Container
@@ -541,6 +486,53 @@ const EducationStyles = {
         animation: `floatGentle 6s ease-in-out infinite ${delay}s`,
         zIndex: 0,
     }),
+
+    // 🌟 BOTTOM NAVBAR STYLES
+    BottomNavbar: {
+            position: "fixed",
+            bottom: "2rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+            gap: "1.2rem",
+            padding: "1rem 1.8rem",
+
+            // 🌟 Transparent Glass Blur Background
+            background: "rgba(36, 72, 85, 0.25)", // slight tint only
+            backdropFilter: "blur(18px)",
+            WebkitBackdropFilter: "blur(18px)",
+
+            borderRadius: "40px",
+            border: `1px solid ${Theme.MUTED_AQUA}40`,
+            boxShadow: "0 10px 35px rgba(0,0,0,0.25)", 
+            zIndex: 100,
+    },
+
+    NavItem: {
+        minWidth: "120px",
+        textAlign: "center",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        gap: "8px",
+        padding: "0.7rem 1.2rem",
+        borderRadius: "20px",
+        fontSize: "1.05rem",
+        fontWeight: "600",
+        color: Theme.CREAM_WHITE,
+        textDecoration: "none",
+        transition: "all 0.3s ease",
+        fontFamily: "'Georgia', serif",
+        whiteSpace: "nowrap",
+    },
+
+    ActiveNavItem: {
+        background: `linear-gradient(135deg, ${Theme.WARM_RED}20, ${Theme.MUTED_AQUA}15)`,
+        border: `1px solid ${Theme.WARM_RED}30`,
+        color: Theme.WARM_RED,
+    },
 };
 
 // 🎓 COMPONENTS
@@ -559,12 +551,12 @@ const LogoComponent = () => (
 
 const SocialIcons = () => (
     <div style={EducationStyles.SocialIcons} className="social-icons-mobile">
-        <div style={EducationStyles.SocialIcon} className="hover-lift social-icon-mobile">
+        <a href="https://github.com" target="_blank" rel="noopener noreferrer" style={EducationStyles.SocialIcon} className="hover-lift social-icon-mobile">
             <Github size={20} />
-        </div>
-        <div style={EducationStyles.SocialIcon} className="hover-lift social-icon-mobile">
+        </a>
+        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={EducationStyles.SocialIcon} className="hover-lift social-icon-mobile">
             <Linkedin size={20} />
-        </div>
+        </a>
     </div>
 );
 
@@ -572,6 +564,58 @@ const PowerButton = () => (
     <a href="/jiya-portfolio/#/main2" style={EducationStyles.PowerButton} className="hover-lift power-button-mobile">
         <Zap size={24} style={{ color: Theme.CREAM_WHITE }} />
     </a>
+);
+
+const BottomNavbar = () => (
+    <nav style={EducationStyles.BottomNavbar}>
+        <Link 
+            to="/main2" 
+            style={EducationStyles.NavItem}
+            className="nav-hover"
+        >
+            <Home size={18} />
+            Home
+        </Link>
+        
+        <Link 
+            to="/education" 
+            style={{
+                ...EducationStyles.NavItem,
+                ...EducationStyles.ActiveNavItem
+            }}
+            className="nav-hover"
+        >
+            <User size={18} />
+            Education
+        </Link>
+        
+        <Link 
+            to="/work" 
+            style={EducationStyles.NavItem}
+            className="nav-hover"
+        >
+            <Briefcase size={18} />
+            Portfolio
+        </Link>
+        
+        <Link 
+            to="/cv" 
+            style={EducationStyles.NavItem}
+            className="nav-hover"
+        >
+            <FileText size={18} />
+            CV
+        </Link>
+
+        <Link 
+            to="/process" 
+            style={EducationStyles.NavItem}
+            className="nav-hover"
+        >
+            <FileText size={18} />
+            Design Psychology
+        </Link>
+    </nav>
 );
 
 const DetailItem = ({ icon: Icon, text }) => (
@@ -615,7 +659,6 @@ const AchievementItem = ({ icon: Icon, text, index }) => (
 
 // 🎓 MAIN COMPONENT
 const EducationPage = () => {
-    const [currentAchievement, setCurrentAchievement] = useState(0);
     const [isMobile, setIsMobile] = useState(false);
 
     const achievements = [
@@ -642,12 +685,7 @@ const EducationPage = () => {
         checkMobile();
         window.addEventListener('resize', checkMobile);
         
-        const interval = setInterval(() => {
-            setCurrentAchievement((prev) => (prev + 1) % achievements.length);
-        }, 3000);
-        
         return () => {
-            clearInterval(interval);
             window.removeEventListener('resize', checkMobile);
         };
     }, []);
@@ -670,9 +708,16 @@ const EducationPage = () => {
                             0 35px 70px rgba(36, 72, 85, 0.4),
                             inset 0 1px 0 rgba(251, 233, 208, 0.2);
                     }
+
+                    .nav-hover:hover {
+                        background: rgba(255,255,255,0.08);
+                        box-shadow: 0 8px 20px rgba(36,72,85,0.3);
+                        color: ${Theme.WARM_RED};
+                        transform: translateY(-2px);
+                    }
                     
                     @media (hover: none) {
-                        .hover-lift:hover, .card-hover:hover {
+                        .hover-lift:hover, .card-hover:hover, .nav-hover:hover {
                             transform: none;
                         }
                     }
@@ -691,6 +736,7 @@ const EducationPage = () => {
             <LogoComponent />
             <SocialIcons />
             <PowerButton />
+            <BottomNavbar />
 
             <div style={EducationStyles.LayoutContainer} className="education-layout">
                 
@@ -878,7 +924,7 @@ const EducationPage = () => {
             {!isMobile && (
                 <div style={{
                     position: "fixed",
-                    bottom: "2rem",
+                    bottom: "6rem",
                     left: "50%",
                     transform: "translateX(-50%)",
                     color: Theme.MUTED_AQUA,
