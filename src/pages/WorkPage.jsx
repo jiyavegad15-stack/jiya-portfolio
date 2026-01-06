@@ -1,5 +1,5 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Zap, Github, Linkedin, ArrowRight, Eye, Sparkles, X, Aperture, BookOpen, Menu, Home, User, Code, Briefcase, FileText } from "lucide-react";
+import { Zap, Instagram, Linkedin, ArrowRight, Eye, Sparkles, X, Aperture, BookOpen, Menu, Home, User, Code, Briefcase, FileText } from "lucide-react";
 
 // ---- GORGEOUS NEW COLOR PALETTE ----
 const ColorPalette = {
@@ -29,11 +29,10 @@ const NavigationBar = () => {
 
     const navItems = [
         { id: 'home', label: 'Home', icon: Home, href: '/jiya-portfolio/#/main2' },
-        { id: 'about', label: 'About', icon: User, href: '#about' },
-        { id: 'skills', label: 'Skills', icon: Code, href: '#skills' },
-        { id: 'work', label: 'Work', icon: Briefcase, href: '#work' },
-        { id: 'portfolio', label: 'Portfolio', icon: BookOpen, href: '#portfolio' },
-        { id: 'cv', label: 'CV', icon: FileText, href: '#cv' }
+        { id: 'about', label: 'About', icon: User, href: '/jiya-portfolio/#about' },
+        { id: 'skills', label: 'Skills', icon: Code, href: '/jiya-portfolio/#skills' },
+        { id: 'work', label: 'Work', icon: Briefcase, href: '/jiya-portfolio/#work' },
+        { id: 'cv', label: 'CV', icon: FileText, href: '/jiya-portfolio/#cv' }
     ];
 
     const toggleMenu = () => {
@@ -147,8 +146,8 @@ const NavigationBar = () => {
 
                         {/* Social Icons in Mobile Menu */}
                         <div style={NavStyles.mobileSocial}>
-                            <a href="#" style={NavStyles.socialIcon} aria-label="GitHub">
-                                <Github size={20} />
+                            <a href="#" style={NavStyles.socialIcon} aria-label="Instagram">
+                                <Instagram size={20} />
                             </a>
                             <a href="#" style={NavStyles.socialIcon} aria-label="LinkedIn">
                                 <Linkedin size={20} />
@@ -326,7 +325,7 @@ const NavStyles = {
     },
 };
 
-// ---- PLACEHOLDER URL FOR GITHUB PAGES ----
+// ---- PLACEHOLDER URL FOR Instagram PAGES ----
 const BASE_PLACEHOLDER_URL = "https://placehold.co";
 
 // ---- FONT IMPORTS ----
@@ -362,7 +361,7 @@ function importAll(r) {
 try {
   importAll(require.context("../assets/projects", true, /\.(jpg|jpeg|png)$/));
 } catch (error) {
-  console.log("Images not found, using placeholders for GitHub Pages");
+  console.log("Images not found, using placeholders for Instagram Pages");
 }
 
 // FIX IMAGE ORDER: 1.jpg, 2.jpg, 3.jpg, …
@@ -373,11 +372,11 @@ Object.keys(collectionImages).forEach(folder => {
   });
 });
 
-// ---- GITHUB PAGES FRIENDLY IMAGE GETTER ----
+// ---- Instagram PAGES FRIENDLY IMAGE GETTER ----
 const getCollectionImages = (projectId) => {
   const images = collectionImages[`${projectId}X`] || [];
   
-  // GitHub Pages fallback - if no images found, use placeholders
+  // Instagram Pages fallback - if no images found, use placeholders
   if (images.length === 0) {
     return [
       `${BASE_PLACEHOLDER_URL}/600x800/${Theme.dark.substring(1)}/${Theme.cardBg.substring(1)}?text=Collection+${projectId}+1`,
@@ -395,7 +394,7 @@ const Work = [
         name: "Conceptual Collection: Duality",
         description: "Minimalist evening wear exploring form and void. Featured in Vogue India. The collection is characterized by clean lines, exaggerated volumes, and a strict monochromatic palette, focusing on the interplay between light and shadow. The fabrication emphasizes structured silks and innovative synthetic materials.",
         tags: ["Minimalism", "Evening Wear", "Vogue"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(1)[0],
         collectionPath: "1X",
@@ -405,7 +404,7 @@ const Work = [
         name: "Urban Utility Line: Chroma",
         description: "Sustainable, modular casual wear using organic cotton and natural dyes. This line was designed for adaptability in urban environments, featuring detachable sleeves and multi-functional pockets. Sustainability audits were conducted on every material sourcing step.",
         tags: ["Sustainable", "Casual", "Utility"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(2)[0],
         collectionPath: "2X",
@@ -415,7 +414,7 @@ const Work = [
         name: "Couture Showcase: Earthbound",
         description: "Hand-stitched garments inspired by geological textures and ancient textiles. Each piece in this limited couture series took over 150 hours to construct, integrating unconventional materials like raw jute and recycled metals into the embroidery.",
         tags: ["Couture", "Handmade", "Textiles"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(3)[0],
         collectionPath: "3X",
@@ -425,7 +424,7 @@ const Work = [
         name: "Internship Project: Silhouettes",
         description: "Developed 20 preliminary designs for a Fall/Winter prêt-à-porter collection during an internship at a major design house. This included trend analysis, technical flats, and initial prototype development focusing on streamlined manufacturing processes.",
         tags: ["Prêt-à-porter", "Commercial", "Research"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(4)[0],
         collectionPath: "4X",
@@ -435,7 +434,7 @@ const Work = [
         name: "Accessories Capsule: Echo",
         description: "A limited-edition line of leather goods and metallic jewelry emphasizing raw texture. The accessories feature hand-burnished leather and oxidized brass, reflecting an organic, industrial aesthetic.",
         tags: ["Accessories", "Leather", "Metal"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(5)[0],
         collectionPath: "5X",
@@ -445,7 +444,7 @@ const Work = [
         name: "Avant-Garde Collection: Nebula",
         description: "Experimental fashion pieces exploring cosmic themes through innovative fabric manipulation and lighting integration. Features glow-in-the-dark elements and kinetic structures.",
         tags: ["Avant-Garde", "Experimental", "Cosmic"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(6)[0],
         collectionPath: "6X",
@@ -455,7 +454,7 @@ const Work = [
         name: "Sustainable Swimwear: Oceanic",
         description: "Eco-friendly swimwear line made from recycled ocean plastics. Features reversible designs and UV-protective fabrics with minimalist aesthetic.",
         tags: ["Sustainable", "Swimwear", "Eco-Friendly"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(7)[0],
         collectionPath: "7X",
@@ -465,7 +464,7 @@ const Work = [
         name: "Digital Fashion: Metaforms",
         description: "Virtual fashion collection designed for digital platforms and NFTs. Explores the intersection of physical and digital fashion experiences.",
         tags: ["Digital", "Virtual", "NFT"],
-        github: "#",
+        Instagram: "#",
         link: "#",
         image: getCollectionImages(8)[0],
         collectionPath: "8X",
@@ -807,16 +806,16 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
                             </div>
                         </button>
                         <a 
-                            href={data.github}
+                            href={data.Instagram}
                             onClick={(e) => e.stopPropagation()}
                             style={{
                                 ...CardStyles.secondaryButton,
                                 transform: isHovered ? 'rotate(360deg)' : 'rotate(0deg)'
                             }}
                             className="secondary-button-icon"
-                            aria-label="View GitHub repository"
+                            aria-label="View Instagram repository"
                         >
-                            <Github size={16} />
+                            <Instagram size={16} />
                         </a>
                     </div>
                 </div>
@@ -1737,7 +1736,7 @@ const fullCSS = FontStyles + `
 @media (min-width: 1440px) {
     .fashion-card {
         width: 400px !important;
-        height: 620px !important;
+        height: 540px !important;
     }
 }
 
@@ -1992,12 +1991,6 @@ const ProjectDetailModal = ({ project, onClose }) => {
                 {project.tags.map(tag => (
                     <span key={tag} style={ModalStyles.detailTagItem}>{tag}</span>
                 ))}
-            </div>
-
-            <div style={{ marginTop: '2rem', textAlign: 'right' }}>
-                <a href={project.link} target="_blank" rel="noopener noreferrer" style={ModalStyles.exploreLink}>
-                    View External Showcase <ArrowRight size={16} style={{ marginLeft: '8px' }} />
-                </a>
             </div>
         </ModalBase>
     );

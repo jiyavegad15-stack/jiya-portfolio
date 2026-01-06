@@ -1,640 +1,461 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Zap,
-  Github,
-  Linkedin,
   Instagram,
+  Linkedin,
   Mail,
-  Palette,
-  Scissors,
+  ChevronRight,
+  X,
+  Menu,
 } from "lucide-react";
 
 import EntryAnimation from "../components/EntryAnimation";
-import profileImage from "../assets/profile.jpg";
+import profileImage from "../assets/profile3.png";
 
 /* ---------- COLOR PALETTE ---------- */
-const ColorPalette = {
-  SOFT_BEIGE: "#FBE9D0",   // Background color
-  DARK_TEAL: "#244855",    // Text and soft accents
-  MUDDY_BROWN: "#874F41",  // Highlights and interactive accents
-  MUTED_AQUA: "#90AEAD",
+const Colors = {
+  BG: "#FDFCF8",
+  TEXT_MAIN: "#1B2A2F",
+  TEXT_MUTED: "#6C757D",
+  TEXT_LIGHT: "#8A9EA6",
+  ACCENT: "#D66E53",
+  LINE: "rgba(27, 42, 47, 0.1)",
+  WHITE: "#FFFFFF",
+  DARK_BG: "#0F1A1E",
 };
 
-/* ---------- SOCIAL MEDIA LINKS ---------- */
-const SocialLinks = {
-  INSTAGRAM: "https://instagram.com/yourusername",
-  LINKEDIN: "https://linkedin.com/in/yourusername", 
-  EMAIL: "mailto:your.email@domain.com"
-};
+/* ---------- VIEWPORT HOOK ---------- */
+const useViewport = () => {
+  const [size, setSize] = useState({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  });
 
-/* ---------- RESPONSIVE STYLES ---------- */
-const Styles = {
-  MainContainer: {
-    height: "100vh",
-    width: "100vw",
-    background: ColorPalette.SOFT_BEIGE,
-    overflow: "hidden",
-    fontFamily: "'Georgia','Times New Roman', serif",
-    position: "relative",
-  },
+  useEffect(() => {
+    const onResize = () =>
+      setSize({ width: window.innerWidth, height: window.innerHeight });
 
-  Logo: {
-    position: "fixed",
-    top: "3rem",
-    left: "4rem",
-    zIndex: 50,
-    fontWeight: "bold",
-    fontSize: "clamp(1.8rem, 4vw, 2.5rem)",
-    color: ColorPalette.DARK_TEAL,
-    display: "flex",
-    alignItems: "center",
-    gap: "1rem",
-    animation: "fadeIn 0.8s ease both",
-  },
-
-  SocialIconsContainer: {
-    position: "fixed",
-    top: "3rem",
-    right: "4rem",
-    display: "flex",
-    gap: "1.2rem",
-    zIndex: 50,
-    animation: "fadeIn 1s ease both",
-  },
-
-  SocialIcon: {
-    width: "44px",
-    height: "44px",
-    borderRadius: "50%",
-    background: "rgba(36,72,85,0.08)",
-    display: "flex",
-    alignItems: "center",
-    justifyContent: "center",
-    backdropFilter: "blur(10px)",
-    border: `1px solid ${ColorPalette.DARK_TEAL}40`,
-    cursor: "pointer",
-    transition: "all 0.3s ease",
-    color: ColorPalette.DARK_TEAL,
-    textDecoration: "none",
-  },
-
-  RightImageContainer: {
-    position: "absolute",
-    top: 0,
-    right: 0,
-    width: "55vw",
-    height: "100vh",
-    overflow: "hidden",
-    zIndex: 5,
-  },
-
-  RightImage: (open) => ({
-    width: "100%",
-    height: "100%",
-    objectFit: "cover",
-    filter: open ? "brightness(1)" : "brightness(0.6) grayscale(40%)",
-    transition: "1.5s ease",
-  }),
-
-  DarkReveal: (open) => ({
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: open ? "50%" : "0%",
-    height: "100%",
-    background: `linear-gradient(135deg, ${ColorPalette.SOFT_BEIGE}, ${ColorPalette.MUDDY_BROWN}50)`,
-    zIndex: 10,
-    transition: "1.2s cubic-bezier(0.7,0,0.3,1)",
-  }),
-
-  PowerBtn: {
-    position: "absolute",
-    top: "50%",
-    left: "50%",
-    transform: "translate(-50%,-50%)",
-    width: "clamp(100px, 20vw, 140px)",
-    height: "clamp(100px, 20vw, 140px)",
-    borderRadius: "50%",
-    background: "rgba(36,72,85,0.08)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    cursor: "pointer",
-    zIndex: 30,
-    border: `2px solid ${ColorPalette.MUDDY_BROWN}50`,
-    backdropFilter: "blur(20px)",
-    animation: "pulse 3s infinite",
-    transition: "all 0.3s ease",
-  },
-
-  PowerIcon: {
-    width: "clamp(40px, 8vw, 60px)",
-    height: "clamp(40px, 8vw, 60px)",
-    color: ColorPalette.MUDDY_BROWN,
-    transition: "all 0.3s ease",
-  },
-
-  PowerOffBtn: {
-    position: "fixed",
-    top: "3.5rem",
-    right: "15rem",
-    width: "50px",
-    height: "50px",
-    borderRadius: "50%",
-    background: "rgba(36,72,85,0.08)",
-    display: "flex",
-    justifyContent: "center",
-    alignItems: "center",
-    cursor: "pointer",
-    zIndex: 40,
-    border: `1px solid ${ColorPalette.DARK_TEAL}40`,
-    backdropFilter: "blur(10px)",
-    transition: "all 0.3s ease",
-  },
-
-  IntroContent: {
-    position: "absolute",
-    top: 0,
-    left: 0,
-    width: "50vw",
-    height: "100%",
-    padding: "7rem 5rem",
-    display: "flex",
-    flexDirection: "column",
-    justifyContent: "center",
-    color: ColorPalette.DARK_TEAL,
-    zIndex: 20,
-    animation: "fadeIn 1.2s ease both",
-  },
-
-  Heading: {
-    fontSize: "clamp(2.5rem, 8vw, 5rem)",
-    fontWeight: "bold",
-    marginBottom: "2rem",
-    background: `linear-gradient(135deg, ${ColorPalette.DARK_TEAL}, ${ColorPalette.MUTED_AQUA})`,
-    WebkitBackgroundClip: "text",
-    color: "transparent",
-    backgroundClip: "text",
-    lineHeight: "1.1",
-  },
-
-  IntroText: {
-    maxWidth: "40rem",
-    fontSize: "clamp(1rem, 2.5vw, 1.4rem)",
-    lineHeight: "1.7",
-    opacity: 0.95,
-    marginBottom: "3rem",
-  },
-
-  Highlight: {
-    color: ColorPalette.MUDDY_BROWN,
-    fontWeight: 600,
-  },
-
-  TagContainer: {
-    display: "flex",
-    gap: "2rem",
-    marginBottom: "2rem",
-    flexWrap: "wrap",
-  },
-
-  Tag: {
-    border: `1px solid ${ColorPalette.DARK_TEAL}30`,
-    padding: "clamp(0.8rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem)",
-    borderRadius: "50px",
-    display: "flex",
-    alignItems: "center",
-    gap: "1rem",
-    background: "rgba(255,255,255,0.6)",
-    backdropFilter: "blur(10px)",
-    transition: "all 0.3s ease",
-    fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
-  },
-
-  NavLinks: (open) => ({
-    position: "absolute",
-    bottom: "5rem",
-    left: open ? "5rem" : "50%",
-    transform: open ? "none" : "translateX(-50%)",
-    display: "flex",
-    gap: "4rem",
-    transition: "all 0.8s cubic-bezier(0.7,0,0.3,1)",
-    zIndex: 30,
-  }),
-
-  NavLink: (open) => ({
-    fontSize: open ? "clamp(1.5rem, 3vw, 2rem)" : "clamp(2rem, 5vw, 2.8rem)",
-    textDecoration: "none",
-    fontWeight: "700",
-    color: ColorPalette.DARK_TEAL,
-    transition: "all 0.5s ease",
-    background: open ? "transparent" : `linear-gradient(135deg, ${ColorPalette.DARK_TEAL}, ${ColorPalette.MUTED_AQUA})`,
-    WebkitBackgroundClip: open ? "none" : "text",
-    WebkitTextFillColor: open ? "inherit" : "transparent",
-    backgroundClip: open ? "none" : "text",
-    padding: open ? "0" : "clamp(0.8rem, 2vw, 1rem) clamp(1.5rem, 3vw, 2rem)",
-    borderRadius: open ? "0" : "50px",
-    border: open ? "none" : `2px solid ${ColorPalette.DARK_TEAL}20`,
-  }),
-
-  SideElements: (open) => ({
-    position: "fixed",
-    top: "calc(50% + 1.5rem)",
-    right: open ? "3rem" : "4rem",
-    transform: "translateY(-50%)",
-    display: "flex",
-    flexDirection: "column",
-    gap: "2rem",
-    transition: "0.5s ease",
-    zIndex: 30,
-  }),
-
-  SideLink: {
-    writingMode: "vertical-rl",
-    textOrientation: "mixed",
-    color: ColorPalette.DARK_TEAL,
-    fontSize: "clamp(1rem, 1.5vw, 1.2rem)",
-    padding: "1rem",
-    textDecoration: "none",
-    borderRadius: "25px",
-    border: `1px solid ${ColorPalette.DARK_TEAL}30`,
-    background: "rgba(36,72,85,0.06)",
-  },
-};
-
-/* ---------- INTRO CONTENT ---------- */
-const IntroContent = () => (
-  <div style={Styles.IntroContent}>
-    <h1 style={Styles.Heading}>
-      Jiya<br />Vegad
-    </h1>
-
-    <p style={Styles.IntroText}>
-      I am a <span style={Styles.Highlight}>minimalist fashion designer</span>{" "}
-      specializing in expressive, narrative-driven garments that merge{" "}
-      <span style={Styles.Highlight}>storytelling, emotion and craft</span> to create 
-      fashion that feels both personal and powerful.
-    </p>
-
-    <div style={Styles.TagContainer}>
-      <div style={Styles.Tag} className="tag-hover">
-        <Palette size={20} color={ColorPalette.MUDDY_BROWN} />
-        Conceptual Design
-      </div>
-
-      <div style={Styles.Tag} className="tag-hover">
-        <Scissors size={20} color={ColorPalette.MUDDY_BROWN} />
-        Artisanal Craft
-      </div>
-    </div>
-  </div>
-);
-
-/* ---------- SOCIAL ICONS COMPONENT ---------- */
-const SocialIcons = () => (
-  <div style={Styles.SocialIconsContainer}>
-    <a 
-      href={SocialLinks.INSTAGRAM} 
-      target="_blank" 
-      rel="noopener noreferrer"
-      style={Styles.SocialIcon}
-      className="social-hover"
-      aria-label="Instagram"
-    >
-      <Instagram size={20} />
-    </a>
-    <a 
-      href={SocialLinks.LINKEDIN} 
-      target="_blank" 
-      rel="noopener noreferrer"
-      style={Styles.SocialIcon}
-      className="social-hover"
-      aria-label="LinkedIn"
-    >
-      <Linkedin size={20} />
-    </a>
-    <a 
-      href={SocialLinks.EMAIL}
-      style={Styles.SocialIcon}
-      className="social-hover"
-      aria-label="Email"
-    >
-      <Mail size={20} />
-    </a>
-  </div>
-);
-
-/* ---------- MAIN PAGE CONTENT ---------- */
-const PremiumAppContent = () => {
-  const [open, setOpen] = useState(false);
-  const [isMobile, setIsMobile] = useState(false);
-
-  // Check for mobile on mount and resize
-  React.useEffect(() => {
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    return () => window.removeEventListener('resize', checkMobile);
+    window.addEventListener("resize", onResize);
+    return () => window.removeEventListener("resize", onResize);
   }, []);
 
+  return size;
+};
+
+/* ---------- GLOBAL STYLES ---------- */
+const GlobalStyles = `
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
+
+body {
+  margin: 0;
+  background: ${Colors.BG};
+  overflow: hidden;
+}
+
+.reveal {
+  opacity: 0;
+  transform: translateY(20px);
+  animation: fadeUp 0.9s ease forwards;
+}
+
+.reveal-delay-1 {
+  animation-delay: 0.2s;
+}
+
+.reveal-delay-2 {
+  animation-delay: 0.4s;
+}
+
+.reveal-delay-3 {
+  animation-delay: 0.6s;
+}
+
+@keyframes fadeUp {
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.nav-item {
+  position: relative;
+  transition: transform 0.3s ease;
+}
+
+.nav-item:hover {
+  transform: translateX(10px);
+}
+
+.nav-item::before {
+  content: "";
+  position: absolute;
+  left: -20px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 6px;
+  background: ${Colors.ACCENT};
+  border-radius: 50%;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+}
+
+.nav-item:hover::before {
+  opacity: 1;
+}
+
+.slide-in-right {
+  animation: slideInRight 1s cubic-bezier(0.77, 0, 0.175, 1) forwards;
+}
+
+@keyframes slideInRight {
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+`;
+
+/* ---------- COMPONENT ---------- */
+const ElegantPortfolio = () => {
+  const { width } = useViewport();
+  const isMobile = width < 768;
+  const isTablet = width >= 768 && width < 1024;
+  const isDesktop = width >= 1024;
+  const screen = isMobile ? "mobile" : isTablet ? "tablet" : "desktop";
+
+  const [isOpen, setIsOpen] = useState(false);
+  const [isInitialLoad, setIsInitialLoad] = useState(true);
+
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setIsInitialLoad(false);
+    }, 500);
+    return () => clearTimeout(timer);
+  }, []);
+
+  /* ---------- STYLES ---------- */
+  const Styles = {
+    Container: {
+      minHeight: "100svh",
+      width: "100%",
+      position: "relative",
+      fontFamily: "'Montserrat', sans-serif",
+      color: Colors.TEXT_MAIN,
+      overflow: "hidden",
+      background: isOpen ? Colors.BG : Colors.DARK_BG,
+      transition: "background 0.8s cubic-bezier(0.77,0,0.175,1)",
+    },
+
+    // Left Panel (Content Panel)
+    LeftPanel: {
+      position: "absolute",
+      left: 0,
+      top: 0,
+      bottom: 0,
+      width: isOpen ? (screen === "desktop" ? "50%" : "100%") : "100%",
+      maxWidth: isOpen ? (screen === "desktop" ? "720px" : "100%") : "100%",
+      padding: isOpen
+        ? screen === "mobile"
+          ? "2rem"
+          : "clamp(2.5rem, 5vw, 5rem)"
+        : "clamp(1.5rem, 4vw, 3rem)",
+      background: isOpen ? Colors.BG : "transparent",
+      zIndex: 20,
+      display: "flex",
+      flexDirection: "column",
+      justifyContent: isOpen ? "space-between" : "center",
+      transition: "all 1s cubic-bezier(0.77,0,0.175,1)",
+    },
+
+    // Hero Text Styles
+    HeroText: {
+      position: "relative",
+      marginBottom: isOpen ? 0 : "2rem",
+    },
+
+    NamePreReveal: {
+      fontFamily: "'Playfair Display', serif",
+      fontSize: "clamp(3rem, 10vw, 8rem)",
+      lineHeight: 0.9,
+      fontWeight: 700,
+      margin: 0,
+      transition: "all 0.8s cubic-bezier(0.77,0,0.175,1)",
+    },
+
+    NameJiya: {
+      color: Colors.WHITE,
+      display: "block",
+    },
+
+    NameVegad: {
+      color: Colors.TEXT_LIGHT,
+      display: "block",
+      marginLeft: isDesktop ? "4rem" : "2rem",
+    },
+
+    NameRevealed: {
+      fontFamily: "'Playfair Display', serif",
+      fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
+      lineHeight: 1.05,
+      fontWeight: 600,
+      color: Colors.TEXT_MAIN,
+    },
+
+    Subtitle: {
+      letterSpacing: "4px",
+      textTransform: "uppercase",
+      fontSize: "0.8rem",
+      color: isOpen ? Colors.ACCENT : Colors.TEXT_LIGHT,
+      marginBottom: "2rem",
+      opacity: isOpen ? 1 : 0.7,
+      transition: "all 0.8s ease",
+    },
+
+    BodyText: {
+      maxWidth: "420px",
+      fontSize: "clamp(0.95rem, 2.5vw, 1rem)",
+      lineHeight: 1.8,
+      color: Colors.TEXT_MUTED,
+      borderLeft: `2px solid ${Colors.ACCENT}`,
+      paddingLeft: "1.5rem",
+      marginBottom: "3rem",
+    },
+
+    // Navigation Styles
+    NavMenu: {
+      display: "flex",
+      flexDirection: "column",
+      gap: "clamp(1rem, 2vw, 1.5rem)",
+      marginTop: "auto",
+    },
+
+    NavLink: {
+      fontFamily: "'Playfair Display', serif",
+      fontSize: "clamp(1.4rem, 4vw, 2.2rem)",
+      color: Colors.TEXT_MAIN,
+      textDecoration: "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "space-between",
+      padding: "0.5rem 0",
+      borderBottom: `1px solid ${Colors.LINE}`,
+    },
+
+    NavLabel: {
+      display: "flex",
+      alignItems: "center",
+      gap: "1rem",
+    },
+
+    NavNum: {
+      fontSize: "0.9rem",
+      color: Colors.ACCENT,
+      fontWeight: 500,
+      minWidth: "30px",
+    },
+
+    // Social Styles
+    Socials: {
+      display: "flex",
+      gap: "1.5rem",
+      marginTop: "2rem",
+      paddingTop: "1.5rem",
+      borderTop: `1px solid ${Colors.LINE}`,
+    },
+
+    SocialIcon: {
+      color: Colors.TEXT_MUTED,
+      transition: "all 0.3s ease",
+      cursor: "pointer",
+    },
+
+    // Right Panel (Image Panel)
+    RightPanel: {
+      position: "absolute",
+      right: 0,
+      top: 0,
+      bottom: 0,
+      width: isOpen ? (screen === "desktop" ? "50%" : "0%") : "0%",
+      overflow: "hidden",
+      transition: "width 1s cubic-bezier(0.77,0,0.175,1)",
+    },
+
+    ImageContainer: {
+      width: "100%",
+      height: "100%",
+      position: "relative",
+      opacity: isOpen ? 1 : 0,
+      transition: "opacity 0.8s ease 0.3s",
+    },
+
+    HeroImage: {
+      width: "100%",
+      height: "100%",
+      objectFit: "cover",
+      transform: isOpen ? "scale(1)" : "scale(1.1)",
+      transition: "all 1.2s cubic-bezier(0.77,0,0.175,1)",
+    },
+
+    // Toggle Button
+    Toggle: {
+      position: "absolute",
+      top: isMobile ? "auto" : isOpen ? "2.5rem" : "50%",
+      bottom: isMobile && isOpen ? "2rem" : "auto",
+      right: isMobile ? "auto" : isOpen ? "calc(50% - 25px)" : "50%",
+      left: isMobile ? "50%" : "auto",
+      transform: "translate(-50%, -50%)",
+      width: "clamp(50px, 8vw, 60px)",
+      height: "clamp(50px, 8vw, 60px)",
+      borderRadius: "50%",
+      background: isOpen ? Colors.ACCENT : Colors.WHITE,
+      border: "none",
+      display: "flex",
+      alignItems: "center",
+      justifyContent: "center",
+      zIndex: 50,
+      cursor: "pointer",
+      transition: "all 0.8s cubic-bezier(0.77,0,0.175,1)",
+      boxShadow: isOpen 
+        ? "0 4px 20px rgba(214, 110, 83, 0.3)"
+        : "0 10px 40px rgba(0,0,0,0.25)",
+    },
+
+    // Menu Button (Mobile)
+    MenuButton: {
+      position: "absolute",
+      top: "2rem",
+      right: "2rem",
+      background: "none",
+      border: "none",
+      color: Colors.WHITE,
+      cursor: "pointer",
+      zIndex: 30,
+      padding: "0.5rem",
+      display: isMobile && !isOpen ? "block" : "none",
+    },
+  };
+
   return (
-    <div style={Styles.MainContainer}>
-      {/* Enhanced Responsive CSS */}
-      <style>
-        {`
-          @keyframes pulse {
-            0% { transform: translate(-50%, -50%) scale(1); }
-            50% { transform: translate(-50%, -50%) scale(1.05); }
-            100% { transform: translate(-50%, -50%) scale(1); }
-          }
-          
-          @keyframes fadeIn {
-            from { opacity: 0; }
-            to { opacity: 1; }
-          }
+    <div style={Styles.Container}>
+      <style>{GlobalStyles}</style>
 
-          .social-hover:hover {
-            transform: translateY(-2px);
-            background: rgba(36, 72, 85, 0.15);
-            border-color: ${ColorPalette.MUDDY_BROWN}50;
-            box-shadow: 0 8px 25px rgba(135, 79, 65, 0.2);
-          }
-
-          .power-hover:hover {
-            transform: translate(-50%, -50%) scale(1.08);
-            border-color: ${ColorPalette.MUDDY_BROWN}70;
-            box-shadow: 0 0 40px rgba(135, 79, 65, 0.3);
-          }
-
-          .power-off-hover:hover {
-            transform: scale(1.1);
-            background: rgba(36, 72, 85, 0.15);
-            border-color: ${ColorPalette.MUDDY_BROWN}50;
-          }
-
-          .tag-hover:hover {
-            transform: translateY(-2px);
-            background: rgba(255, 255, 255, 0.8);
-            border-color: ${ColorPalette.MUDDY_BROWN}40;
-            box-shadow: 0 8px 20px rgba(36, 72, 85, 0.1);
-          }
-
-          .nav-hover:hover {
-            transform: translateY(-2px);
-            color: ${ColorPalette.MUDDY_BROWN};
-          }
-
-          .side-hover:hover {
-            transform: translateX(-5px);
-            background: rgba(36, 72, 85, 0.1);
-            border-color: ${ColorPalette.MUDDY_BROWN}40;
-          }
-
-          /* Mobile Responsive Styles */
-          @media (max-width: 768px) {
-            .logo-mobile {
-              left: 1.5rem !important;
-              top: 1.5rem !important;
-            }
-            
-            .social-icons-mobile {
-              right: 1.5rem !important;
-              top: 1.5rem !important;
-              gap: 0.8rem !important;
-            }
-            
-            .social-icon-mobile {
-              width: 40px !important;
-              height: 40px !important;
-            }
-            
-            .intro-content-mobile {
-              padding: 4rem 2rem !important;
-              width: 100vw !important;
-              text-align: center !important;
-            }
-            
-            .nav-links-mobile {
-              bottom: 2rem !important;
-              left: 50% !important;
-              transform: translateX(-50%) !important;
-              gap: 2rem !important;
-              flex-wrap: wrap !important;
-              justify-content: center !important;
-            }
-            
-            .side-elements-mobile {
-              display: none !important;
-            }
-            
-            .power-off-mobile {
-              right: 1.5rem !important;
-              top: 1rem !important;
-            }
-            
-            .right-image-mobile {
-              width: 100vw !important;
-            }
-            
-            .dark-reveal-mobile {
-              width: ${open ? '100%' : '0%'} !important;
-              background: linear-gradient(135deg, ${ColorPalette.SOFT_BEIGE}, ${ColorPalette.MUDDY_BROWN}30) !important;
-            }
-          }
-
-          @media (max-width: 480px) {
-            .intro-content-mobile {
-              padding: 3rem 1.5rem !important;
-            }
-            
-            .tag-container-mobile {
-              gap: 1rem !important;
-              justify-content: center !important;
-            }
-            
-            .nav-links-mobile {
-              gap: 1.5rem !important;
-            }
-            
-            .logo-mobile {
-              left: 1rem !important;
-              top: 1rem !important;
-            }
-            
-            .social-icons-mobile {
-              right: 1rem !important;
-              top: 1rem !important;
-            }
-          }
-
-          @media (max-width: 320px) {
-            .intro-content-mobile {
-              padding: 2rem 1rem !important;
-            }
-            
-            .tag-mobile {
-              padding: 0.6rem 1rem !important;
-            }
-          }
-
-          /* High zoom level support */
-          @media (max-width: 240px) {
-            body {
-              font-size: 14px;
-            }
-          }
-
-          /* Reduced motion support */
-          @media (prefers-reduced-motion: reduce) {
-            * {
-              animation: none !important;
-              transition: none !important;
-            }
-          }
-
-          /* High contrast support */
-          @media (prefers-contrast: high) {
-            .main-container {
-              background: #000 !important;
-              color: #fff !important;
-            }
-            
-            .social-icon, .tag, .side-link {
-              border: 2px solid #fff !important;
-              background: #111 !important;
-            }
-          }
-
-          /* Touch device optimizations */
-          @media (hover: none) and (pointer: coarse) {
-            .social-hover:active,
-            .power-hover:active,
-            .tag-hover:active,
-            .nav-hover:active,
-            .side-hover:active {
-              transform: scale(0.95);
-            }
-          }
-        `}
-      </style>
-
-      {/* Right image */}
-      <div style={Styles.RightImageContainer} className="right-image-mobile">
-        <img 
-          src={profileImage} 
-          alt="Jiya Vegad - Fashion Designer" 
-          style={Styles.RightImage(open)} 
-          onError={(e) => {
-            e.target.style.display = 'none';
-            console.log('Profile image failed to load');
-          }}
-        />
-      </div>
-
-      {/* Logo */}
-      <div style={Styles.Logo} className="logo-mobile">
-        <div
-          style={{
-            width: "12px",
-            height: "12px",
-            borderRadius: "50%",
-            background: ColorPalette.MUDDY_BROWN,
-            boxShadow: `0 0 20px ${ColorPalette.MUDDY_BROWN}`,
-          }}
-        ></div>
-        JV
-      </div>
-
-      {/* Social Icons */}
-      <SocialIcons />
-
-      {/* Curtain Reveal */}
-      <div style={Styles.DarkReveal(open)} className="dark-reveal-mobile" />
-
-      {/* Intro */}
-      {open && <IntroContent />}
-
-      {/* Power Button */}
-      {!open ? (
+      {/* Menu Button for Mobile */}
+      {!isOpen && isMobile && (
         <button 
-          style={Styles.PowerBtn} 
-          onClick={() => setOpen(true)}
-          className="power-hover"
-          aria-label="Open portfolio"
+          style={Styles.MenuButton} 
+          onClick={() => setIsOpen(true)}
+          className="reveal"
         >
-          <Zap style={Styles.PowerIcon} />
-        </button>
-      ) : (
-        <button 
-          style={Styles.PowerOffBtn} 
-          onClick={() => setOpen(false)}
-          className="power-off-hover power-off-mobile"
-          aria-label="Close portfolio"
-        >
-          <Zap size={24} color={ColorPalette.MUDDY_BROWN} />
+          <Menu size={28} />
         </button>
       )}
 
-      {/* Bottom Navigation */}
-        <div style={Styles.NavLinks(open)} className="nav-links-mobile">
-          <a 
-            href="/jiya-portfolio/#/about" 
-            style={Styles.NavLink(open)} 
-            className="nav-hover"
-          >
-            About
-          </a>
+      {/* LEFT PANEL - CONTENT */}
+      <div style={Styles.LeftPanel} className={isOpen && !isInitialLoad ? "slide-in-right" : ""}>
+        {isOpen ? (
+          // Revealed Content
+          <>
+            <div>
+              <h1 style={Styles.NameRevealed} className="reveal">
+                Jiya Vegad.
+              </h1>
+              <div style={Styles.Subtitle} className="reveal reveal-delay-1">
+                Fashion Designer · 2025
+              </div>
+              <p style={Styles.BodyText} className="reveal reveal-delay-2">
+                Merging artisanal craft with digital innovation. Exploring
+                structure, emotion, and modern silhouettes through sustainable
+                design practices.
+              </p>
+            </div>
 
-          <a 
-            href="/jiya-portfolio/#/work" 
-            style={Styles.NavLink(open)} 
-            className="nav-hover"
-          >
-            Portfolio
-          </a>
+            <nav style={Styles.NavMenu}>
+              {[
+                ["01", "Portfolio", "#/portfolio"],
+                ["02", "Collections", "#/collections"],
+                ["03", "About", "#/about"],
+                ["04", "Contact", "#/contact"],
+              ].map(([num, label, link], index) => (
+                <a
+                  key={label}
+                  href={link}
+                  className="nav-item reveal"
+                  style={Styles.NavLink}
+                >
+                  <div style={Styles.NavLabel}>
+                    <span style={Styles.NavNum}>{num}</span>
+                    <span>{label}</span>
+                  </div>
+                  <ChevronRight size={20} color={Colors.TEXT_MUTED} />
+                </a>
+              ))}
+            </nav>
 
-          <a 
-            href="/jiya-portfolio/#/education" 
-            style={Styles.NavLink(open)} 
-            className="nav-hover"
-          >
-            Education
-          </a>
-        </div>
-
-        {/* Side links - Hidden on mobile */}
-        {!isMobile && (
-          <div style={Styles.SideElements(open)} className="side-elements-mobile">
-            <a 
-              href="/jiya-portfolio/#/cv" 
-              style={Styles.SideLink} 
-              className="side-hover"
-            >
-              Curriculum Vitae
-            </a>
-
-            <a 
-              href="/jiya-portfolio/#/process" 
-              style={Styles.SideLink} 
-              className="side-hover"
-            >
-              Design Philosophy
-            </a>
+            <div style={Styles.Socials} className="reveal reveal-delay-3">
+              <Instagram 
+                size={20} 
+                style={Styles.SocialIcon}
+                onMouseEnter={(e) => e.currentTarget.style.color = Colors.ACCENT}
+                onMouseLeave={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
+              />
+              <Linkedin 
+                size={20} 
+                style={Styles.SocialIcon}
+                onMouseEnter={(e) => e.currentTarget.style.color = Colors.ACCENT}
+                onMouseLeave={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
+              />
+              <Mail 
+                size={20} 
+                style={Styles.SocialIcon}
+                onMouseEnter={(e) => e.currentTarget.style.color = Colors.ACCENT}
+                onMouseLeave={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
+              />
+            </div>
+          </>
+        ) : (
+          // Pre-reveal Hero Text
+          <div style={Styles.HeroText}>
+            <h1 style={Styles.NamePreReveal}>
+              <span style={Styles.NameJiya}>Jiya</span>
+              <span style={Styles.NameVegad}>Vegad</span>
+            </h1>
+            <div style={Styles.Subtitle}>Fashion Design Portfolio 2025</div>
           </div>
         )}
+      </div>
+
+      {/* RIGHT PANEL - IMAGE */}
+      <div style={Styles.RightPanel}>
+        <div style={Styles.ImageContainer}>
+          <img src={profileImage} alt="Jiya Vegad" style={Styles.HeroImage} />
+        </div>
+      </div>
+
+      {/* TOGGLE BUTTON */}
+      <button 
+        style={Styles.Toggle} 
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Close menu" : "Open portfolio"}
+      >
+        {isOpen ? (
+          <X size={28} color={Colors.WHITE} />
+        ) : (
+          <ChevronRight size={28} color={Colors.TEXT_MAIN} />
+        )}
+      </button>
     </div>
   );
 };
 
-/* ---------- EXPORT (WITH ENTRY ANIMATION WRAPPER) ---------- */
+/* ---------- EXPORT ---------- */
 export default function Main() {
   return (
     <EntryAnimation>
-      <PremiumAppContent />
+      <ElegantPortfolio />
     </EntryAnimation>
   );
 }
-

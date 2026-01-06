@@ -1,950 +1,862 @@
-import React, { useState, useEffect } from "react";
-import { Zap, Github, Linkedin, Award, BookOpen, GraduationCap, Calendar, MapPin, Sparkles, ChevronDown, Home, User, Briefcase, FileText } from "lucide-react";
+import React, { useState, useEffect, useRef } from "react";
+import { 
+  Award, 
+  BookOpen, 
+  GraduationCap, 
+  Calendar, 
+  MapPin, 
+  Sparkles, 
+  ChevronDown, 
+  Home, 
+  User, 
+  Briefcase, 
+  FileText,
+  ArrowLeft,
+  ExternalLink,
+  Star,
+  Target,
+  Feather,
+  Layers,
+  Zap
+} from "lucide-react";
 import { Link } from "react-router-dom";
 
-// 🎨 COLOR PALETTE
+// 🎨 EXTENDED REFINED PALETTE
 const Theme = {
-    DARK_TEAL: "#244855",
-    WARM_RED: "#E64833",
-    MUDDY_BROWN: "#874F41",
-    MUTED_AQUA: "#90AEAD",
-    SOFT_BEIGE: "#FBE9D0",
-    CREAM_WHITE: "#FFFDF8"
+    BG: "#FDFCF8",         // Warm Alabaster
+    BG_SECONDARY: "rgba(214, 110, 83, 0.05)", // Terracotta tint
+    TEXT_MAIN: "#1B2A2F",  // Charcoal / Deep Green
+    TEXT_MUTED: "#6C757D", // Muted Grey
+    ACCENT: "#D66E53",     // Terracotta
+    ACCENT_LIGHT: "#E89A87",
+    LINE: "rgba(27, 42, 47, 0.1)",
+    WHITE: "#FFFFFF",
+    SHADOW: "rgba(27, 42, 47, 0.08)"
 };
 
-// 🌿 NEW ANIMATIONS
-const animationsCSS = `
-@keyframes slideInStagger {
-  0% { 
-    opacity: 0; 
-    transform: translateX(-100px) rotate(-5deg); 
-    clip-path: polygon(0 0, 0 0, 0 100%, 0 100%);
-  }
-  100% { 
-    opacity: 1; 
-    transform: translateX(0) rotate(0deg);
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
-  }
+// 📱 RESPONSIVE BREAKPOINTS
+const Breakpoints = {
+    MOBILE: 768,
+    TABLET: 1024,
+    DESKTOP: 1280
+};
+
+// 🎬 ANIMATIONS & GLOBAL STYLES
+const GlobalStyles = `
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
 }
 
-@keyframes cardReveal {
-  0% { 
-    opacity: 0;
-    transform: translateY(60px) scale(0.95);
-    filter: blur(10px);
-  }
-  100% { 
-    opacity: 1;
-    transform: translateY(0) scale(1);
-    filter: blur(0);
-  }
+body {
+    background: ${Theme.BG};
+    overflow-x: hidden;
+}
+
+/* Fluid Typography */
+@media (max-width: ${Breakpoints.MOBILE}px) {
+    html { font-size: 14px; }
+}
+
+/* Animations */
+@keyframes floatIn {
+    0% { 
+        opacity: 0; 
+        transform: translateY(40px) scale(0.95); 
+    }
+    100% { 
+        opacity: 1; 
+        transform: translateY(0) scale(1); 
+    }
+}
+
+@keyframes lineDraw {
+    0% { 
+        width: 0; 
+        background-position: 0% 50%; 
+    }
+    100% { 
+        width: 100%; 
+        background-position: 100% 50%; 
+    }
 }
 
 @keyframes gradientShift {
-  0% { background-position: 0% 50%; }
-  50% { background-position: 100% 50%; }
-  100% { background-position: 0% 50%; }
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
 }
 
-@keyframes floatGentle {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-5px) rotate(0.5deg); }
-  66% { transform: translateY(3px) rotate(-0.5deg); }
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.6; }
 }
 
-@keyframes textGlow {
-  0%, 100% { text-shadow: 0 0 20px transparent; }
-  50% { text-shadow: 0 0 20px ${Theme.WARM_RED}40; }
+@keyframes shimmer {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(100%); }
 }
 
-@keyframes borderFlow {
-  0% { border-color: ${Theme.MUTED_AQUA}30; }
-  25% { border-color: ${Theme.WARM_RED}40; }
-  50% { border-color: ${Theme.MUDDY_BROWN}30; }
-  75% { border-color: ${Theme.MUTED_AQUA}30; }
-  100% { border-color: ${Theme.MUTED_AQUA}30; }
+/* Card Hover Effects */
+.education-card {
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
 }
 
-/* Responsive CSS */
-@media (max-width: 768px) {
-  .education-layout {
-    grid-template-columns: 1fr !important;
-    gap: 0 !important;
-  }
-  
-  .left-panel, .right-panel {
-    padding: 5rem 1.5rem 2rem 1.5rem !important;
-  }
-  
-  .main-heading {
-    font-size: clamp(2.5rem, 10vw, 4rem) !important;
-    text-align: center !important;
-  }
-  
-  .sub-heading {
-    text-align: center !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-  
-  .timeline {
-    padding-left: 2rem !important;
-  }
-  
-  .education-card {
-    padding: 2rem 1.5rem !important;
-    margin-bottom: 2rem !important;
-  }
-  
-  .detail-grid {
-    grid-template-columns: 1fr !important;
-    gap: 1rem !important;
-  }
-  
-  .institution-header {
-    flex-direction: column !important;
-    gap: 1rem !important;
-    align-items: flex-start !important;
-  }
-  
-  .focus-chips {
-    justify-content: center !important;
-  }
-  
-  /* Fixed elements mobile */
-  .logo-mobile {
-    left: 1.5rem !important;
-    top: 1.5rem !important;
-    font-size: 1.8rem !important;
-  }
-  
-  .social-icons-mobile {
-    right: 1.5rem !important;
-    top: 1.5rem !important;
-    gap: 0.8rem !important;
-  }
-  
-  .social-icon-mobile {
-    width: 40px !important;
-    height: 40px !important;
-  }
-  
-  .power-button-mobile {
-    top: 1rem !important;
-    width: 45px !important;
-    height: 45px !important;
-  }
-  
-  .scroll-indicator {
-    display: none !important;
-  }
-  
-  /* Hide floating shapes on mobile */
-  .floating-shape {
-    display: none !important;
-  }
+.education-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, ${Theme.ACCENT}, transparent);
+    animation: shimmer 2s infinite;
 }
 
-@media (max-width: 480px) {
-  .left-panel, .right-panel {
-    padding: 4rem 1rem 2rem 1rem !important;
-  }
-  
-  .education-card {
-    padding: 1.5rem 1rem !important;
-    border-radius: 20px !important;
-  }
-  
-  .achievements-carousel {
-    padding: 1.5rem 1rem !important;
-  }
-  
-  .logo-mobile {
-    left: 1rem !important;
-    top: 1rem !important;
-  }
-  
-  .social-icons-mobile {
-    right: 1rem !important;
-    top: 1rem !important;
-  }
-  
-  .timeline {
-    padding-left: 1.5rem !important;
-  }
-  
-  .timeline-dot {
-    left: -2.5rem !important;
-  }
+.education-card:hover {
+    transform: translateY(-12px) scale(1.02);
+    border-color: ${Theme.ACCENT} !important;
+    box-shadow: 
+        0 25px 50px rgba(214, 110, 83, 0.1),
+        0 15px 35px rgba(27, 42, 47, 0.05),
+        inset 0 1px 0 rgba(255, 255, 255, 0.8);
 }
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .education-layout {
-    grid-template-columns: 1fr 1fr !important;
-  }
-  
-  .left-panel {
-    padding: 6rem 2rem 3rem 3rem !important;
-  }
-  
-  .right-panel {
-    padding: 4rem 2rem 3rem 2rem !important;
-  }
-  
-  .main-heading {
-    font-size: clamp(3rem, 6vw, 4rem) !important;
-  }
+.education-card:hover::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, 
+        transparent, 
+        ${Theme.ACCENT}, 
+        ${Theme.ACCENT_LIGHT}, 
+        ${Theme.ACCENT}, 
+        transparent);
+    animation: gradientShift 3s ease infinite;
 }
 
-@media (min-width: 1440px) {
-  .left-panel {
-    padding: 8rem 5rem 4rem 7rem !important;
-  }
-  
-  .right-panel {
-    padding: 6rem 5rem 4rem 5rem !important;
-  }
+/* Timeline Line */
+.timeline-line {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    width: 1px;
+    height: 100%;
+    background: linear-gradient(to bottom, 
+        transparent, 
+        ${Theme.ACCENT} 20%, 
+        ${Theme.ACCENT} 80%, 
+        transparent);
+    transform: translateX(-50%);
+    animation: lineDraw 2s ease-out forwards;
+}
+
+@media (max-width: ${Breakpoints.MOBILE}px) {
+    .timeline-line { 
+        left: 30px; 
+        transform: none;
+    }
+}
+
+/* Achievement Card Hover */
+.achievement-card {
+    transition: all 0.4s ease;
+    position: relative;
+}
+
+.achievement-card:hover {
+    transform: translateY(-8px);
+    background: ${Theme.WHITE} !important;
+    box-shadow: 0 20px 40px rgba(214, 110, 83, 0.1);
+}
+
+.achievement-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 2px;
+    background: ${Theme.ACCENT};
+    transition: width 0.3s ease;
+}
+
+.achievement-card:hover::after {
+    width: 60px;
+}
+
+/* Scroll Indicator */
+.scroll-indicator {
+    animation: pulse 2s ease-in-out infinite;
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 6px;
+}
+
+::-webkit-scrollbar-track {
+    background: ${Theme.BG};
+}
+
+::-webkit-scrollbar-thumb {
+    background: linear-gradient(to bottom, ${Theme.ACCENT}, ${Theme.ACCENT_LIGHT});
+    border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: ${Theme.ACCENT};
 }
 `;
 
-// 🎓 MODERN STYLES
-const EducationStyles = {
-    Box: {
-        backgroundColor: Theme.DARK_TEAL,
-        width: "100%",
+const Styles = {
+    // Main Container
+    Container: {
+        backgroundColor: Theme.BG,
         minHeight: "100vh",
-        color: Theme.SOFT_BEIGE,
+        minHeight: "100dvh", // Dynamic viewport height
+        width: "100vw",
+        color: Theme.TEXT_MAIN,
+        fontFamily: "'Montserrat', sans-serif",
         position: "relative",
-        overflowX: "hidden",
-        fontFamily: "'Inter', 'SF Pro Display', -apple-system, sans-serif",
-        background: `linear-gradient(-45deg, ${Theme.DARK_TEAL}, #1a3a47, #2d5366, ${Theme.DARK_TEAL})`,
-        backgroundSize: "400% 400%",
-        animation: "gradientShift 15s ease infinite",
-        paddingBottom: "100px", // Added padding for bottom navbar
+        overflowX: "hidden"
     },
 
-    // Responsive Layout Container
-    LayoutContainer: {
-        display: "grid",
-        gridTemplateColumns: "1fr 1.2fr",
-        gap: "0",
-        minHeight: "100vh",
-        position: "relative",
-    },
-
-    // Left Panel - Timeline Style
-    LeftPanel: {
-        padding: "8rem 4rem 4rem 6rem",
-        position: "relative",
-        zIndex: 2,
-    },
-
-    // Right Panel - Content Focus
-    RightPanel: {
-        background: `linear-gradient(135deg, 
-            rgba(251, 233, 208, 0.03) 0%,
-            rgba(144, 174, 173, 0.02) 100%)`,
-        backdropFilter: "blur(40px)",
-        padding: "6rem 4rem 4rem 4rem",
-        position: "relative",
-        borderLeft: `1px solid ${Theme.MUTED_AQUA}15`,
-    },
-
-    // Vertical Timeline
-    Timeline: {
-        position: "relative",
-        paddingLeft: "3rem",
-    },
-
-    TimelineItem: (delay) => ({
-        position: "relative",
-        marginBottom: "4rem",
-        animation: `slideInStagger 1.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) ${delay}s both`,
+    // Back Button
+    BackButton: (screenWidth) => ({
+        position: "fixed",
+        top: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "2.5rem",
+        left: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "3rem",
+        zIndex: 1000,
+        background: "rgba(255, 255, 255, 0.9)",
+        backdropFilter: "blur(10px)",
+        border: `1px solid ${Theme.LINE}`,
+        borderRadius: "50%",
+        width: screenWidth < Breakpoints.MOBILE ? "44px" : "50px",
+        height: screenWidth < Breakpoints.MOBILE ? "44px" : "50px",
+        display: "flex",
+        alignItems: "center",
+        justifyContent: "center",
+        cursor: "pointer",
+        transition: "all 0.3s ease",
+        textDecoration: "none",
+        "&:hover": {
+            transform: "translateX(-4px)",
+            background: Theme.WHITE,
+            boxShadow: `0 10px 30px ${Theme.SHADOW}`
+        }
     }),
 
-    TimelineDot: {
-        position: "absolute",
-        left: "-3rem",
-        top: "0.5rem",
-        width: "24px",
-        height: "24px",
-        borderRadius: "50%",
-        background: `linear-gradient(135deg, ${Theme.WARM_RED}, ${Theme.MUDDY_BROWN})`,
-        border: `3px solid ${Theme.DARK_TEAL}`,
-        boxShadow: `0 0 0 2px ${Theme.WARM_RED}60`,
-    },
-
-    // Header Styles
-    MainHeading: {
-        fontSize: "clamp(2.5rem, 8vw, 4.5rem)",
-        fontWeight: "800",
-        background: `linear-gradient(135deg, ${Theme.SOFT_BEIGE} 0%, ${Theme.MUTED_AQUA} 100%)`,
-        WebkitBackgroundClip: "text",
-        WebkitTextFillColor: "transparent",
-        backgroundClip: "text",
-        marginBottom: "1rem",
-        lineHeight: "1.1",
-        letterSpacing: "-0.02em",
-        animation: "textGlow 3s ease-in-out infinite",
-    },
-
-    SubHeading: {
-        fontSize: "clamp(1rem, 3vw, 1.3rem)",
-        color: Theme.MUTED_AQUA,
-        fontWeight: "300",
-        letterSpacing: "0.5px",
-        marginBottom: "4rem",
-        maxWidth: "400px",
-        lineHeight: "1.6",
-    },
-
-    // Card Styles
-    EducationCard: {
-        background: `linear-gradient(145deg,
-            rgba(251, 233, 208, 0.08) 0%,
-            rgba(144, 174, 173, 0.04) 50%,
-            rgba(135, 79, 65, 0.02) 100%)`,
-        backdropFilter: "blur(20px)",
-        borderRadius: "28px",
-        padding: "3rem",
-        marginBottom: "2.5rem",
-        border: `1px solid ${Theme.MUTED_AQUA}20`,
-        boxShadow: `
-            0 25px 60px rgba(36, 72, 85, 0.3),
-            inset 0 1px 0 rgba(251, 233, 208, 0.1),
-            inset 0 0 20px rgba(251, 233, 208, 0.02)
-        `,
+    // Hero Section
+    HeroSection: (screenWidth) => ({
+        padding: screenWidth < Breakpoints.MOBILE ? "8rem 1.5rem 4rem" : "12rem 10% 6rem",
+        textAlign: "center",
         position: "relative",
         overflow: "hidden",
-        animation: "cardReveal 1s cubic-bezier(0.25, 0.46, 0.45, 0.94) both",
-        animationDelay: "0.6s",
-    },
-
-    InstitutionHeader: {
-        display: "flex",
-        alignItems: "flex-start",
-        justifyContent: "space-between",
-        marginBottom: "2rem",
-    },
-
-    InstitutionName: {
-        fontSize: "clamp(1.4rem, 4vw, 1.8rem)",
-        fontWeight: "700",
-        color: Theme.SOFT_BEIGE,
-        marginBottom: "0.8rem",
-        lineHeight: "1.3",
-    },
-
-    DegreeTitle: {
-        fontSize: "clamp(1.1rem, 3vw, 1.4rem)",
-        fontWeight: "600",
-        color: Theme.WARM_RED,
-        marginBottom: "1.5rem",
-        display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-    },
-
-    DetailGrid: {
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(200px, 1fr))",
-        gap: "1.5rem",
-        marginBottom: "2rem",
-    },
-
-    DetailItem: {
-        display: "flex",
-        alignItems: "center",
-        gap: "0.8rem",
-        color: Theme.MUTED_AQUA,
-        fontSize: "clamp(0.9rem, 2vw, 1rem)",
-        padding: "0.8rem 1.2rem",
-        background: "rgba(36, 72, 85, 0.3)",
-        borderRadius: "12px",
-        border: `1px solid ${Theme.MUTED_AQUA}15`,
-    },
-
-    FocusChip: {
-        display: "inline-flex",
-        alignItems: "center",
-        gap: "0.5rem",
-        padding: "0.6rem 1.2rem",
-        background: `linear-gradient(135deg, ${Theme.MUDDY_BROWN}20, ${Theme.WARM_RED}15)`,
-        borderRadius: "20px",
-        border: `1px solid ${Theme.WARM_RED}25`,
-        color: Theme.WARM_RED,
-        fontSize: "clamp(0.8rem, 2vw, 0.9rem)",
-        fontWeight: "500",
-        margin: "0.3rem",
-        animation: "floatGentle 4s ease-in-out infinite",
-    },
-
-    // Achievements Carousel
-    AchievementsCarousel: {
-        background: `linear-gradient(135deg, 
-            rgba(135, 79, 65, 0.1) 0%, 
-            rgba(144, 174, 173, 0.05) 100%)`,
-        backdropFilter: "blur(15px)",
-        borderRadius: "20px",
-        padding: "2.5rem",
-        border: `1px solid ${Theme.MUTED_AQUA}20`,
-        marginTop: "3rem",
-        animation: "borderFlow 8s ease-in-out infinite",
-    },
-
-    CarouselTitle: {
-        fontSize: "clamp(1.2rem, 3vw, 1.5rem)",
-        fontWeight: "600",
-        color: Theme.WARM_RED,
-        marginBottom: "2rem",
-        display: "flex",
-        alignItems: "center",
-        gap: "1rem",
-    },
-
-    AchievementItem: (index) => ({
-        display: "flex",
-        alignItems: "flex-start",
-        gap: "1rem",
-        marginBottom: "1.5rem",
-        padding: "1.2rem",
-        background: "rgba(251, 233, 208, 0.05)",
-        borderRadius: "16px",
-        border: `1px solid ${Theme.MUTED_AQUA}15`,
-        animation: `cardReveal 0.8s ease-out ${0.8 + index * 0.1}s both`,
+        animation: "floatIn 1s ease forwards"
     }),
 
-    // Fixed Elements
-    Logo: {
-        position: "fixed",
-        top: "3rem",
-        left: "4rem",
-        zIndex: 100,
-        fontSize: "clamp(1.8rem, 4vw, 2.2rem)",
-        fontWeight: "800",
-        color: Theme.SOFT_BEIGE,
-        display: "flex",
-        alignItems: "center",
-        gap: "12px",
-        fontFamily: "'Inter', sans-serif",
-        letterSpacing: "-0.02em",
+    HeroBackground: {
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        height: "100%",
+        background: `linear-gradient(135deg, ${Theme.BG} 0%, rgba(214, 110, 83, 0.03) 100%)`,
+        zIndex: -1
     },
 
-    SocialIcons: {
-        position: "fixed",
-        top: "3rem",
-        right: "4rem",
-        display: "flex",
-        gap: "1rem",
-        zIndex: 100,
-    },
+    MainHeading: (screenWidth) => ({
+        fontFamily: "'Playfair Display', serif",
+        fontSize: screenWidth < Breakpoints.MOBILE ? "clamp(2.5rem, 12vw, 3.5rem)" : "clamp(3.5rem, 8vw, 5.5rem)",
+        fontWeight: "600",
+        margin: "0 0 1rem 0",
+        lineHeight: "1.1",
+        background: `linear-gradient(135deg, ${Theme.TEXT_MAIN} 0%, ${Theme.ACCENT} 100%)`,
+        WebkitBackgroundClip: "text",
+        WebkitTextFillColor: "transparent",
+        backgroundClip: "text"
+    }),
 
-    SocialIcon: {
-        width: "44px",
-        height: "44px",
-        borderRadius: "12px",
-        background: "rgba(251, 233, 208, 0.08)",
+    SubHeading: (screenWidth) => ({
+        fontSize: screenWidth < Breakpoints.MOBILE ? "0.75rem" : "0.85rem",
+        textTransform: "uppercase",
+        letterSpacing: screenWidth < Breakpoints.MOBILE ? "3px" : "4px",
+        color: Theme.ACCENT,
+        fontWeight: "500",
+        marginBottom: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "2rem",
+        display: "inline-block",
+        padding: "0.5rem 1.5rem",
+        border: `1px solid rgba(214, 110, 83, 0.2)`,
+        borderRadius: "100px",
+        background: "rgba(255, 255, 255, 0.5)"
+    }),
+
+    HeroDescription: (screenWidth) => ({
+        maxWidth: screenWidth < Breakpoints.MOBILE ? "100%" : "600px",
+        margin: "2rem auto 0",
+        fontSize: screenWidth < Breakpoints.MOBILE ? "1rem" : "1.1rem",
+        lineHeight: "1.8",
+        color: Theme.TEXT_MUTED,
+        fontWeight: "300"
+    }),
+
+    // Timeline Container
+    TimelineContainer: (screenWidth) => ({
+        position: "relative",
+        maxWidth: screenWidth < Breakpoints.DESKTOP ? "100%" : "1400px",
+        margin: "0 auto",
+        padding: screenWidth < Breakpoints.MOBILE ? "2rem 1.5rem" : "4rem 2rem",
+        overflow: "hidden"
+    }),
+
+    // Card Wrapper
+    CardWrapper: (isRight, screenWidth) => ({
         display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
+        justifyContent: screenWidth < Breakpoints.MOBILE ? "flex-start" : (isRight ? "flex-end" : "flex-start"),
+        width: "100%",
+        marginBottom: screenWidth < Breakpoints.MOBILE ? "4rem" : "6rem",
+        paddingLeft: screenWidth < Breakpoints.MOBILE ? "60px" : "0",
+        position: "relative",
+        animation: "floatIn 0.8s ease forwards",
+        animationDelay: "calc(var(--index) * 0.2s)"
+    }),
+
+    // Education Card
+    EducationCard: (screenWidth) => ({
+        width: screenWidth < Breakpoints.MOBILE ? "100%" : "46%",
+        padding: screenWidth < Breakpoints.MOBILE ? "2rem" : "3rem",
+        background: "rgba(255, 255, 255, 0.7)",
         backdropFilter: "blur(10px)",
-        border: `1px solid ${Theme.SOFT_BEIGE}20`,
-        transition: "all 0.3s ease",
-        cursor: "pointer",
-        color: Theme.SOFT_BEIGE,
+        border: `1px solid ${Theme.LINE}`,
+        borderRadius: "0px",
+        position: "relative",
+        zIndex: 2
+    }),
+
+    // Timeline Dot
+    Dot: (screenWidth) => ({
+        position: "absolute",
+        left: screenWidth < Breakpoints.MOBILE ? "30px" : "50%",
+        top: screenWidth < Breakpoints.MOBILE ? "50px" : "40px",
+        width: screenWidth < Breakpoints.MOBILE ? "14px" : "16px",
+        height: screenWidth < Breakpoints.MOBILE ? "14px" : "16px",
+        background: `radial-gradient(circle, ${Theme.ACCENT} 30%, ${Theme.ACCENT_LIGHT} 100%)`,
+        borderRadius: "50%",
+        transform: screenWidth < Breakpoints.MOBILE ? "none" : "translateX(-50%)",
+        zIndex: 10,
+        boxShadow: `0 0 0 4px rgba(214, 110, 83, 0.1)`,
+        animation: "pulse 2s ease-in-out infinite"
+    }),
+
+    // Date Styling
+    DateText: (screenWidth) => ({
+        fontFamily: "'Montserrat', sans-serif",
+        fontSize: screenWidth < Breakpoints.MOBILE ? "0.65rem" : "0.7rem",
+        letterSpacing: screenWidth < Breakpoints.MOBILE ? "2px" : "3px",
+        color: Theme.ACCENT,
+        marginBottom: "1.5rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "8px"
+    }),
+
+    // Institution Name
+    InstitutionName: (screenWidth) => ({
+        fontFamily: "'Playfair Display', serif",
+        fontSize: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "1.8rem",
+        fontWeight: "600",
+        marginBottom: "0.5rem",
+        lineHeight: "1.2"
+    }),
+
+    // Degree Title
+    DegreeTitle: (screenWidth) => ({
+        fontSize: screenWidth < Breakpoints.MOBILE ? "0.85rem" : "0.9rem",
+        color: Theme.TEXT_MUTED,
+        fontWeight: "400",
+        marginBottom: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "2rem",
+        display: "flex",
+        alignItems: "center",
+        gap: "10px"
+    }),
+
+    // Achievements Section
+    AchievementsSection: (screenWidth) => ({
+        padding: screenWidth < Breakpoints.MOBILE ? "3rem 1.5rem" : "6rem 10%",
+        background: `linear-gradient(180deg, ${Theme.BG} 0%, ${Theme.BG_SECONDARY} 100%)`,
+        position: "relative",
+        overflow: "hidden"
+    }),
+
+    AchievementsGrid: (screenWidth) => ({
+        display: "grid",
+        gridTemplateColumns: screenWidth < Breakpoints.MOBILE ? "1fr" : 
+                           screenWidth < Breakpoints.TABLET ? "repeat(2, 1fr)" : "repeat(3, 1fr)",
+        gap: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "2rem",
+        maxWidth: "1200px",
+        margin: "0 auto"
+    }),
+
+    AchievementCard: (screenWidth) => ({
+        padding: screenWidth < Breakpoints.MOBILE ? "2rem" : "2.5rem",
+        background: Theme.WHITE,
+        border: `1px solid ${Theme.LINE}`,
+        borderRadius: "0px",
+        textAlign: "center",
+        position: "relative"
+    }),
+
+    // Skills Section
+    SkillsSection: (screenWidth) => ({
+        padding: screenWidth < Breakpoints.MOBILE ? "3rem 1.5rem" : "6rem 10%",
+        background: Theme.BG
+    }),
+
+    SkillsGrid: (screenWidth) => ({
+        display: "grid",
+        gridTemplateColumns: screenWidth < Breakpoints.MOBILE ? "1fr" : 
+                           screenWidth < Breakpoints.TABLET ? "repeat(2, 1fr)" : "repeat(4, 1fr)",
+        gap: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "2rem",
+        maxWidth: "1200px",
+        margin: "3rem auto 0"
+    }),
+
+    SkillItem: {
+        textAlign: "center",
+        padding: "1.5rem",
+        border: `1px solid ${Theme.LINE}`,
+        background: "rgba(255, 255, 255, 0.5)"
     },
 
-    PowerButton: {
+    // Bottom Navigation
+    BottomNavbar: (screenWidth) => ({
         position: "fixed",
-        top: "1.5rem",
+        bottom: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "2.5rem",
         left: "50%",
         transform: "translateX(-50%)",
-        width: "52px",
-        height: "52px",
-        borderRadius: "16px",
-        background: `linear-gradient(135deg, ${Theme.WARM_RED} 0%, ${Theme.MUDDY_BROWN} 100%)`,
         display: "flex",
-        justifyContent: "center",
         alignItems: "center",
-        textDecoration: "none",
-        boxShadow: `0 8px 25px ${Theme.WARM_RED}30`,
-        zIndex: 100,
-        transition: "all 0.3s ease",
-    },
-
-    // Background Elements
-    FloatingShape: (size, color, top, left, rotation, delay) => ({
-        position: "absolute",
-        width: size,
-        height: size,
-        background: `linear-gradient(135deg, ${color}08, ${color}03)`,
-        backdropFilter: "blur(40px)",
-        borderRadius: "30% 70% 70% 30% / 30% 30% 70% 70%",
-        top,
-        left,
-        transform: `rotate(${rotation}deg)`,
-        animation: `floatGentle 6s ease-in-out infinite ${delay}s`,
-        zIndex: 0,
+        gap: screenWidth < Breakpoints.MOBILE ? "1.5rem" : "2.5rem",
+        padding: screenWidth < Breakpoints.MOBILE ? "0.75rem 1.5rem" : "1rem 2.5rem",
+        background: "rgba(255, 255, 255, 0.92)",
+        backdropFilter: "blur(20px)",
+        borderRadius: "100px",
+        border: `1px solid ${Theme.LINE}`,
+        zIndex: 1000,
+        boxShadow: "0 20px 60px rgba(0,0,0,0.08)"
     }),
 
-    // 🌟 BOTTOM NAVBAR STYLES
-    BottomNavbar: {
-            position: "fixed",
-            bottom: "2rem",
-            left: "50%",
-            transform: "translateX(-50%)",
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-            gap: "1.2rem",
-            padding: "1rem 1.8rem",
-
-            // 🌟 Transparent Glass Blur Background
-            background: "rgba(36, 72, 85, 0.25)", // slight tint only
-            backdropFilter: "blur(18px)",
-            WebkitBackdropFilter: "blur(18px)",
-
-            borderRadius: "40px",
-            border: `1px solid ${Theme.MUTED_AQUA}40`,
-            boxShadow: "0 10px 35px rgba(0,0,0,0.25)", 
-            zIndex: 100,
-    },
-
-    NavItem: {
-        minWidth: "120px",
-        textAlign: "center",
+    NavLink: (screenWidth) => ({
+        textDecoration: "none",
+        color: Theme.TEXT_MUTED,
+        fontSize: screenWidth < Breakpoints.MOBILE ? "0.6rem" : "0.65rem",
+        fontWeight: "600",
+        letterSpacing: "1.5px",
+        textTransform: "uppercase",
         display: "flex",
-        justifyContent: "center",
+        flexDirection: "column",
+        alignItems: "center",
+        gap: "4px",
+        transition: "all 0.3s ease",
+        padding: "0.5rem",
+        borderRadius: "8px",
+        "&:hover": {
+            color: Theme.ACCENT,
+            background: "rgba(214, 110, 83, 0.05)"
+        }
+    }),
+
+    ActiveNavLink: (screenWidth) => ({
+        color: Theme.ACCENT,
+        background: "rgba(214, 110, 83, 0.08)",
+        transform: "translateY(-2px)"
+    }),
+
+    // Scroll Indicator
+    ScrollIndicator: (screenWidth) => ({
+        position: "absolute",
+        bottom: screenWidth < Breakpoints.MOBILE ? "1rem" : "2rem",
+        left: "50%",
+        transform: "translateX(-50%)",
+        display: "flex",
+        flexDirection: "column",
         alignItems: "center",
         gap: "8px",
-        padding: "0.7rem 1.2rem",
-        borderRadius: "20px",
-        fontSize: "1.05rem",
-        fontWeight: "600",
-        color: Theme.CREAM_WHITE,
-        textDecoration: "none",
-        transition: "all 0.3s ease",
-        fontFamily: "'Georgia', serif",
-        whiteSpace: "nowrap",
-    },
+        color: Theme.ACCENT,
+        fontSize: "0.7rem",
+        letterSpacing: "2px",
+        opacity: 0.7,
+        animation: "pulse 2s ease-in-out infinite"
+    }),
 
-    ActiveNavItem: {
-        background: `linear-gradient(135deg, ${Theme.WARM_RED}20, ${Theme.MUTED_AQUA}15)`,
-        border: `1px solid ${Theme.WARM_RED}30`,
-        color: Theme.WARM_RED,
-    },
+    // Section Title
+    SectionTitle: (screenWidth) => ({
+        fontFamily: "'Playfair Display', serif",
+        fontSize: screenWidth < Breakpoints.MOBILE ? "2rem" : "2.8rem",
+        textAlign: "center",
+        marginBottom: screenWidth < Breakpoints.MOBILE ? "2rem" : "3rem",
+        position: "relative",
+        "&::after": {
+            content: '""',
+            position: "absolute",
+            bottom: "-1rem",
+            left: "50%",
+            transform: "translateX(-50%)",
+            width: "60px",
+            height: "1px",
+            background: Theme.ACCENT
+        }
+    })
 };
 
-// 🎓 COMPONENTS
-const LogoComponent = () => (
-    <div style={EducationStyles.Logo} className="logo-mobile">
-        <div style={{
-            width: "12px",
-            height: "12px",
-            borderRadius: "3px",
-            background: `linear-gradient(135deg, ${Theme.WARM_RED}, ${Theme.MUDDY_BROWN})`,
-            transform: "rotate(45deg)",
-        }}></div>
-        JV
-    </div>
-);
-
-const SocialIcons = () => (
-    <div style={EducationStyles.SocialIcons} className="social-icons-mobile">
-        <a href="https://github.com" target="_blank" rel="noopener noreferrer" style={EducationStyles.SocialIcon} className="hover-lift social-icon-mobile">
-            <Github size={20} />
-        </a>
-        <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={EducationStyles.SocialIcon} className="hover-lift social-icon-mobile">
-            <Linkedin size={20} />
-        </a>
-    </div>
-);
-
-const PowerButton = () => (
-    <a href="/jiya-portfolio/#/main2" style={EducationStyles.PowerButton} className="hover-lift power-button-mobile">
-        <Zap size={24} style={{ color: Theme.CREAM_WHITE }} />
-    </a>
-);
-
-const BottomNavbar = () => (
-    <nav style={EducationStyles.BottomNavbar}>
-        <Link 
-            to="/main2" 
-            style={EducationStyles.NavItem}
-            className="nav-hover"
-        >
-            <Home size={18} />
-            Home
-        </Link>
-        
-        <Link 
-            to="/education" 
-            style={{
-                ...EducationStyles.NavItem,
-                ...EducationStyles.ActiveNavItem
-            }}
-            className="nav-hover"
-        >
-            <User size={18} />
-            Education
-        </Link>
-        
-        <Link 
-            to="/work" 
-            style={EducationStyles.NavItem}
-            className="nav-hover"
-        >
-            <Briefcase size={18} />
-            Portfolio
-        </Link>
-        
-        <Link 
-            to="/cv" 
-            style={EducationStyles.NavItem}
-            className="nav-hover"
-        >
-            <FileText size={18} />
-            CV
-        </Link>
-
-        <Link 
-            to="/process" 
-            style={EducationStyles.NavItem}
-            className="nav-hover"
-        >
-            <FileText size={18} />
-            Design Psychology
-        </Link>
-    </nav>
-);
-
-const DetailItem = ({ icon: Icon, text }) => (
-    <div style={EducationStyles.DetailItem}>
-        <Icon size={16} />
-        <span>{text}</span>
-    </div>
-);
-
-const FocusChip = ({ text }) => (
-    <div style={EducationStyles.FocusChip}>
-        <Sparkles size={14} />
-        {text}
-    </div>
-);
-
-const AchievementItem = ({ icon: Icon, text, index }) => (
-    <div style={EducationStyles.AchievementItem(index)}>
-        <div style={{
-            width: "20px",
-            height: "20px",
-            borderRadius: "6px",
-            background: `linear-gradient(135deg, ${Theme.WARM_RED}20, ${Theme.MUTED_AQUA}25)`,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            flexShrink: 0,
-            marginTop: "2px",
-            border: `1px solid ${Theme.WARM_RED}30`,
-        }}>
-            <Icon size={12} color={Theme.WARM_RED} />
-        </div>
-        <span style={{ 
-            lineHeight: "1.5", 
-            opacity: 0.9, 
-            flex: 1,
-            fontSize: "clamp(0.9rem, 2vw, 1rem)"
-        }}>{text}</span>
-    </div>
-);
-
-// 🎓 MAIN COMPONENT
 const EducationPage = () => {
-    const [isMobile, setIsMobile] = useState(false);
-
-    const achievements = [
-        { icon: Award, text: "Best Design Concept Award - Annual Fashion Exhibition 2023" },
-        { icon: Award, text: "Sustainable Design Recognition - Green Fashion Initiative 2022" },
-        { icon: Award, text: "Academic Excellence Award - FDDI Kolkata 2022" },
-        { icon: Award, text: "Featured Designer - Kolkata Design Week 2023" },
-    ];
-
-    const focusAreas = [
-        "Apparel Design",
-        "Material Science", 
-        "Sustainability",
-        "Accessory Design",
-        "Technical Drawing",
-        "Fashion Business"
-    ];
+    const [screenWidth, setScreenWidth] = useState(typeof window !== 'undefined' ? window.innerWidth : 1200);
+    const [activeSection, setActiveSection] = useState('timeline');
+    const containerRef = useRef(null);
 
     useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
+        const handleResize = () => setScreenWidth(window.innerWidth);
+        handleResize();
+        window.addEventListener('resize', handleResize);
 
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        
+        // Intersection Observer for active section
+        const observer = new IntersectionObserver(
+            (entries) => {
+                entries.forEach((entry) => {
+                    if (entry.isIntersecting) {
+                        setActiveSection(entry.target.id);
+                    }
+                });
+            },
+            { threshold: 0.5, rootMargin: '-100px 0px -100px 0px' }
+        );
+
+        const sections = document.querySelectorAll('section[id]');
+        sections.forEach((section) => observer.observe(section));
+
         return () => {
-            window.removeEventListener('resize', checkMobile);
+            window.removeEventListener('resize', handleResize);
+            observer.disconnect();
         };
     }, []);
 
+    const educationData = [
+        {
+            year: "2021 – 2025",
+            institution: "Footwear Design & Development Institute",
+            degree: "Bachelor of Design (Specialization in Fashion Technology)",
+            location: "Kolkata, West Bengal",
+            description: "Specializing in the fusion of traditional craftsmanship and digital manufacturing. Exploring the boundaries of wearable art through sustainable materials and innovative design methodologies.",
+            icon: <Layers size={20} />,
+            highlights: ["Sustainable Design", "Digital Pattern Making", "Material Innovation", "Portfolio Development"],
+            side: "left"
+        },
+        {
+            year: "2019 – 2021",
+            institution: "S.J. DAV Public School",
+            degree: "Higher Secondary Education (Science Stream)",
+            location: "Chaibasa, Jharkhand",
+            description: "Focusing on the intersections of science and geometry, which later became the structural foundation of my design philosophy. Developed analytical thinking and precision.",
+            icon: <Target size={20} />,
+            highlights: ["Physics & Mathematics", "Art & Design", "Research Methodology", "Academic Excellence"],
+            side: "right"
+        }
+    ];
+
+    const achievements = [
+        { 
+            title: "Best Design Concept '23", 
+            description: "Awarded for innovative sustainable fashion concept",
+            icon: <Award size={24} />,
+            year: "2023"
+        },
+        { 
+            title: "Sustainable Excellence", 
+            description: "Recognition for eco-friendly material innovation",
+            icon: <Feather size={24} />,
+            year: "2022"
+        },
+        { 
+            title: "FDDI Merit List", 
+            description: "Consistently ranked among top 5% of cohort",
+            icon: <Star size={24} />,
+            year: "2021-2024"
+        },
+        { 
+            title: "Digital Innovation Award", 
+            description: "Excellence in 3D fashion design technology",
+            icon: <Zap size={24} />,
+            year: "2023"
+        }
+    ];
+
+    const skills = [
+        { name: "Pattern Making", level: "Advanced", icon: "✂️" },
+        { name: "3D Design", level: "Proficient", icon: "🖥️" },
+        { name: "Material Science", level: "Intermediate", icon: "🔬" },
+        { name: "Sustainable Design", level: "Advanced", icon: "🌱" },
+        { name: "Portfolio Development", level: "Expert", icon: "📁" },
+        { name: "Digital Rendering", level: "Proficient", icon: "🎨" },
+        { name: "Textile Technology", level: "Intermediate", icon: "🧵" },
+        { name: "Fashion Illustration", level: "Expert", icon: "✏️" }
+    ];
+
+    const handleSmoothScroll = (sectionId) => {
+        const element = document.getElementById(sectionId);
+        if (element) {
+            element.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+    };
+
     return (
-        <div style={EducationStyles.Box} className="education-box">
-            <style>{animationsCSS}</style>
-            
-            {/* Enhanced Hover Effects */}
-            <style>
-                {`
-                    .hover-lift:hover {
-                        transform: translateY(-2px) scale(1.02);
-                        box-shadow: 0 15px 35px rgba(230, 72, 51, 0.25);
-                    }
-                    
-                    .card-hover:hover {
-                        transform: translateY(-5px) scale(1.01);
-                        box-shadow: 
-                            0 35px 70px rgba(36, 72, 85, 0.4),
-                            inset 0 1px 0 rgba(251, 233, 208, 0.2);
-                    }
+        <div ref={containerRef} style={Styles.Container}>
+            <style>{GlobalStyles}</style>
 
-                    .nav-hover:hover {
-                        background: rgba(255,255,255,0.08);
-                        box-shadow: 0 8px 20px rgba(36,72,85,0.3);
-                        color: ${Theme.WARM_RED};
-                        transform: translateY(-2px);
-                    }
-                    
-                    @media (hover: none) {
-                        .hover-lift:hover, .card-hover:hover, .nav-hover:hover {
-                            transform: none;
-                        }
-                    }
-                `}
-            </style>
+            {/* Back to Home */}
+            <Link to="/main2" style={Styles.BackButton(screenWidth)} aria-label="Back to Home">
+                <ArrowLeft size={screenWidth < Breakpoints.MOBILE ? 18 : 20} />
+            </Link>
 
-            {/* Background Shapes - Hide on mobile */}
-            {!isMobile && (
-                <>
-                    <div style={EducationStyles.FloatingShape("400px", Theme.WARM_RED, "10%", "5%", 45, 0)} className="floating-shape" />
-                    <div style={EducationStyles.FloatingShape("300px", Theme.MUTED_AQUA, "70%", "10%", -20, 2)} className="floating-shape" />
-                    <div style={EducationStyles.FloatingShape("500px", Theme.MUDDY_BROWN, "20%", "80%", 15, 1)} className="floating-shape" />
-                </>
-            )}
-
-            <LogoComponent />
-            <SocialIcons />
-            <PowerButton />
-            <BottomNavbar />
-
-            <div style={EducationStyles.LayoutContainer} className="education-layout">
+            {/* Hero Section */}
+            <section id="hero" style={Styles.HeroSection(screenWidth)}>
+                <div style={Styles.HeroBackground}></div>
+                <span style={Styles.SubHeading(screenWidth)}>Academic Journey</span>
+                <h1 style={Styles.MainHeading(screenWidth)}>Curriculum Vitae</h1>
+                <p style={Styles.HeroDescription(screenWidth)}>
+                    A meticulously documented voyage through formal education, specialized training, 
+                    and continuous learning that shapes my design philosophy and technical expertise.
+                </p>
                 
-                {/* Left Panel - Timeline */}
-                <div style={EducationStyles.LeftPanel} className="left-panel">
-                    <h1 style={EducationStyles.MainHeading} className="main-heading">
-                        Academic<br />Journey
-                    </h1>
-                    <p style={EducationStyles.SubHeading} className="sub-heading">
-                        From foundational education to specialized design studies, 
-                        each step has shaped my creative perspective and technical expertise.
-                    </p>
-
-                    <div style={EducationStyles.Timeline} className="timeline">
-                        {/* Timeline Item 1 */}
-                        <div style={EducationStyles.TimelineItem(0.3)}>
-                            <div style={EducationStyles.TimelineDot} className="timeline-dot"></div>
-                            <div style={{
-                                color: Theme.WARM_RED,
-                                fontWeight: "600",
-                                fontSize: "clamp(1rem, 2vw, 1.1rem)",
-                                marginBottom: "0.5rem",
-                            }}>
-                                2021 – Present
-                            </div>
-                            <div style={{
-                                color: Theme.SOFT_BEIGE,
-                                fontWeight: "700",
-                                fontSize: "clamp(1.1rem, 3vw, 1.3rem)",
-                            }}>
-                                Bachelor of Design
-                            </div>
-                            <div style={{
-                                color: Theme.MUTED_AQUA,
-                                fontSize: "clamp(0.9rem, 2vw, 1rem)",
-                                marginTop: "0.3rem",
-                            }}>
-                                FDDI, Kolkata
-                            </div>
-                        </div>
-
-                        {/* Timeline Item 2 */}
-                        <div style={EducationStyles.TimelineItem(0.6)}>
-                            <div style={EducationStyles.TimelineDot} className="timeline-dot"></div>
-                            <div style={{
-                                color: Theme.WARM_RED,
-                                fontWeight: "600",
-                                fontSize: "clamp(1rem, 2vw, 1.1rem)",
-                                marginBottom: "0.5rem",
-                            }}>
-                                2019 – 2021
-                            </div>
-                            <div style={{
-                                color: Theme.SOFT_BEIGE,
-                                fontWeight: "700",
-                                fontSize: "clamp(1.1rem, 3vw, 1.3rem)",
-                            }}>
-                                Higher Secondary
-                            </div>
-                            <div style={{
-                                color: Theme.MUTED_AQUA,
-                                fontSize: "clamp(0.9rem, 2vw, 1rem)",
-                                marginTop: "0.3rem",
-                            }}>
-                                S.J. DAV Public School
-                            </div>
-                        </div>
-                    </div>
+                {/* Scroll Indicator */}
+                <div style={Styles.ScrollIndicator(screenWidth)} className="scroll-indicator">
+                    <ChevronDown size={20} />
+                    <span>EXPLORE</span>
                 </div>
+            </section>
 
-                {/* Right Panel - Content */}
-                <div style={EducationStyles.RightPanel} className="right-panel">
-                    
-                    {/* FDDI Card */}
-                    <div style={EducationStyles.EducationCard} className="card-hover education-card">
-                        <div style={EducationStyles.InstitutionHeader} className="institution-header">
-                            <div>
-                                <h2 style={EducationStyles.InstitutionName}>
-                                    Footwear Design & Development Institute
-                                </h2>
-                                <div style={EducationStyles.DegreeTitle}>
-                                    <GraduationCap size={24} />
-                                    Bachelor of Design
-                                </div>
+            {/* Timeline Section */}
+            <section id="timeline" style={Styles.TimelineContainer(screenWidth)}>
+                <div className="timeline-line"></div>
+                
+                {educationData.map((item, index) => (
+                    <div 
+                        key={index} 
+                        style={{
+                            ...Styles.CardWrapper(item.side === "right", screenWidth),
+                            "--index": index
+                        }}
+                    >
+                        <div style={Styles.Dot(screenWidth)}></div>
+                        
+                        <div style={Styles.EducationCard(screenWidth)} className="education-card">
+                            <div style={Styles.DateText(screenWidth)}>
+                                <Calendar size={14} />
+                                {item.year}
                             </div>
-                            <MapPin size={32} color={Theme.MUTED_AQUA} opacity={0.7} />
-                        </div>
-
-                        <div style={EducationStyles.DetailGrid} className="detail-grid">
-                            <DetailItem icon={Calendar} text="2021 – Present" />
-                            <DetailItem icon={MapPin} text="Kolkata, India" />
-                            <DetailItem icon={BookOpen} text="Full-time Program" />
-                        </div>
-
-                        <p style={{ 
-                            fontSize: "clamp(0.95rem, 2vw, 1.05rem)", 
-                            lineHeight: "1.7", 
-                            opacity: 0.9, 
-                            marginBottom: "2rem",
-                            color: Theme.SOFT_BEIGE
-                        }}>
-                            Comprehensive education in apparel and accessory design with emphasis on 
-                            creative expression, technical proficiency, and sustainable fashion practices.
-                        </p>
-
-                        <div style={{ marginBottom: "2rem" }}>
-                            <div style={{
-                                fontSize: "clamp(0.9rem, 2vw, 1rem)",
-                                fontWeight: "600",
-                                color: Theme.WARM_RED,
-                                marginBottom: "1rem",
-                                display: "flex",
-                                alignItems: "center",
-                                gap: "0.5rem",
+                            
+                            <h2 style={Styles.InstitutionName(screenWidth)}>{item.institution}</h2>
+                            
+                            <div style={Styles.DegreeTitle(screenWidth)}>
+                                {item.icon}
+                                <span>{item.degree}</span>
+                            </div>
+                            
+                            <p style={{ 
+                                lineHeight: '1.8', 
+                                color: Theme.TEXT_MUTED, 
+                                fontSize: screenWidth < Breakpoints.MOBILE ? '0.9rem' : '1rem',
+                                marginBottom: '2rem'
                             }}>
-                                <Sparkles size={16} />
-                                Focus Areas
-                            </div>
-                            <div style={{ display: "flex", flexWrap: "wrap", gap: "0.5rem" }} className="focus-chips">
-                                {focusAreas.map((area, index) => (
-                                    <FocusChip key={index} text={area} />
+                                {item.description}
+                            </p>
+                            
+                            {/* Highlights */}
+                            <div style={{ 
+                                display: 'flex', 
+                                flexWrap: 'wrap', 
+                                gap: '0.5rem',
+                                marginBottom: '2rem'
+                            }}>
+                                {item.highlights.map((highlight, i) => (
+                                    <span key={i} style={{
+                                        fontSize: '0.7rem',
+                                        padding: '0.4rem 0.8rem',
+                                        background: 'rgba(214, 110, 83, 0.1)',
+                                        color: Theme.ACCENT,
+                                        borderRadius: '4px',
+                                        letterSpacing: '0.5px'
+                                    }}>
+                                        {highlight}
+                                    </span>
                                 ))}
                             </div>
-                        </div>
-                    </div>
-
-                    {/* School Card */}
-                    <div 
-                      style={{ 
-                        ...EducationStyles.EducationCard, 
-                        animationDelay: "0.8s" 
-                      }} 
-                      className="card-hover education-card"
-                    >
-                        <div style={EducationStyles.InstitutionHeader} className="institution-header">
-                            <div>
-                                <h2 style={EducationStyles.InstitutionName}>
-                                    S.J. DAV Public School
-                                </h2>
-                                <div style={EducationStyles.DegreeTitle}>
-                                    <BookOpen size={24} />
-                                    Higher Secondary Education
-                                </div>
+                            
+                            {/* Location */}
+                            <div style={{ 
+                                display: 'flex', 
+                                alignItems: 'center', 
+                                gap: '8px', 
+                                color: Theme.ACCENT, 
+                                fontSize: '0.7rem', 
+                                letterSpacing: '1px',
+                                borderTop: `1px solid ${Theme.LINE}`,
+                                paddingTop: '1.5rem'
+                            }}>
+                                <MapPin size={12} />
+                                {item.location}
+                                <ExternalLink size={10} style={{ marginLeft: 'auto' }} />
                             </div>
-                            <MapPin size={32} color={Theme.MUTED_AQUA} opacity={0.7} />
                         </div>
+                    </div>
+                ))}
+            </section>
 
-                        <div style={EducationStyles.DetailGrid} className="detail-grid">
-                            <DetailItem icon={Calendar} text="2019 – 2021" />
-                            <DetailItem icon={MapPin} text="Chaibasa, Jharkhand" />
-                            <DetailItem icon={BookOpen} text="Science Stream" />
+            {/* Achievements Section */}
+            <section id="achievements" style={Styles.AchievementsSection(screenWidth)}>
+                <h3 style={Styles.SectionTitle(screenWidth)}>Distinctions & Honors</h3>
+                <div style={Styles.AchievementsGrid(screenWidth)}>
+                    {achievements.map((achievement, index) => (
+                        <div 
+                            key={index} 
+                            style={Styles.AchievementCard(screenWidth)} 
+                            className="achievement-card"
+                        >
+                            <div style={{ 
+                                marginBottom: '1.5rem',
+                                color: Theme.ACCENT,
+                                display: 'flex',
+                                alignItems: 'center',
+                                justifyContent: 'center',
+                                width: '60px',
+                                height: '60px',
+                                background: 'rgba(214, 110, 83, 0.1)',
+                                borderRadius: '50%',
+                                margin: '0 auto'
+                            }}>
+                                {achievement.icon}
+                            </div>
+                            <h4 style={{ 
+                                fontFamily: "'Playfair Display', serif",
+                                fontSize: '1.2rem',
+                                marginBottom: '0.5rem'
+                            }}>
+                                {achievement.title}
+                            </h4>
+                            <p style={{ 
+                                fontSize: '0.8rem', 
+                                color: Theme.TEXT_MUTED,
+                                marginBottom: '0.5rem'
+                            }}>
+                                {achievement.description}
+                            </p>
+                            <span style={{ 
+                                fontSize: '0.7rem', 
+                                color: Theme.ACCENT,
+                                letterSpacing: '1px'
+                            }}>
+                                {achievement.year}
+                            </span>
                         </div>
-
-                        <p style={{ 
-                            fontSize: "clamp(0.95rem, 2vw, 1.05rem)", 
-                            lineHeight: "1.7", 
-                            opacity: 0.9,
-                            color: Theme.SOFT_BEIGE
-                        }}>
-                            Foundation years that cultivated creative thinking, analytical skills, 
-                            and cultural awareness – establishing the building blocks for design education 
-                            and creative problem-solving.
-                        </p>
-                    </div>
-
-                    {/* Achievements Carousel */}
-                    <div style={EducationStyles.AchievementsCarousel} className="achievements-carousel">
-                        <h3 style={EducationStyles.CarouselTitle}>
-                            <Award size={24} />
-                            Academic Recognitions
-                        </h3>
-                        {achievements.map((achievement, index) => (
-                            <AchievementItem
-                                key={index}
-                                icon={achievement.icon}
-                                text={achievement.text}
-                                index={index}
-                            />
-                        ))}
-                    </div>
+                    ))}
                 </div>
-            </div>
+            </section>
 
-            {/* Scroll Indicator - Hide on mobile */}
-            {!isMobile && (
-                <div style={{
-                    position: "fixed",
-                    bottom: "6rem",
-                    left: "50%",
-                    transform: "translateX(-50%)",
-                    color: Theme.MUTED_AQUA,
-                    fontSize: "0.9rem",
-                    opacity: 0.8,
-                    zIndex: 50,
-                    display: "flex",
-                    alignItems: "center",
-                    gap: "0.8rem",
-                    background: "rgba(36, 72, 85, 0.7)",
-                    padding: "0.8rem 1.5rem",
-                    borderRadius: "20px",
-                    backdropFilter: "blur(10px)",
-                    border: `1px solid ${Theme.MUTED_AQUA}20`,
-                    animation: "floatGentle 3s ease-in-out infinite",
-                }} className="scroll-indicator">
-                    <span>Explore Education</span>
-                    <ChevronDown size={16} />
+            {/* Skills Section */}
+            <section id="skills" style={Styles.SkillsSection(screenWidth)}>
+                <h3 style={Styles.SectionTitle(screenWidth)}>Core Competencies</h3>
+                <div style={Styles.SkillsGrid(screenWidth)}>
+                    {skills.map((skill, index) => (
+                        <div key={index} style={Styles.SkillItem}>
+                            <div style={{ 
+                                fontSize: '1.5rem',
+                                marginBottom: '1rem'
+                            }}>
+                                {skill.icon}
+                            </div>
+                            <h4 style={{ 
+                                fontFamily: "'Montserrat', sans-serif",
+                                fontSize: '1rem',
+                                fontWeight: '600',
+                                marginBottom: '0.5rem'
+                            }}>
+                                {skill.name}
+                            </h4>
+                            <span style={{ 
+                                fontSize: '0.75rem', 
+                                color: Theme.ACCENT,
+                                letterSpacing: '1px'
+                            }}>
+                                {skill.level}
+                            </span>
+                            <div style={{
+                                height: '2px',
+                                background: Theme.LINE,
+                                marginTop: '0.5rem',
+                                position: 'relative',
+                                overflow: 'hidden'
+                            }}>
+                                <div style={{
+                                    position: 'absolute',
+                                    top: 0,
+                                    left: 0,
+                                    height: '100%',
+                                    width: skill.level === 'Expert' ? '100%' : 
+                                          skill.level === 'Advanced' ? '85%' :
+                                          skill.level === 'Proficient' ? '70%' : '50%',
+                                    background: Theme.ACCENT
+                                }}></div>
+                            </div>
+                        </div>
+                    ))}
                 </div>
-            )}
+            </section>
+
+            {/* Bottom Navigation */}
+            <nav style={Styles.BottomNavbar(screenWidth)}>
+                <a 
+                    href="#timeline" 
+                    style={{
+                        ...Styles.NavLink(screenWidth),
+                        ...(activeSection === 'timeline' || activeSection === 'hero' ? Styles.ActiveNavLink(screenWidth) : {})
+                    }}
+                    onClick={(e) => { e.preventDefault(); handleSmoothScroll('timeline'); }}
+                >
+                    <BookOpen size={16} />
+                    <span>Timeline</span>
+                </a>
+                <a 
+                    href="#achievements" 
+                    style={{
+                        ...Styles.NavLink(screenWidth),
+                        ...(activeSection === 'achievements' ? Styles.ActiveNavLink(screenWidth) : {})
+                    }}
+                    onClick={(e) => { e.preventDefault(); handleSmoothScroll('achievements'); }}
+                >
+                    <Award size={16} />
+                    <span>Awards</span>
+                </a>
+                <a 
+                    href="#skills" 
+                    style={{
+                        ...Styles.NavLink(screenWidth),
+                        ...(activeSection === 'skills' ? Styles.ActiveNavLink(screenWidth) : {})
+                    }}
+                    onClick={(e) => { e.preventDefault(); handleSmoothScroll('skills'); }}
+                >
+                    <Sparkles size={16} />
+                    <span>Skills</span>
+                </a>
+            </nav>
         </div>
     );
 };
