@@ -174,7 +174,7 @@ const ElegantPortfolio = () => {
     // Hero Text Styles
     HeroText: {
       position: "relative",
-      marginBottom: isOpen ? 0 : "2rem",
+      marginBottom: isOpen ? 0 : "4rem",
     },
 
     NamePreReveal: {
@@ -213,6 +213,7 @@ const ElegantPortfolio = () => {
       marginBottom: "2rem",
       opacity: isOpen ? 1 : 0.7,
       transition: "all 0.8s ease",
+      marginTop: "1.5rem",
     },
 
     BodyText: {

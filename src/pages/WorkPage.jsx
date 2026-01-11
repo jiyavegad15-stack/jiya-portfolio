@@ -31,7 +31,7 @@ const NavigationBar = () => {
         { id: 'home', label: 'Home', icon: Home, href: '/jiya-portfolio/#/main2' },
         { id: 'about', label: 'About', icon: User, href: '/jiya-portfolio/#about' },
         { id: 'skills', label: 'Skills', icon: Code, href: '/jiya-portfolio/#skills' },
-        { id: 'work', label: 'Work', icon: Briefcase, href: '/jiya-portfolio/#work' },
+        { id: 'work', label: 'Experience', icon: Briefcase, href: '/jiya-portfolio/#work' },
         { id: 'cv', label: 'CV', icon: FileText, href: '/jiya-portfolio/#cv' }
     ];
 
@@ -480,9 +480,9 @@ const getCardDimensions = () => {
     } else if (width < 768) { // Mobile
         return { width: 'calc(100vw - 2rem)', height: '450px', marginRight: '0', marginBottom: '1.5rem' };
     } else if (width < 1024) { // Tablet
-        return { width: '320px', height: '520px', marginRight: '2rem', marginBottom: '0' };
+        return { width: '320px', height: '420px', marginRight: '2rem', marginBottom: '0' };
     } else { // Desktop
-        return { width: '380px', height: '600px', marginRight: '4rem', marginBottom: '0' };
+        return { width: '380px', height: '450px', marginRight: '4rem', marginBottom: '0', padding: '6rem' };
     }
 };
 
