@@ -377,7 +377,7 @@ const ElegantPortfolio = () => {
             <nav style={Styles.NavMenu}>
               {[
                 ["01", "Portfolio", "#/portfolio"],
-                ["02", "Collections", "#/collections"],
+                ["02", "Experience", "#/work"],
                 ["03", "About", "#/about"],
                 ["04", "Contact", "#/contact"],
               ].map(([num, label, link], index) => (

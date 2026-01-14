@@ -18,15 +18,19 @@ const Palette = {
     DARK_BG: "#0F1A1E",
 };
 
-// ---- IMAGE IMPORT FUNCTION ----
-// This function will import all images from ../assets/projects
+// ---- ENHANCED IMAGE IMPORT FUNCTION ----
+// This function properly imports and sorts images in sequential order
 const importAll = (r) => {
   let images = {};
   r.keys().forEach((key) => {
     const path = key.replace("./", "");
     const [folder, filename] = path.split("/");
     if (!images[folder]) images[folder] = [];
-    images[folder].push(r(key));
+    images[folder].push({
+      path: r(key),
+      name: filename,
+      number: parseInt(filename.match(/(\d+)/)?.[0] || "0")
+    });
   });
   return images;
 };
@@ -34,9 +38,19 @@ const importAll = (r) => {
 // Import all images from projects directory
 let collectionImages = {};
 try {
-  collectionImages = importAll(require.context("../assets/projects", true, /\.(jpg|jpeg|png|webp)$/));
+  collectionImages = importAll(require.context("../assets/portfolio", true, /\.(jpg|jpeg|png|webp)$/));
+  
+  // Sort images numerically within each folder
+  Object.keys(collectionImages).forEach(folder => {
+    collectionImages[folder].sort((a, b) => a.number - b.number);
+    
+    // Convert back to just the path strings for compatibility
+    collectionImages[folder] = collectionImages[folder].map(img => img.path);
+  });
+  
+  console.log("Imported images:", collectionImages);
 } catch (error) {
-  console.log("Using placeholder images. Ensure images are in ../assets/projects/ folder");
+  console.log("Using placeholder images. Ensure images are in ../assets/portfolio/ folder");
   
   // Fallback placeholder images
   collectionImages = {
@@ -65,17 +79,21 @@ try {
       "https://images.unsplash.com/photo-1515372039744-b8f02a3ae446?auto=format&fit=crop&w=800&q=80"
     ]
   };
+  
+  // Sort placeholder images to ensure they're in sequence
+  Object.keys(collectionImages).forEach(folder => {
+    collectionImages[folder] = collectionImages[folder].sort((a, b) => {
+      // Extract number from URL for sorting (if exists)
+      const aNum = parseInt(a.match(/(\d+)/)?.[0] || "0");
+      const bNum = parseInt(b.match(/(\d+)/)?.[0] || "0");
+      return aNum - bNum;
+    });
+  });
 }
 
-// Sort images numerically (1.jpg, 2.jpg, etc.)
+// Debug log to check image order
 Object.keys(collectionImages).forEach(folder => {
-  collectionImages[folder].sort((a, b) => {
-    const getNum = (path) => {
-      const match = path.toString().match(/(\d+)\.(jpg|jpeg|png|webp)$/i);
-      return match ? parseInt(match[1]) : 0;
-    };
-    return getNum(a) - getNum(b);
-  });
+  console.log(`Folder ${folder} images:`, collectionImages[folder]);
 });
 
 // Helper function to get images for a collection
@@ -90,7 +108,7 @@ const Work = [
         id: 1, 
         name: "Chittah", 
         type: "CONCEPTUAL COUTUR", 
-        description: "Minimalist evening wear exploring form and void. Featured in Vogue India. The collection is characterized by clean lines and exaggerated volumes. Structured silks and innovative synthetic materials create dramatic silhouettes that play with light and shadow in unique ways.", 
+        description: "Chittah project investigates raw emotions and primal instincts, translating psychological depth into bold silhouettes, textures, and expressive garment forms narratives", 
         tags: ["Raw Emotion", "Primal Instinct", "Expressive Forms", "Conceptual Couture", "Art-Led Fashion"], 
         image: getCollectionImages(1)[0] || "https://images.unsplash.com/photo-1539109132382-381bb3f1c2b3?auto=format&fit=crop&w=1200&q=80",
         collectionPath: "1X",
@@ -121,10 +139,10 @@ const Work = [
     },
     { 
         id: 4, 
-        name: "Accessories Capsule: Echo", 
-        type: "LEATHER GOODS", 
-        description: "A limited-edition line of leather goods and metallic jewelry emphasizing raw texture. Features hand-burnished leather and oxidized brass, reflecting an organic, industrial aesthetic with meticulous attention to detail.", 
-        tags: ["Leather", "Brass", "Accessories", "Handmade"], 
+        name: "Additional Work", 
+        type: "Crriculum Work", 
+        description: "Developed ready-to-wear designs alongside embroidery explorations and a craft cluster project, translating traditional skills into refined, contemporary fashion outcomes", 
+        tags: ["Leather", "Accessories", "Handmade"], 
         image: getCollectionImages(4)[0] || "https://images.unsplash.com/photo-1544441893-675973e31985?auto=format&fit=crop&w=1200&q=80",
         collectionPath: "4X",
         year: "2023",
@@ -132,7 +150,6 @@ const Work = [
     },
 ];
 
-// ---- ENHANCED GALLERY MODAL COMPONENT ----
 // ---- ENHANCED GALLERY MODAL COMPONENT ----
 const GalleryModal = ({ project, onClose }) => {
   if (!project) return null;
@@ -142,6 +159,15 @@ const GalleryModal = ({ project, onClose }) => {
   const [isZoomed, setIsZoomed] = useState(false);
   const [touchStart, setTouchStart] = useState(null);
   const [touchEnd, setTouchEnd] = useState(null);
+
+  // Debug: Log images and their order when modal opens
+  useEffect(() => {
+    console.log(`Opening gallery for project ${project.id}:`);
+    console.log(`Total images: ${images.length}`);
+    images.forEach((img, idx) => {
+      console.log(`Image ${idx + 1}:`, img);
+    });
+  }, [project]);
 
   const nextImage = () => {
     setCurrentIndex((prev) => (prev + 1) % images.length);
@@ -281,7 +307,7 @@ const GalleryModal = ({ project, onClose }) => {
                     loading="eager"
                     onError={(e) => {
                       e.target.onerror = null;
-                      e.target.src = `https://placehold.co/800x600/${Palette.ACCENT.substring(1)}/ffffff?text=${project.name}&font=playfair`;
+                      e.target.src = `https://placehold.co/800x600/${Palette.ACCENT.substring(1)}/ffffff?text=${project.name}+${currentIndex + 1}&font=playfair`;
                     }}
                   />
                   
@@ -337,6 +363,7 @@ const GalleryModal = ({ project, onClose }) => {
                         opacity: index === currentIndex ? 1 : 0.7
                       }}
                       onClick={() => setCurrentIndex(index)}
+                      title={`Image ${index + 1}`}
                     >
                       <img 
                         src={src} 
@@ -347,6 +374,9 @@ const GalleryModal = ({ project, onClose }) => {
                           e.target.src = `https://placehold.co/80x60/${Palette.ACCENT.substring(1)}/ffffff?text=${index + 1}`;
                         }}
                       />
+                      <div style={responsiveModalStyles.thumbnailNumber}>
+                        {index + 1}
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -432,11 +462,11 @@ const GalleryModal = ({ project, onClose }) => {
           
           <img
             src={images[currentIndex]}
-            alt={`Fullscreen view - ${project.name}`}
+            alt={`Fullscreen view - ${project.name} - Image ${currentIndex + 1}`}
             style={responsiveModalStyles.zoomImage}
             onError={(e) => {
               e.target.onerror = null;
-              e.target.src = `https://placehold.co/1920x1080/${Palette.ACCENT.substring(1)}/ffffff?text=${project.name}+Collection`;
+              e.target.src = `https://placehold.co/1920x1080/${Palette.ACCENT.substring(1)}/ffffff?text=${project.name}+Image+${currentIndex + 1}`;
             }}
           />
           
@@ -658,7 +688,7 @@ const responsiveModalStyles = {
     borderRadius: '16px',
     overflow: 'hidden',
     backgroundColor: Palette.DARK_BG,
-    height: '400px', // Fixed height for better control
+    height: '400px',
     cursor: 'pointer',
     flex: 1,
   },
@@ -666,7 +696,7 @@ const responsiveModalStyles = {
   mainImage: {
     width: '100%',
     height: '100%',
-    objectFit: 'contain', // Changed to contain to prevent cropping
+    objectFit: 'contain',
     backgroundColor: Palette.DARK_BG,
     display: 'block',
   },
@@ -758,12 +788,29 @@ const responsiveModalStyles = {
     cursor: 'pointer',
     transition: 'all 0.3s ease',
     flexShrink: 0,
+    position: 'relative',
   },
   
   thumbnailImage: {
     width: '100%',
     height: '100%',
     objectFit: 'cover',
+  },
+  
+  thumbnailNumber: {
+    position: 'absolute',
+    bottom: '4px',
+    right: '4px',
+    backgroundColor: 'rgba(0,0,0,0.7)',
+    color: Palette.WHITE,
+    fontSize: '10px',
+    fontWeight: 'bold',
+    width: '18px',
+    height: '18px',
+    borderRadius: '50%',
+    display: 'flex',
+    alignItems: 'center',
+    justifyContent: 'center',
   },
   
   // Details Column
@@ -1234,7 +1281,7 @@ const PortfolioPage = () => {
             <nav style={Styles.nav}>
                 <div style={Styles.navBrand}>JV <span style={{color: Palette.ACCENT}}>✦</span></div>
                 <div style={Styles.navLinks}>
-                    <a href="/jiya-portfolio/#work" style={Styles.navLink}>Work</a>
+                    <a href="/jiya-portfolio/#work" style={Styles.navLink}>Experience</a>
                     <a href="/jiya-portfolio/#about" style={Styles.navLink}>About</a>
                     <div style={Styles.navIcon}><Zap size={18} fill={Palette.ACCENT} stroke={Palette.ACCENT} /></div>
                 </div>

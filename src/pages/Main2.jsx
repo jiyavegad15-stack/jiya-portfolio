@@ -344,12 +344,17 @@ export default function ElegantPortfolio() {
 
             <nav style={Styles.NavMenu}>
               {[
-                ["01", "Portfolio"],
-                ["02", "Collections"],
-                ["03", "About"],
-                ["04", "Contact"],
-              ].map(([num, label]) => (
-                <a key={label} href="#" className="nav-item reveal" style={Styles.NavLink}>
+                ["01", "Portfolio", "#/portfolio"],
+                ["02", "Experience", "#/work"],
+                ["03", "About", "#/about"],
+                ["04", "Contact", "#/contact"],
+              ].map(([num, label, link]) => (
+                <a
+                  key={label}
+                  href={link}
+                  className="nav-item reveal"
+                  style={Styles.NavLink}
+                >
                   <div style={Styles.NavLabel}>
                     <span style={Styles.NavNum}>{num}</span>
                     <span>{label}</span>
@@ -358,6 +363,7 @@ export default function ElegantPortfolio() {
                 </a>
               ))}
             </nav>
+
 
             <div style={Styles.Socials} className="reveal reveal-delay-3">
               <Instagram size={20} style={Styles.SocialIcon} />

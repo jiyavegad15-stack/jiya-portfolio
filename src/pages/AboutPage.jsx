@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Link, useLocation } from "react-router-dom";
 import {
     Sparkles, ArrowRight, Mail, Instagram, Linkedin,
-    Activity, Scissors
+    Activity, Music2, Headphones, Plane, PersonStanding,
 } from "lucide-react";
 
 import ProfilePic from "../assets/profile3.png";
@@ -146,7 +146,9 @@ const Navbar = () => {
         { name: "Home", path: "/main2" },
         { name: "About", path: "/about" },
         { name: "Experience", path: "/work" },
-        { name: "Process", path: "/process" }
+        { name: "Contact", path: "/contact" },
+        { name: "Portfolio", path: "/portfolio" },
+        { name: "CV", path: "/cv" }
     ];
 
     return (
@@ -292,10 +294,10 @@ const AboutPage = () => {
                     marginTop: "4rem"
                 }}>
                     {[
-                        { icon: <Activity />, title: "Move & Play", text: "A few favourite sports — just for fun." },
-                        { icon: <Scissors />, title: "Dance", text: "Movement as self-expression." },
-                        { icon: <Sparkles />, title: "Music", text: "Playlists for every mood." },
-                        { icon: <Scissors />, title: "Travel", text: "New places, textures and stories." }
+                        { icon: <Activity/>, title: "Move & Play", text: "A few favourite sports — just for fun." },
+                        { icon: <PersonStanding/>, title: "Dance", text: "Movement as self-expression." },
+                        { icon: <Headphones/>, title: "Music", text: "Playlists for every mood." },
+                        { icon: <Plane/>, title: "Travel", text: "New places, textures and stories." }
                     ].map((i, k) => (
                         <Reveal key={k} delay={k}>
                             <div style={{

@@ -1,509 +1,629 @@
 import React, { useState, useEffect } from "react";
-import { Zap, Github, Linkedin, Scissors, Paintbrush } from "lucide-react";
+import {
+  Scissors,
+  Paintbrush,
+  Palette,
+  TrendingUp,
+  ArrowLeft,
+  Sparkles,
+  Target,
+  Layers,
+  Camera,
+  Ruler,
+  Zap,
+  Palette as ColorPaletteIcon,
+} from "lucide-react";
 
-// --- 1. THEME & MOCK DATA ---
-const ColorPalette = {
-    IVORY: "#FFFFF0",
-    CHARCOAL: "#4A4A48",
-    SAGE_GREEN: "#9CAF88",
-    DUSTY_ROSE: "#C4A69F",
-    PALE_GRAY: "#D8D8D8",
-    WARM_BEIGE: "#D7C7B6",
+/**
+ * REFINED SOPHISTICATED THEME SYSTEM
+ */
+const Theme = {
+  BG: "#FCFAF5",
+  PAPER: "#FFFFFF",
+  CHARCOAL: "#1A1A18",
+  DARK_CHARCOAL: "#121210",
+  IVORY: "#F8F7F0",
+  STONE: "#7E7E76",
+  LIGHT_STONE: "rgba(126, 126, 118, 0.4)",
+  SAGE: "#8C9E7A",
+  LIGHT_SAGE: "rgba(140, 158, 122, 0.1)",
+  CLAY: "#B8958D",
+  LIGHT_CLAY: "rgba(184, 149, 141, 0.1)",
+  BORDER: "rgba(26, 26, 24, 0.06)",
+  SHADOW_SOFT: "0 4px 24px rgba(0, 0, 0, 0.03)",
+  SHADOW_ELEVATED: "0 20px 60px rgba(0, 0, 0, 0.06)",
+  ACCENT_GLOW: "0 0 40px rgba(140, 158, 122, 0.15)",
 };
 
-const DarkTheme = {
-    body: ColorPalette.CHARCOAL,
-    text: ColorPalette.IVORY,
-    accent: ColorPalette.DUSTY_ROSE,
-};
+/**
+ * SKILLS DATA (UNCHANGED CONTENT)
+ */
+const skillsData = [
+  {
+    id: 1,
+    index: "01",
+    title: "Design Knowledge",
+    subtitle: "Core Fashion Expertise",
+    icon: Palette,
+    description:
+      "A strong foundation in fashion design principles, combining technical accuracy with creative exploration and contemporary relevance.",
+    expertise: [
+      { name: "Surface Embellishment", level: 90 },
+      { name: "Pattern Making", level: 92 },
+      { name: "Trend Analysis", level: 88 },
+      { name: "Material Exploration", level: 85 },
+    ],
+    color: Theme.SAGE,
+    lightColor: Theme.LIGHT_SAGE,
+  },
+  {
+    id: 2,
+    index: "02",
+    title: "Software Knowledge",
+    subtitle: "Digital Design Tools",
+    icon: ColorPaletteIcon,
+    description:
+      "Proficient in industry-relevant digital tools used for design development, visualization, and workflow organization.",
+    expertise: [
+      { name: "Procreate", level: 90 },
+      { name: "Adobe Illustrator", level: 88 },
+      { name: "Microsoft Excel", level: 80 },
+    ],
+    color: Theme.CLAY,
+    lightColor: Theme.LIGHT_CLAY,
+  },
+  {
+    id: 3,
+    index: "03",
+    title: "Soft Skills",
+    subtitle: "Professional & Interpersonal Strengths",
+    icon: Layers,
+    description:
+      "Strong collaborative and problem-solving abilities developed through academic projects and real-world industry exposure.",
+    expertise: [
+      { name: "Team Communication", level: 92 },
+      { name: "Problem Solving", level: 90 },
+      { name: "Time Management", level: 85 },
+      { name: "Adaptability", level: 88 },
+    ],
+    color: Theme.STONE,
+    lightColor: "rgba(126, 126, 118, 0.1)",
+  },
+  {
+    id: 4,
+    index: "04",
+    title: "Achievements",
+    subtitle: "Awards & Recognition",
+    icon: Target,
+    description:
+      "Recognized for creative excellence and competitive performance across institutional and national platforms.",
+    expertise: [
+      { name: "1st Prize – Face Painting (FDDI)", level: 100 },
+      { name: "2nd Prize – Fashion Show (NIFT Spectrum, 2023)", level: 95 },
+      { name: "2nd Prize – National Gujarati Drawing Competition", level: 90 },
+    ],
+    color: Theme.CHARCOAL,
+    lightColor: "rgba(26, 26, 24, 0.08)",
+  },
+];
 
-// --- 2. CSS Keyframes ---
-const tiltKeyframes = `
-@keyframes tilt {
-    0%, 100% {
-        transform: rotateX(0deg) rotateY(0deg);
-        box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
-    }
-    50% {
-        transform: rotateX(1deg) rotateY(1deg);
-        box-shadow: 0 20px 50px ${DarkTheme.accent}55;
-    }
-}
+const SkillsPage = () => {
+  const [activeCard, setActiveCard] = useState(null);
+  const [scrollProgress, setScrollProgress] = useState(0);
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
 
-/* Mobile Responsive Styles */
-@media (max-width: 768px) {
-    .skills-box-mobile {
-        padding: 6rem 1rem 2rem 1rem !important;
-        gap: 2rem !important;
-    }
-    
-    .cards-wrapper-mobile {
-        flex-direction: column !important;
-        gap: 2rem !important;
-        align-items: center !important;
-    }
-    
-    .card-mobile {
-        max-width: 100% !important;
-        min-height: auto !important;
-        padding: 2rem 1.5rem !important;
-        margin-bottom: 0 !important;
-    }
-    
-    .logo-mobile {
-        left: 1.5rem !important;
-        top: 1.5rem !important;
-        font-size: 1.5rem !important;
-    }
-    
-    .social-icons-mobile {
-        right: 1.5rem !important;
-        top: 1.5rem !important;
-        gap: 0.8rem !important;
-    }
-    
-    .social-icon-mobile {
-        width: 20px !important;
-        height: 20px !important;
-    }
-    
-    .power-button-mobile {
-        top: 0.8rem !important;
-        width: 45px !important;
-        height: 45px !important;
-    }
-    
-    .big-title-mobile {
-        display: none !important;
-    }
-    
-    .card-title-mobile {
-        font-size: 1.5rem !important;
-    }
-    
-    .card-icon-mobile {
-        width: 30px !important;
-        height: 30px !important;
-    }
-}
-
-@media (max-width: 480px) {
-    .skills-box-mobile {
-        padding: 5rem 1rem 1.5rem 1rem !important;
-    }
-    
-    .card-mobile {
-        padding: 1.5rem 1rem !important;
-    }
-    
-    .logo-mobile {
-        left: 1rem !important;
-        top: 1rem !important;
-    }
-    
-    .social-icons-mobile {
-        right: 1rem !important;
-        top: 1rem !important;
-    }
-    
-    .card-title-mobile {
-        font-size: 1.3rem !important;
-    }
-    
-    .description-mobile {
-        font-size: 0.9rem !important;
-        line-height: 1.5 !important;
-    }
-}
-
-@media (max-width: 320px) {
-    .skills-box-mobile {
-        padding: 4rem 0.5rem 1rem 0.5rem !important;
-    }
-    
-    .card-mobile {
-        padding: 1rem 0.8rem !important;
-    }
-    
-    .card-title-mobile {
-        font-size: 1.2rem !important;
-    }
-    
-    .list-mobile {
-        margin-left: 1rem !important;
-        font-size: 0.8rem !important;
-    }
-}
-
-/* High zoom level support */
-@media (max-width: 240px) {
-    body {
-        font-size: 14px;
-    }
-}
-
-/* Reduced motion support */
-@media (prefers-reduced-motion: reduce) {
-    * {
-        animation: none !important;
-        transition: none !important;
-    }
-}
-
-/* High contrast support */
-@media (prefers-contrast: high) {
-    .skills-box {
-        background: #000 !important;
-        color: #fff !important;
-    }
-    
-    .card {
-        border: 2px solid #fff !important;
-        background: #111 !important;
-    }
-    
-    .card-hover {
-        background: #fff !important;
-        color: #000 !important;
-    }
-}
-
-/* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
-    .card-hover:active {
-        transform: scale(0.98) !important;
-    }
-}
-
-/* Orientation support */
-@media (orientation: landscape) and (max-height: 500px) {
-    .skills-box-mobile {
-        padding: 4rem 1rem 1rem 1rem !important;
-    }
-    
-    .card-mobile {
-        min-height: 400px !important;
-        padding: 1.5rem !important;
-    }
-}
-`;
-
-// --- 3. RESPONSIVE STYLES ---
-const SkillsStyles = {
-    Box: {
-        backgroundColor: DarkTheme.body,
-        width: "100%",
-        minHeight: "100vh",
-        position: "relative",
-        display: "flex",
-        flexDirection: "column",
-        alignItems: "center",
-        fontFamily: "sans-serif",
-        overflowY: "auto",
-        padding: "8rem 2rem 4rem 2rem",
-        gap: "3rem",
-        boxSizing: "border-box",
-    },
-
-    FixedElement: {
-        position: "fixed",
-        zIndex: 50,
-        color: DarkTheme.text,
-    },
-
-    Logo: {
-        top: "2rem",
-        left: "3rem",
-        fontSize: "clamp(1.5rem, 3vw, 2rem)",
-        fontWeight: 700,
-        fontFamily: "serif",
-    },
-
-    SocialIcons: {
-        top: "2rem",
-        right: "3rem",
-        display: "flex",
-        gap: "1rem",
-    },
-
-    PowerButton: {
-        position: "fixed",
-        top: "1rem",
-        left: "50%",
-        transform: "translateX(-50%)",
-        width: "50px",
-        height: "50px",
-        borderRadius: "50%",
-        backgroundColor: DarkTheme.text,
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-        textDecoration: "none",
-        zIndex: 60,
-        minWidth: "44px",
-        minHeight: "44px",
-    },
-
-    CardsWrapper: {
-        display: "flex",
-        flexDirection: "row",
-        justifyContent: "center",
-        alignItems: "flex-start",
-        gap: "4rem",
-        width: "100%",
-        maxWidth: "1200px",
-        flexWrap: "wrap",
-    },
-
-    Card: {
-        width: "100%",
-        maxWidth: "450px",
-        minHeight: "550px",
-        padding: "2.5rem",
-        borderWidth: "2px",
-        borderStyle: "solid",
-        borderColor: DarkTheme.text,
-        color: DarkTheme.text,
-        backgroundColor: DarkTheme.body,
-        borderRadius: "12px",
-        display: "flex",
-        flexDirection: "column",
-        justifyContent: "space-between",
-        transition: "all 0.4s ease-in-out",
-        cursor: "pointer",
-        transformStyle: "preserve-3d",
-        boxShadow: "0 10px 30px rgba(0,0,0,0.4)",
-        animation: "tilt 4s ease-in-out infinite",
-        boxSizing: "border-box",
-    },
-
-    CardHover: {
-        backgroundColor: DarkTheme.text,
-        color: DarkTheme.body,
-        borderColor: DarkTheme.accent,
-        boxShadow: `0 20px 50px ${DarkTheme.accent}80`,
-    },
-
-    Title: {
-        display: "flex",
-        alignItems: "center",
-        fontSize: "clamp(1.5rem, 3vw, 2rem)",
-        fontWeight: 700,
-        marginBottom: "1rem",
-        color: DarkTheme.accent,
-    },
-
-    TitleIcon: {
-        marginRight: "1rem",
-        width: "clamp(30px, 5vw, 40px)",
-        height: "clamp(30px, 5vw, 40px)",
-        transition: "fill 0.3s ease",
-    },
-
-    Description: {
-        fontSize: "clamp(0.9rem, 1.5vw, 1rem)",
-        lineHeight: 1.6,
-        paddingBottom: "1rem",
-        flexGrow: 1,
-    },
-
-    Strong: {
-        textTransform: "uppercase",
-        fontWeight: 700,
-        color: DarkTheme.accent,
-    },
-
-    List: {
-        marginTop: "1rem",
-        marginLeft: "2rem",
-        listStyleType: "disc",
-        fontSize: "clamp(0.8rem, 1.5vw, 0.9rem)",
-        lineHeight: 1.5,
-    },
-};
-
-// --- MOCK COMPONENTS ---
-const BigTitle = ({ text, top, right }) => (
-    <h1 style={{ 
-        ...BigTitleStyles.Text, 
-        top, 
-        right,
-        fontSize: "clamp(8rem, 15vw, 18vh)"
-    }} className="big-title-mobile">
-        {text}
-    </h1>
-);
-
-const BigTitleStyles = {
-    Text: {
-        position: "absolute",
-        opacity: 0.1,
-        color: DarkTheme.text,
-        zIndex: 0,
-        fontWeight: "900",
-        pointerEvents: "none",
-    },
-};
-
-const LogoComponent = () => (
-    <div style={{ ...SkillsStyles.FixedElement, ...SkillsStyles.Logo }} className="logo-mobile">
-        JV
-    </div>
-);
-
-const SocialIcons = () => (
-    <div style={{ ...SkillsStyles.FixedElement, ...SkillsStyles.SocialIcons }} className="social-icons-mobile">
-        <Github size={24} className="social-icon-mobile" />
-        <Linkedin size={24} className="social-icon-mobile" />
-    </div>
-);
-
-const PowerButton = () => (
-    <a href="/jiya-portfolio/#/main2" style={SkillsStyles.PowerButton} className="power-button-mobile" aria-label="Home">
-        <Zap size={30} style={{ color: DarkTheme.body }} />
-    </a>
-);
-
-// Particle background
-const ParticleComponent = () => (
-    <div style={{ position: "fixed", inset: 0, opacity: 0.08, pointerEvents: "none" }}>
-        <div
-            style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                    "radial-gradient(circle at 10% 20%, rgba(255,255,255,0.35), transparent 40%)",
-            }}
-        ></div>
-        <div
-            style={{
-                position: "absolute",
-                inset: 0,
-                background:
-                    "radial-gradient(circle at 90% 80%, rgba(255,255,255,0.35), transparent 40%)",
-            }}
-        ></div>
-    </div>
-);
-
-// --- SKILLS CARD ---
-const SkillsCard = ({ title, icon: Icon, mainText, skills }) => {
-    const [isHovered, setIsHovered] = useState(false);
-    const [isMobile, setIsMobile] = useState(false);
-
-    useEffect(() => {
-        const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768);
-        };
-        
-        checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
-    }, []);
-
-    const cardStyle = {
-        ...SkillsStyles.Card,
-        ...(isHovered && !isMobile ? SkillsStyles.CardHover : {}),
-        transform: isHovered && !isMobile
-            ? "rotateX(1deg) rotateY(1deg) scale(1.03)"
-            : "rotateX(0deg) rotateY(0deg) scale(1)",
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrolled = window.scrollY;
+      const maxScroll = document.body.scrollHeight - window.innerHeight;
+      setScrollProgress((scrolled / maxScroll) * 100);
     };
 
-    const finalCardStyle = isMobile
-        ? { 
-            ...cardStyle, 
-            maxWidth: "100%", 
-            marginBottom: "0",
-            minHeight: "auto",
-            animation: "none"
-          }
-        : cardStyle;
+    const handleMouseMove = (e) => {
+      setMousePosition({ x: e.clientX, y: e.clientY });
+    };
 
-    return (
+    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("mousemove", handleMouseMove);
+    
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("mousemove", handleMouseMove);
+    };
+  }, []);
+
+  return (
+    <div style={styles.container}>
+      {/* Subtle gradient background */}
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        background: `linear-gradient(135deg, ${Theme.BG} 0%, ${Theme.IVORY} 100%)`,
+        zIndex: -2,
+      }} />
+      
+      {/* Animated grid overlay */}
+      <div style={{
+        position: "fixed",
+        inset: 0,
+        backgroundImage: `linear-gradient(${Theme.BORDER} 1px, transparent 1px),
+                         linear-gradient(90deg, ${Theme.BORDER} 1px, transparent 1px)`,
+        backgroundSize: "60px 60px",
+        opacity: 0.2,
+        zIndex: -1,
+        transform: `translate(${mousePosition.x * 0.01}px, ${mousePosition.y * 0.01}px)`,
+        transition: "transform 0.3s ease-out",
+      }} />
+
+      {/* Progress bar */}
+      <div style={styles.progressBar}>
         <div
-            style={finalCardStyle}
-            className="card-mobile card-hover"
-            onMouseEnter={() => !isMobile && setIsHovered(true)}
-            onMouseLeave={() => !isMobile && setIsHovered(false)}
-            onTouchStart={() => isMobile && setIsHovered(true)}
-            onTouchEnd={() => isMobile && setTimeout(() => setIsHovered(false), 150)}
+          style={{
+            ...styles.progressFill,
+            width: `${scrollProgress}%`,
+            boxShadow: Theme.ACCENT_GLOW,
+          }}
+        />
+      </div>
+
+      {/* Navigation */}
+      <nav style={styles.navigation}>
+        <div style={styles.navLeft}>
+          <div style={styles.brandMark}>
+            <Zap size={14} color={Theme.SAGE} />
+            <span style={styles.brandText}>JV</span>
+          </div>
+          <div style={styles.navDivider} />
+          <span style={styles.navTag}>Skills Matrix</span>
+        </div>
+        <button
+          style={{
+            ...styles.backButton,
+            transform: activeCard === null ? "translateX(0)" : "translateX(-4px)",
+          }}
+          onClick={() => (window.location.href = "#/main2")}
         >
-            <h2 style={{ 
-                ...SkillsStyles.Title, 
-                color: isHovered ? DarkTheme.body : DarkTheme.accent 
-            }} className="card-title-mobile">
-                <Icon style={{ 
-                    ...SkillsStyles.TitleIcon,
-                    width: isMobile ? "30px" : "40px",
-                    height: isMobile ? "30px" : "40px"
-                }} className="card-icon-mobile" />
-                {title}
-            </h2>
+          <ArrowLeft size={16} />
+          <span>Return</span>
+        </button>
+      </nav>
 
-            <p style={SkillsStyles.Description} className="description-mobile">
-                {mainText}
-            </p>
-
-            <div style={SkillsStyles.Description} className="description-mobile">
-                <strong style={SkillsStyles.Strong}>Skills</strong>
-                <ul style={SkillsStyles.List} className="list-mobile">
-                    {skills.map((skill, idx) => (
-                        <li key={idx}>{skill}</li>
-                    ))}
-                </ul>
-            </div>
+      {/* Hero Section */}
+      <header style={styles.hero}>
+        <div style={styles.heroContent}>
+          <div style={styles.heroBadge}>
+            <Sparkles size={12} color={Theme.SAGE} />
+            <span>Editorial Expertise</span>
+          </div>
+          <h1 style={styles.heroTitle}>
+            Design
+            <br />
+            <span style={styles.heroTitleItalic}>Discipline.</span>
+          </h1>
+          <p style={styles.heroSubtitle}>
+            A curated overview of skills that balance creative intuition with
+            technical precision.
+          </p>
         </div>
-    );
+      </header>
+
+      {/* Skills Grid */}
+      <main style={styles.main}>
+        <div style={styles.skillsGrid}>
+          {skillsData.map((skill) => (
+            <div
+              key={skill.id}
+              style={{
+                ...styles.skillCard,
+                transform: activeCard === skill.id ? "translateY(-8px)" : "translateY(0)",
+                boxShadow: activeCard === skill.id ? Theme.SHADOW_ELEVATED : Theme.SHADOW_SOFT,
+                borderColor: activeCard === skill.id ? skill.color : Theme.BORDER,
+              }}
+              onMouseEnter={() => setActiveCard(skill.id)}
+              onMouseLeave={() => setActiveCard(null)}
+            >
+              {/* Card accent */}
+              <div style={{
+                ...styles.cardAccent,
+                background: `linear-gradient(90deg, ${skill.color}00 0%, ${skill.color}30 100%)`,
+                opacity: activeCard === skill.id ? 1 : 0,
+              }} />
+
+              {/* Card number */}
+              <div style={{
+                ...styles.cardNumber,
+                color: activeCard === skill.id ? skill.color : Theme.LIGHT_STONE,
+              }}>
+                {skill.index}
+              </div>
+
+              {/* Card header */}
+              <div style={styles.cardHeader}>
+                <div
+                  style={{
+                    ...styles.iconBackground,
+                    backgroundColor: activeCard === skill.id ? skill.color : skill.lightColor,
+                    transform: activeCard === skill.id ? "scale(1.1)" : "scale(1)",
+                  }}
+                >
+                  <skill.icon 
+                    size={24} 
+                    color={activeCard === skill.id ? Theme.PAPER : skill.color} 
+                  />
+                </div>
+                <div>
+                  <h3 style={styles.skillTitle}>{skill.title}</h3>
+                  <p style={styles.skillSubtitle}>{skill.subtitle}</p>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p style={styles.cardDescription}>{skill.description}</p>
+
+              {/* Expertise section */}
+              <div style={styles.expertiseSection}>
+                {skill.expertise.map((item, idx) => (
+                  <div key={idx} style={styles.expertiseItem}>
+                    <div style={styles.expertiseHeader}>
+                      <span style={styles.expertiseName}>{item.name}</span>
+                      <span style={{
+                        ...styles.expertiseLevel,
+                        color: activeCard === skill.id ? skill.color : Theme.STONE,
+                      }}>
+                        {item.level}%
+                      </span>
+                    </div>
+                    <div style={styles.progressContainer}>
+                      <div
+                        style={{
+                          ...styles.progressBarInner,
+                          width: `${item.level}%`,
+                          backgroundColor: skill.color,
+                          boxShadow: activeCard === skill.id ? `0 0 12px ${skill.color}40` : "none",
+                          transform: activeCard === skill.id ? "scaleY(1.2)" : "scaleY(1)",
+                        }}
+                      />
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              {/* Subtle indicator line */}
+              <div style={styles.indicatorLine}>
+                <div
+                  style={{
+                    ...styles.indicatorFill,
+                    width: activeCard === skill.id ? "100%" : "0%",
+                    backgroundColor: skill.color,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer style={styles.footer}>
+        <div style={styles.footerContent}>
+          <span style={styles.footerText}>Jiya Vegad © 2025</span>
+          <div style={styles.footerDivider} />
+          <span style={styles.footerText}>Skills Matrix v1.0</span>
+        </div>
+      </footer>
+    </div>
+  );
 };
 
-// --- MAIN PAGE ---
-const MySkillsPage = () => {
-    const fashionDesign = {
-        title: "Fashion Designer",
-        icon: Scissors,
-        mainText:
-            "I create expressive, meaningful fashion blending comfort, culture and modern craftsmanship.",
-        skills: [
-            "Illustration & Sketching",
-            "Pattern Making & Draping",
-            "Garment Construction",
-            "Surface Embellishment",
-            "Textile Knowledge",
-            "Moodboard Creation & Curation",
-        ],
-    };
+/* REFINED STYLES OBJECT */
+const styles = {
+  container: {
+    minHeight: "100vh",
+    backgroundColor: "transparent",
+    position: "relative",
+    overflowX: "hidden",
+  },
 
-    const creativeSkills = {
-        title: "Creative Direction",
-        icon: Paintbrush,
-        mainText:
-            "Visual storytelling, brand identity creation, and strategic presentation across digital and editorial platforms.",
-        skills: [
-            "Trend Forecasting",
-            "Editorial Design & Layout",
-            "Styling & Merchandising",
-            "Digital Content Creation",
-            "Visual Branding Strategy",
-        ],
-    };
+  progressBar: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "2px",
+    backgroundColor: Theme.BORDER,
+    zIndex: 100,
+  },
 
-    return (
-        <div style={SkillsStyles.Box} className="skills-box-mobile">
-            <style>{tiltKeyframes}</style>
+  progressFill: {
+    height: "100%",
+    backgroundColor: Theme.SAGE,
+    transition: "width 0.2s ease-out",
+  },
 
-            <LogoComponent />
-            <SocialIcons />
-            <PowerButton />
-            <ParticleComponent />
+  navigation: {
+    position: "fixed",
+    top: 0,
+    width: "100%",
+    padding: "1.75rem 3rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backdropFilter: "blur(12px)",
+    backgroundColor: "rgba(252, 250, 245, 0.85)",
+    borderBottom: `1px solid ${Theme.BORDER}`,
+    zIndex: 50,
+  },
 
-            <div style={SkillsStyles.CardsWrapper} className="cards-wrapper-mobile">
-                <SkillsCard {...fashionDesign} />
-                <SkillsCard {...creativeSkills} />
-            </div>
+  navLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
+  },
 
-            <BigTitle text="SKILLS" top="82%" right="30%" />
-        </div>
-    );
+  brandMark: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.375rem",
+    padding: "0.5rem 0.75rem",
+    backgroundColor: Theme.LIGHT_SAGE,
+    borderRadius: "12px",
+    border: `1px solid ${Theme.BORDER}`,
+  },
+
+  brandText: {
+    fontWeight: 600,
+    fontSize: "0.875rem",
+    letterSpacing: "0.5px",
+    color: Theme.CHARCOAL,
+  },
+
+  navDivider: {
+    width: "1px",
+    height: "16px",
+    backgroundColor: Theme.BORDER,
+  },
+
+  navTag: {
+    fontSize: "0.75rem",
+    color: Theme.STONE,
+    letterSpacing: "0.5px",
+    fontWeight: 500,
+  },
+
+  backButton: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    background: "none",
+    border: `1px solid ${Theme.BORDER}`,
+    padding: "0.625rem 1.25rem",
+    borderRadius: "100px",
+    cursor: "pointer",
+    color: Theme.CHARCOAL,
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    transition: "all 0.3s ease",
+  },
+
+  hero: {
+    padding: "12rem 3rem 6rem",
+    maxWidth: "1200px",
+    margin: "0 auto",
+  },
+
+  heroContent: {
+    maxWidth: "600px",
+  },
+
+  heroBadge: {
+    display: "inline-flex",
+    alignItems: "center",
+    gap: "0.5rem",
+    padding: "0.5rem 1rem",
+    backgroundColor: Theme.LIGHT_SAGE,
+    border: `1px solid ${Theme.BORDER}`,
+    borderRadius: "100px",
+    marginBottom: "2.5rem",
+    fontSize: "0.75rem",
+    fontWeight: 500,
+    color: Theme.SAGE,
+    letterSpacing: "0.5px",
+  },
+
+  heroTitle: {
+    fontSize: "clamp(3.5rem, 8vw, 6rem)",
+    fontFamily: "'Playfair Display', serif",
+    fontWeight: 400,
+    lineHeight: 1.1,
+    marginBottom: "1.5rem",
+    color: Theme.CHARCOAL,
+    letterSpacing: "-0.02em",
+  },
+
+  heroTitleItalic: {
+    fontStyle: "italic",
+    fontWeight: 300,
+    color: Theme.SAGE,
+  },
+
+  heroSubtitle: {
+    color: Theme.STONE,
+    fontSize: "1.125rem",
+    lineHeight: 1.6,
+    maxWidth: "500px",
+    fontWeight: 400,
+  },
+
+  main: {
+    padding: "0 3rem 8rem",
+    maxWidth: "1400px",
+    margin: "0 auto",
+  },
+
+  skillsGrid: {
+    display: "grid",
+    gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
+    gap: "2rem",
+    alignItems: "start",
+  },
+
+  skillCard: {
+    backgroundColor: Theme.PAPER,
+    padding: "2.5rem",
+    border: `1px solid ${Theme.BORDER}`,
+    borderRadius: "20px",
+    position: "relative",
+    overflow: "hidden",
+    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+    height: "100%",
+    minHeight: "480px",
+  },
+
+  cardAccent: {
+    position: "absolute",
+    top: 0,
+    left: 0,
+    right: 0,
+    height: "120px",
+    transition: "opacity 0.4s ease",
+  },
+
+  cardNumber: {
+    position: "absolute",
+    top: "2rem",
+    right: "2rem",
+    fontSize: "4rem",
+    fontFamily: "'Playfair Display', serif",
+    fontWeight: 300,
+    lineHeight: 1,
+    opacity: 0.15,
+    transition: "all 0.4s ease",
+  },
+
+  cardHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1.25rem",
+    marginBottom: "2rem",
+  },
+
+  iconBackground: {
+    width: "56px",
+    height: "56px",
+    borderRadius: "16px",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
+    flexShrink: 0,
+  },
+
+  skillTitle: {
+    fontSize: "1.75rem",
+    fontFamily: "'Playfair Display', serif",
+    fontWeight: 500,
+    color: Theme.CHARCOAL,
+    marginBottom: "0.25rem",
+    lineHeight: 1.2,
+  },
+
+  skillSubtitle: {
+    fontSize: "0.875rem",
+    color: Theme.STONE,
+    fontWeight: 500,
+    letterSpacing: "0.5px",
+  },
+
+  cardDescription: {
+    marginBottom: "3rem",
+    color: Theme.STONE,
+    lineHeight: 1.7,
+    fontSize: "0.95rem",
+  },
+
+  expertiseSection: {
+    marginTop: "auto",
+  },
+
+  expertiseItem: {
+    marginBottom: "1.5rem",
+  },
+
+  expertiseHeader: {
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    marginBottom: "0.5rem",
+  },
+
+  expertiseName: {
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    color: Theme.CHARCOAL,
+  },
+
+  expertiseLevel: {
+    fontSize: "0.75rem",
+    fontWeight: 600,
+    letterSpacing: "0.5px",
+    transition: "color 0.3s ease",
+  },
+
+  progressContainer: {
+    height: "4px",
+    backgroundColor: Theme.BORDER,
+    borderRadius: "2px",
+    overflow: "hidden",
+  },
+
+  progressBarInner: {
+    height: "100%",
+    borderRadius: "2px",
+    transition: "all 0.5s cubic-bezier(0.4, 0, 0.2, 1)",
+  },
+
+  indicatorLine: {
+    position: "absolute",
+    bottom: 0,
+    left: "2.5rem",
+    right: "2.5rem",
+    height: "1px",
+    backgroundColor: Theme.BORDER,
+  },
+
+  indicatorFill: {
+    height: "100%",
+    transition: "width 0.6s cubic-bezier(0.4, 0, 0.2, 1)",
+  },
+
+  footer: {
+    padding: "2rem 3rem",
+    borderTop: `1px solid ${Theme.BORDER}`,
+    backgroundColor: Theme.PAPER,
+  },
+
+  footerContent: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "1rem",
+    fontSize: "0.75rem",
+    color: Theme.STONE,
+  },
+
+  footerDivider: {
+    width: "4px",
+    height: "4px",
+    borderRadius: "50%",
+    backgroundColor: Theme.BORDER,
+  },
+
+  footerText: {
+    fontWeight: 500,
+    letterSpacing: "0.5px",
+  },
 };
 
-export default MySkillsPage;
+export default SkillsPage;
