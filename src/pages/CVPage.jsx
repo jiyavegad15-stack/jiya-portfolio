@@ -121,7 +121,7 @@ const CVPage = () => {
             }
             
             .profile-image-print {
-              filter: grayscale(100%) !important;
+              filter: "none";
             }
             
             .experience-card-print,
