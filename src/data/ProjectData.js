@@ -1,0 +1,68 @@
+// src/data/ProjectData.js
+
+export const Projects = [
+  {
+    id: 1,
+    name: "Conceptual Couture – ‘Fragments of Identity’",
+    tags: ["couture", "concept-art"],
+    category: "Fashion Design",
+    imgSrc: require("../assets/project1.jpg"),
+    link: "https://example.com",
+  },
+  {
+    id: 2,
+    name: "Khadi Reimagined – Modern Crafts",
+    tags: ["khadi", "textile"],
+    category: "Textile Design",
+    imgSrc: require("../assets/project2.jpg"),
+    link: "https://example.com",
+  },
+  {
+    id: 3,
+    name: "Blur Pottery Fashion Series",
+    tags: ["craft", "fusion"],
+    category: "Craft Collaboration",
+    imgSrc: require("../assets/project3.jpg"),
+    link: "https://example.com",
+  },
+  {
+    id: 4,
+    name: "Minimalist Streetwear Capsule",
+    tags: ["streetwear", "minimal"],
+    category: "Fashion Styling",
+    imgSrc: require("../assets/project4.jpg"),
+    link: "https://example.com",
+  },
+  {
+    id: 5,
+    name: "Sustainable Upcycled Pieces",
+    tags: ["eco", "sustainability"],
+    category: "Sustainable Fashion",
+    imgSrc: require("../assets/project5.jpg"),
+    link: "https://example.com",
+  },
+  {
+    id: 6,
+    name: "Editorial Digital Layouts",
+    tags: ["editorial", "digital"],
+    category: "Digital Media",
+    imgSrc: require("../assets/project6.jpg"),
+    link: "https://example.com",
+  },
+  {
+    id: 7,
+    name: "Craft Narrative Lookbook",
+    tags: ["storytelling", "craft"],
+    category: "Creative Direction",
+    imgSrc: require("../assets/project7.jpg"),
+    link: "https://example.com",
+  },
+  {
+    id: 8,
+    name: "Fashion Illustration Series",
+    tags: ["illustration", "art"],
+    category: "Illustration",
+    imgSrc: require("../assets/project8.jpg"),
+    link: "https://example.com",
+  },
+];
