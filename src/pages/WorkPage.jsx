@@ -1,7 +1,24 @@
 import React, { useRef, useEffect, useState, useCallback } from "react";
-import { Zap, Instagram, Linkedin, ArrowRight, Eye, Sparkles, X, Aperture, BookOpen, Menu, Home, User, Code, Briefcase, FileText } from "lucide-react";
+import {
+  Zap,
+  Instagram,
+  Linkedin,
+  ArrowRight,
+  Eye,
+  Sparkles,
+  X,
+  Aperture,
+  BookOpen,
+  Menu,
+  Home,
+  User,
+  Code,
+  Briefcase,
+  FileText,
+  Mail,
+  FileCheck
+} from "lucide-react";
 
-// ---- GORGEOUS NEW COLOR PALETTE ----
 const ColorPalette = {
     DARK_TEAL: "#244855",
     WARM_RED: "#E64833",
@@ -22,7 +39,6 @@ const Theme = {
     red: ColorPalette.WARM_RED
 };
 
-// ---- NAVIGATION BAR COMPONENT ----
 const NavigationBar = () => {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const [activeSection, setActiveSection] = useState('work');
@@ -32,7 +48,11 @@ const NavigationBar = () => {
         { id: 'about', label: 'About', icon: User, href: '/jiya-portfolio/#about' },
         { id: 'skills', label: 'Skills', icon: Code, href: '/jiya-portfolio/#skills' },
         { id: 'work', label: 'Experience', icon: Briefcase, href: '/jiya-portfolio/#work' },
-        { id: 'cv', label: 'CV', icon: FileText, href: '/jiya-portfolio/#cv' }
+        { id: 'cv', label: 'CV', icon: FileCheck, href: '/jiya-portfolio/#cv' },
+        { id: 'portfolio', label: 'Portfolio', icon: Aperture, href: '/jiya-portfolio/#portfolio' },
+        { id: 'education', label: 'Education', icon: BookOpen, href: '/jiya-portfolio/#education' },
+        { id: 'contact', label: 'Contact', icon: Mail, href: '/jiya-portfolio/#contact' }
+
     ];
 
     const toggleMenu = () => {
@@ -46,7 +66,6 @@ const NavigationBar = () => {
         if (href.startsWith('/')) {
             window.location.href = href;
         } else {
-            // Smooth scroll to section
             const element = document.querySelector(href);
             if (element) {
                 element.scrollIntoView({ behavior: 'smooth' });
@@ -160,7 +179,6 @@ const NavigationBar = () => {
     );
 };
 
-// ---- NAVIGATION STYLES ----
 const NavStyles = {
     navbar: {
         position: 'fixed',
@@ -325,10 +343,8 @@ const NavStyles = {
     },
 };
 
-// ---- PLACEHOLDER URL FOR Instagram PAGES ----
 const BASE_PLACEHOLDER_URL = "https://placehold.co";
 
-// ---- FONT IMPORTS ----
 const FontStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Lora:ital,wght@0,400;0,500;0,600;0,700;1,400&family=Playfair+Display:wght@400;500;600;700;800&display=swap');
 
@@ -344,10 +360,8 @@ const FontStyles = `
 }
 `;
 
-// --- COLLECTION DATA SIMULATION ---
 const collectionImages = {};
 
-// Dynamic import for all images inside /assets/projects/*
 function importAll(r) {
   r.keys().forEach((key) => {
     const path = key.replace("./", ""); 
@@ -357,14 +371,12 @@ function importAll(r) {
   });
 }
 
-// Auto-import all JPG files in all folders
 try {
   importAll(require.context("../assets/projects", true, /\.(jpg|jpeg|png)$/));
 } catch (error) {
   console.log("Images not found, using placeholders for Instagram Pages");
 }
 
-// FIX IMAGE ORDER: 1.jpg, 2.jpg, 3.jpg, …
 Object.keys(collectionImages).forEach(folder => {
   collectionImages[folder].sort((a, b) => {
     const getNum = (file) => parseInt(file.split("/").pop().split(".")[0]);
@@ -372,11 +384,10 @@ Object.keys(collectionImages).forEach(folder => {
   });
 });
 
-// ---- Instagram PAGES FRIENDLY IMAGE GETTER ----
+
 const getCollectionImages = (projectId) => {
   const images = collectionImages[`${projectId}X`] || [];
   
-  // Instagram Pages fallback - if no images found, use placeholders
   if (images.length === 0) {
     return [
       `${BASE_PLACEHOLDER_URL}/600x800/${Theme.dark.substring(1)}/${Theme.cardBg.substring(1)}?text=Collection+${projectId}+1`,
@@ -421,22 +432,20 @@ const Work = [
     }
 ];
 
-// ---- RESPONSIVE CARD SIZES ----
 const getCardDimensions = () => {
     const width = window.innerWidth;
     
-    if (width < 480) { // Small Mobile
+    if (width < 480) { 
         return { width: 'calc(100vw - 2rem)', height: '420px', marginRight: '0', marginBottom: '1.5rem' };
-    } else if (width < 768) { // Mobile
+    } else if (width < 768) {
         return { width: 'calc(100vw - 2rem)', height: '450px', marginRight: '0', marginBottom: '1.5rem' };
-    } else if (width < 1024) { // Tablet
+    } else if (width < 1024) { 
         return { width: '320px', height: '420px', marginRight: '2rem', marginBottom: '0' };
-    } else { // Desktop
-        return { width: '380px', height: '450px', marginRight: '4rem', marginBottom: '0', padding: '6rem' };
+    } else {
+        return { width: '420px', height: '450px', marginRight: '4rem', marginBottom: '0', padding: '6rem' };
     }
 };
 
-// ---- ELEGANT GALLERY MODAL ----
 const ImageGalleryModal = ({ project, onClose }) => {
     if (!project) return null;
 
@@ -452,7 +461,6 @@ const ImageGalleryModal = ({ project, onClose }) => {
         setCurrentImageIndex((prev) => (prev - 1 + images.length) % images.length);
     };
 
-    // Keyboard navigation
     useEffect(() => {
         const handleKeyDown = (e) => {
             if (e.key === 'ArrowRight') nextImage();
@@ -478,9 +486,8 @@ const ImageGalleryModal = ({ project, onClose }) => {
                     </div>
                 </div>
 
-                {/* Gallery Layout */}
                 <div style={ModalStyles.galleryContainer}>
-                    {/* Main Image Viewer */}
+                
                     <div style={ModalStyles.mainImageViewer}>
                         <button 
                             style={ModalStyles.navButton}
@@ -520,7 +527,6 @@ const ImageGalleryModal = ({ project, onClose }) => {
                         </button>
                     </div>
 
-                    {/* Thumbnail Strip */}
                     {images.length > 1 && (
                         <div style={ModalStyles.thumbnailStrip}>
                             {images.map((src, index) => (
@@ -550,7 +556,6 @@ const ImageGalleryModal = ({ project, onClose }) => {
                     )}
                 </div>
 
-                {/* Collection Description */}
                 <div style={ModalStyles.galleryDescription}>
                     <h3 style={ModalStyles.descriptionTitle}>Collection Details</h3>
                     <p style={ModalStyles.descriptionText}>{project.description}</p>
@@ -566,7 +571,6 @@ const ImageGalleryModal = ({ project, onClose }) => {
                 </p>
             </ModalBase>
 
-            {/* ZOOM MODAL */}
             {zoomedImage && (
                 <div style={zoomModal.overlay} onClick={() => setZoomedImage(null)}>
                     <img 
@@ -584,7 +588,6 @@ const ImageGalleryModal = ({ project, onClose }) => {
     );
 };
 
-// ---- MODAL BASE COMPONENT ----
 const ModalBase = ({ children, onClose, isGallery = false }) => (
     <div style={ModalStyles.overlay} onClick={onClose}>
         <div 
@@ -609,14 +612,12 @@ const ModalBase = ({ children, onClose, isGallery = false }) => (
     </div>
 );
 
-// ---- RESPONSIVE CARD COMPONENT ----
 const Card = ({ data, index, onExplore, onViewCollection }) => {
     const [isHovered, setIsHovered] = useState(false);
     const [dimensions, setDimensions] = useState(getCardDimensions());
     const cardRef = useRef(null);
     const isMobile = window.innerWidth < 768;
 
-    // Update dimensions on resize
     useEffect(() => {
         const handleResize = () => {
             setDimensions(getCardDimensions());
@@ -626,7 +627,6 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
-    // Dynamic 3D Transform on Hover (desktop only)
     useEffect(() => {
         if (!isMobile && isHovered && cardRef.current) {
             cardRef.current.style.transform = `translateY(-30px) scale(1.06) rotateY(${index % 2 === 0 ? '4deg' : '-4deg'})`;
@@ -661,7 +661,6 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
             role="article"
             aria-label={`Project: ${data.name}`}
         >
-            {/* Image Container */}
             <div style={CardStyles.imageContainer}>
                 <img 
                     src={data.image} 
@@ -678,20 +677,17 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
                     loading="lazy"
                 />
                 
-                {/* Overlays */}
                 <div style={CardStyles.gradientOverlay} />
                 <div style={{
                     ...CardStyles.colorOverlay,
                     background: `linear-gradient(45deg, ${Theme.accent}20, ${Theme.tertiary}30)`
                 }} />
-                
-                {/* Premium Badge */}
+
                 <div style={CardStyles.premiumBadge}>
                     <Sparkles size={12} />
                     <span>FEATURED</span>
                 </div>
 
-                {/* View Collection Button */}
                 <button
                     onClick={(e) => {
                         e.stopPropagation();
@@ -709,18 +705,15 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
                     <span style={{ fontFamily: "'Lora', serif", fontWeight: '500' }}>View Collection</span>
                 </button>
 
-                {/* Corner Accents */}
                 <div style={CardStyles.cornerAccentTL} />
                 <div style={CardStyles.cornerAccentBR} />
             </div>
 
-            {/* Content Area */}
             <div style={CardStyles.content}>
                 <div style={CardStyles.contentInner}>
                     <h3 style={CardStyles.title}>{data.name}</h3>
                     <p style={CardStyles.description}>{data.description.split('. ')[0]}.</p>
-                    
-                    {/* Tags */}
+
                     <div style={CardStyles.tags}>
                         {data.tags.map((tag, i) => (
                             <span 
@@ -737,7 +730,6 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
                         ))}
                     </div>
 
-                    {/* Action Buttons */}
                     <div style={CardStyles.actions}>
                         <button 
                             onClick={(e) => {
@@ -771,7 +763,6 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
                 </div>
             </div>
 
-            {/* Glow Effects */}
             <div style={{
                 ...CardStyles.glow,
                 opacity: isHovered ? 0.8 : 0,
@@ -781,7 +772,6 @@ const Card = ({ data, index, onExplore, onViewCollection }) => {
     );
 };
 
-// ---- UPDATED CARD STYLES ----
 const CardStyles = {
     base: {
         borderRadius: '25px',
@@ -1012,7 +1002,6 @@ const CardStyles = {
     },
 };
 
-// ---- ELEGANT GALLERY STYLES ----
 const ModalStyles = {
     overlay: {
         position: 'fixed',
@@ -1279,7 +1268,6 @@ const ModalStyles = {
     },
 };
 
-// ---- FIXED STYLES (Responsive) ----
 const FixedStyles = {
     powerButton: {
         position: "fixed",
@@ -1365,7 +1353,6 @@ const zoomModal = {
     }
 };
 
-// ---- COMPREHENSIVE CSS ANIMATIONS AND RESPONSIVE STYLES ----
 const fullCSS = FontStyles + `
 @keyframes cardReveal {
     0% {
@@ -1737,21 +1724,18 @@ const fullCSS = FontStyles + `
 }
 `;
 
-// ---- MAIN WORK PAGE ----
 const WorkPage = () => {
     const scrollRef = useRef(null);
     const boxRef = useRef(null);
     const [isMounted, setIsMounted] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     
-    // Modals state
     const [viewingProject, setViewingProject] = useState(null);
     const [viewingCollection, setViewingCollection] = useState(null);
 
     const selectedProject = viewingProject ? Work.find(p => p.id === viewingProject) : null;
     const selectedCollection = viewingCollection ? Work.find(p => p.id === viewingCollection) : null;
 
-    // Handlers for Modals
     const handleExplore = useCallback((id) => {
         setViewingProject(id);
     }, []);
@@ -1765,7 +1749,6 @@ const WorkPage = () => {
         setViewingCollection(null);
     }, []);
 
-    // Check for mobile and handle resize
     useEffect(() => {
         const checkMobile = () => {
             const mobile = window.innerWidth < 768;
@@ -1777,7 +1760,6 @@ const WorkPage = () => {
         return () => window.removeEventListener('resize', checkMobile);
     }, []);
 
-    // Calculate total content width for smooth scrolling
     const calculateTotalContentWidth = useCallback(() => {
         if (isMobile) return 0;
         
@@ -1786,11 +1768,9 @@ const WorkPage = () => {
         const totalCardWidth = Work.length * (parseInt(cardWidth) + parseInt(marginRight));
         const viewportWidth = window.innerWidth;
         
-        // Return the amount we can scroll (total width - viewport width + some padding)
         return Math.max(0, totalCardWidth - viewportWidth + 200);
     }, [isMobile]);
 
-    // Enhanced scroll handler with smooth animation
     useEffect(() => {
         if (!isMounted) return;
 
@@ -1811,7 +1791,6 @@ const WorkPage = () => {
 
         if (!isMobile) {
             window.addEventListener("scroll", handleScroll, { passive: true });
-            // Trigger initial calculation
             handleScroll();
         }
 
@@ -1822,17 +1801,14 @@ const WorkPage = () => {
         };
     }, [isMounted, isMobile, calculateTotalContentWidth]);
 
-    // Calculate container height based on device type
     useEffect(() => {
         if (isMounted && boxRef.current) {
             if (isMobile) {
-                // For mobile: vertical layout, height based on content
                 const cardHeight = getCardDimensions().height;
                 const marginBottom = '1.5rem';
                 const totalHeight = Work.length * (parseInt(cardHeight) + parseInt(marginBottom)) + 200;
                 boxRef.current.style.height = `${totalHeight}px`;
             } else {
-                // For desktop: horizontal layout - make it scrollable
                 const totalContentWidth = calculateTotalContentWidth();
                 const newHeight = Math.max(window.innerHeight * 2, totalContentWidth * 0.5 + window.innerHeight);
                 boxRef.current.style.height = `${newHeight}px`;
@@ -1860,14 +1836,12 @@ const WorkPage = () => {
         >
             <style>{fullCSS}</style>
 
-            {/* Add Navigation Bar */}
             <NavigationBar />
 
             <PowerButton />
 
             {!isMobile && <BigTitle text="WORK" top="12%" right="8%" />}
 
-            {/* Scroll Instruction - Desktop only */}
             {!isMobile && (
                 <div style={FixedStyles.scrollInstruction} className="scroll-instruction">
                     <div style={FixedStyles.scrollArrow}>⌄</div>
@@ -1876,7 +1850,6 @@ const WorkPage = () => {
                 </div>
             )}
 
-            {/* Card Container - Different layout based on device */}
             <div
                 ref={scrollRef}
                 style={{
@@ -1903,14 +1876,12 @@ const WorkPage = () => {
                 ))}
             </div>
 
-            {/* Modals */}
             {selectedProject && <ProjectDetailModal project={selectedProject} onClose={handleCloseModal} />}
             {selectedCollection && <ImageGalleryModal project={selectedCollection} onClose={handleCloseModal} />}
         </div>
     );
 };
 
-// ---- SIMPLIFIED FIXED COMPONENTS ----
 const PowerButton = () => (
     <a href="/jiya-portfolio/#/main2" style={FixedStyles.powerButton} className="power-button-hover animate-fadeInUp" aria-label="Home">
         <div style={FixedStyles.powerButtonInner} className="power-button-inner">
@@ -1925,7 +1896,6 @@ const BigTitle = ({ text, top, right }) => (
     </h1>
 );
 
-// Add the missing ProjectDetailModal component
 const ProjectDetailModal = ({ project, onClose }) => {
     if (!project) return null;
 

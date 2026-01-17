@@ -1,11 +1,11 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import styled, { keyframes } from "styled-components";
 import {
   Zap, Instagram, Mail, Sparkles, ArrowUpRight,
-  ChevronRight, Heart, Send, PenTool, MapPin
+  ChevronRight, Heart, Send, Home, User, Briefcase,
+  FolderOpen, GraduationCap, Award, FileText, Menu, X
 } from "lucide-react";
 
-/* ================= ENHANCED ANIMATIONS ================= */
 const fadeInUp = keyframes`
   from { 
     opacity: 0; 
@@ -33,12 +33,184 @@ const shimmer = keyframes`
   100% { background-position: 200% 0; }
 `;
 
-const rotateSlow = keyframes`
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+const slideIn = keyframes`
+  from {
+    transform: translateX(-100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
 `;
 
-/* ================= ENHANCED STYLED COMPONENTS ================= */
+const fadeIn = keyframes`
+  from { opacity: 0; }
+  to { opacity: 1; }
+`;
+
+const NavbarContainer = styled.nav`
+  position: fixed;
+  top: 2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 1000;
+  width: auto;
+  background: rgba(255, 255, 255, 0.85);
+  backdrop-filter: blur(20px);
+  border: 1px solid rgba(228, 225, 217, 0.4);
+  border-radius: 24px;
+  padding: 0.75rem 1.5rem;
+  box-shadow: 
+    0 20px 60px rgba(0,0,0,0.1),
+    0 0 0 1px rgba(255,255,255,0.2) inset;
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  animation: ${fadeIn} 0.8s ease-out;
+
+  @media (max-width: 1024px) {
+    display: none;
+  }
+`;
+
+const MobileMenuButton = styled.button`
+  display: none;
+  position: fixed;
+  top: 2rem;
+  left: 2rem;
+  width: 60px;
+  height: 60px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1A1A18, #2D2D2A);
+  color: #FFFFF0;
+  border: none;
+  cursor: pointer;
+  z-index: 1001;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 12px 40px rgba(26,26,24,0.4);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(145deg, #9CAF88, #8BB677);
+    transform: scale(1.1);
+  }
+
+  @media (max-width: 1024px) {
+    display: flex;
+  }
+`;
+
+const MobileMenu = styled.div`
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100vh;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(30px);
+  z-index: 1000;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2rem;
+  animation: ${slideIn} 0.4s ease-out;
+
+  @media (min-width: 1025px) {
+    display: none;
+  }
+`;
+
+const NavItem = styled.a`
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  color: #1A1A18;
+  text-decoration: none;
+  padding: 0.75rem 1.5rem;
+  border-radius: 16px;
+  font-weight: 500;
+  font-size: 0.95rem;
+  letter-spacing: 0.02em;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  position: relative;
+  overflow: hidden;
+
+  &::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(156,175,136,0.1), transparent);
+    transition: left 0.6s;
+  }
+
+  &:hover {
+    background: rgba(156,175,136,0.1);
+    transform: translateY(-2px);
+    
+    &::before {
+      left: 100%;
+    }
+  }
+
+  &.active {
+    background: linear-gradient(135deg, rgba(156,175,136,0.15), rgba(139,182,119,0.1));
+    color: #1A1A18;
+    font-weight: 600;
+    box-shadow: 0 8px 32px rgba(156,175,136,0.1);
+    border: 1px solid rgba(156,175,136,0.2);
+  }
+`;
+
+const LogoBadge = styled.div`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: linear-gradient(135deg, rgba(156,175,136,0.15), rgba(139,182,119,0.1));
+  border-radius: 16px;
+  border: 1px solid rgba(156,175,136,0.2);
+  color: #1A1A18;
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.05em;
+`;
+
+const MobileNavItem = styled(NavItem)`
+  font-size: 1.2rem;
+  padding: 1rem 2rem;
+  width: 80%;
+  max-width: 300px;
+  justify-content: center;
+`;
+
+const CloseButton = styled.button`
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background: linear-gradient(145deg, #1A1A18, #2D2D2A);
+  color: #FFFFF0;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: linear-gradient(145deg, #9CAF88, #8BB677);
+    transform: rotate(90deg);
+  }
+`;
+
 const PageContainer = styled.div`
   background: linear-gradient(135deg, #FFFFF0 0%, #F8F7F2 50%, #FFFFF0 100%);
   min-height: 100vh;
@@ -48,7 +220,6 @@ const PageContainer = styled.div`
   align-items: center;
   justify-content: center;
   padding: 2rem;
-  position: relative;
 `;
 
 const AnimatedBackground = styled.div`
@@ -88,12 +259,13 @@ const ContentWrapper = styled.div`
   max-width: 800px;
   text-align: center;
   animation: ${fadeInUp} 1s ease-out;
+  margin-top: 4rem; 
 `;
 
 const PowerReturnButton = styled.button`
   position: fixed;
   top: 2.5rem;
-  left: 2.5rem;
+  right: 2.5rem;
   width: 60px;
   height: 60px;
   border-radius: 50%;
@@ -125,7 +297,6 @@ const PowerReturnButton = styled.button`
   }
 `;
 
-/* ===== ENHANCED BRAND IDENTITY ===== */
 const BrandHeader = styled.div`
   display: flex;
   flex-direction: column;
@@ -198,7 +369,6 @@ const HeroBadge = styled.div`
   box-shadow: 0 8px 32px rgba(156,175,136,0.1);
 `;
 
-/* ===== GLASSMORPHISM CONTACT CARDS ===== */
 const ContactCard = styled.div`
   margin: 4rem 0;
   padding: 4rem 3rem;
@@ -331,7 +501,93 @@ const EnhancedFooter = styled.footer`
   }
 `;
 
-/* ================= MAIN COMPONENT ================= */
+const NavigationBar = () => {
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const currentPath = window.location.hash || "#/contact";
+
+  const navItems = [
+    { path: "#/main2", label: "Home", icon: <Home size={18} /> },
+    { path: "#/about", label: "About", icon: <User size={18} /> },
+    { path: "#/work", label: "Experience", icon: <Briefcase size={18} /> },
+    { path: "#/portfolio", label: "Portfolio", icon: <FolderOpen size={18} /> },
+    { path: "#/education", label: "Education", icon: <GraduationCap size={18} /> },
+    { path: "#/skills", label: "Skills", icon: <Award size={18} /> },
+    { path: "#/cv", label: "CV", icon: <FileText size={18} /> },
+    { path: "#/contact", label: "Contact", icon: <Mail size={18} /> },
+  ];
+
+  const handleNavigation = (path) => {
+    setIsMobileMenuOpen(false);
+    window.location.href = path;
+  };
+
+  useEffect(() => {
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setIsMobileMenuOpen(false);
+    };
+    window.addEventListener('keydown', handleEscape);
+    return () => window.removeEventListener('keydown', handleEscape);
+  }, []);
+
+  return (
+    <>
+      <NavbarContainer>
+        <LogoBadge>
+          <Zap size={16} />
+          Jiya Vegad
+        </LogoBadge>
+        
+        {navItems.map((item) => (
+          <NavItem
+            key={item.path}
+            href={item.path}
+            onClick={(e) => {
+              e.preventDefault();
+              handleNavigation(item.path);
+            }}
+            className={currentPath === item.path ? 'active' : ''}
+          >
+            {item.icon}
+            {item.label}
+          </NavItem>
+        ))}
+      </NavbarContainer>
+
+      <MobileMenuButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
+        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+      </MobileMenuButton>
+
+      {isMobileMenuOpen && (
+        <MobileMenu>
+          <LogoBadge style={{ fontSize: '1.1rem', padding: '1rem 1.5rem' }}>
+            <Zap size={20} />
+            JIYA VEGAD
+          </LogoBadge>
+          
+          {navItems.map((item) => (
+            <MobileNavItem
+              key={item.path}
+              href={item.path}
+              onClick={(e) => {
+                e.preventDefault();
+                handleNavigation(item.path);
+              }}
+              className={currentPath === item.path ? 'active' : ''}
+            >
+              {item.icon}
+              {item.label}
+            </MobileNavItem>
+          ))}
+          
+          <CloseButton onClick={() => setIsMobileMenuOpen(false)}>
+            <X size={24} />
+          </CloseButton>
+        </MobileMenu>
+      )}
+    </>
+  );
+};
+
 const ContactPage = () => {
   const email = "jiyavegad15@gmail.com";
   const instagramUrl = "https://www.instagram.com/jiya_vegad";
@@ -350,6 +606,8 @@ const ContactPage = () => {
 
   return (
     <PageContainer>
+      <NavigationBar />
+      
       <PowerReturnButton onClick={() => window.location.href = "#/main2"}>
         <Zap size={24} />
       </PowerReturnButton>

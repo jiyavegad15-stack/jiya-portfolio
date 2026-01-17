@@ -12,6 +12,16 @@ import {
   Ruler,
   Zap,
   Palette as ColorPaletteIcon,
+  Home,
+  User,
+  Briefcase,
+  FolderOpen,
+  FileText,
+  Mail,
+  Menu,
+  X,
+  Code,
+  GraduationCap,
 } from "lucide-react";
 
 /**
@@ -33,7 +43,49 @@ const Theme = {
   SHADOW_SOFT: "0 4px 24px rgba(0, 0, 0, 0.03)",
   SHADOW_ELEVATED: "0 20px 60px rgba(0, 0, 0, 0.06)",
   ACCENT_GLOW: "0 0 40px rgba(140, 158, 122, 0.15)",
+  NAV_BG: "rgba(252, 250, 245, 0.95)",
 };
+
+/**
+ * GLOBAL STYLES
+ */
+const GlobalStyles = `
+@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,600;0,900;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
+
+html { scroll-behavior: smooth; }
+body {
+  background: ${Theme.BG};
+  color: ${Theme.CHARCOAL};
+  font-family: 'Montserrat', sans-serif;
+  overflow-x: hidden;
+}
+
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 1px;
+  background: ${Theme.SAGE};
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
+@media (max-width: 768px) {
+  .desktop-nav { display: none; }
+  .mobile-menu { display: flex; }
+  .menu-toggle { display: block; }
+}
+`;
 
 /**
  * SKILLS DATA (UNCHANGED CONTENT)
@@ -111,6 +163,19 @@ const SkillsPage = () => {
   const [activeCard, setActiveCard] = useState(null);
   const [scrollProgress, setScrollProgress] = useState(0);
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState("skills");
+
+  const navItems = [
+    { path: "/jiya-portfolio#/main2", label: "Home", icon: <Home size={16} /> },
+    { path: "/jiya-portfolio#/about", label: "About", icon: <User size={16} /> },
+    { path: "/jiya-portfolio#/work", label: "Experience", icon: <Briefcase size={16} /> },
+    { path: "/jiya-portfolio#/portfolio", label: "Portfolio", icon: <FolderOpen size={16} /> },
+    { path: "/jiya-portfolio#/education", label: "Education", icon: <GraduationCap size={16} /> },
+    { path: "/jiya-portfolio#/skills", label: "Skills", icon: <Code size={16} /> },
+    { path: "/jiya-portfolio#/cv", label: "CV", icon: <FileText size={16} /> },
+    { path: "/jiya-portfolio#/contact", label: "Contact", icon: <Mail size={16} /> },
+  ];
 
   useEffect(() => {
     const handleScroll = () => {
@@ -123,17 +188,27 @@ const SkillsPage = () => {
       setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && !event.target.closest('.mobile-menu') && !event.target.closest('.menu-toggle')) {
+        setIsMenuOpen(false);
+      }
+    };
+
     window.addEventListener("scroll", handleScroll);
     window.addEventListener("mousemove", handleMouseMove);
+    document.addEventListener('click', handleClickOutside);
     
     return () => {
       window.removeEventListener("scroll", handleScroll);
       window.removeEventListener("mousemove", handleMouseMove);
+      document.removeEventListener('click', handleClickOutside);
     };
-  }, []);
+  }, [isMenuOpen]);
 
   return (
     <div style={styles.container}>
+      <style>{GlobalStyles}</style>
+      
       {/* Subtle gradient background */}
       <div style={{
         position: "fixed",
@@ -166,26 +241,74 @@ const SkillsPage = () => {
         />
       </div>
 
-      {/* Navigation */}
-      <nav style={styles.navigation}>
-        <div style={styles.navLeft}>
-          <div style={styles.brandMark}>
-            <Zap size={14} color={Theme.SAGE} />
-            <span style={styles.brandText}>JV</span>
+      {/* MAIN NAVIGATION */}
+      <nav style={styles.mainNavigation}>
+        <div style={styles.navContainer}>
+          {/* Brand */}
+          <div style={styles.brandContainer}>
+            <div style={styles.brandMark}>
+              <Zap size={14} color={Theme.SAGE} />
+              <span style={styles.brandText}>JV</span>
+            </div>
+            <div style={styles.brandDivider} />
+            <span style={styles.brandTag}>Skills Matrix</span>
           </div>
-          <div style={styles.navDivider} />
-          <span style={styles.navTag}>Skills Matrix</span>
+
+          {/* Desktop Navigation */}
+          <div className="desktop-nav" style={styles.desktopNav}>
+            {navItems.map((item) => (
+              <a
+                key={item.path}
+                href={item.path}
+                style={{
+                  ...styles.navLink,
+                  color: activeLink === item.label.toLowerCase() 
+                    ? Theme.SAGE 
+                    : Theme.CHARCOAL,
+                }}
+                onClick={() => setActiveLink(item.label.toLowerCase())}
+                className="nav-link"
+              >
+                {item.icon}
+                <span style={styles.navLinkText}>{item.label}</span>
+              </a>
+            ))}
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            style={styles.menuToggle}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
         </div>
-        <button
-          style={{
-            ...styles.backButton,
-            transform: activeCard === null ? "translateX(0)" : "translateX(-4px)",
-          }}
-          onClick={() => (window.location.href = "#/main2")}
-        >
-          <ArrowLeft size={16} />
-          <span>Return</span>
-        </button>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="mobile-menu" style={styles.mobileMenu}>
+            {navItems.map((item) => (
+              <a
+                key={item.path}
+                href={item.path}
+                style={{
+                  ...styles.mobileLink,
+                  color: activeLink === item.label.toLowerCase() 
+                    ? Theme.SAGE 
+                    : Theme.CHARCOAL,
+                }}
+                onClick={() => {
+                  setActiveLink(item.label.toLowerCase());
+                  setIsMenuOpen(false);
+                }}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </a>
+            ))}
+          </div>
+        )}
       </nav>
 
       {/* Hero Section */}
@@ -324,37 +447,31 @@ const styles = {
     overflowX: "hidden",
   },
 
-  progressBar: {
+  // Navigation Styles
+  mainNavigation: {
     position: "fixed",
     top: 0,
     left: 0,
     right: 0,
-    height: "2px",
-    backgroundColor: Theme.BORDER,
-    zIndex: 100,
+    backdropFilter: "blur(12px)",
+    backgroundColor: Theme.NAV_BG,
+    borderBottom: `1px solid ${Theme.BORDER}`,
+    zIndex: 1000,
   },
 
-  progressFill: {
-    height: "100%",
-    backgroundColor: Theme.SAGE,
-    transition: "width 0.2s ease-out",
-  },
-
-  navigation: {
-    position: "fixed",
-    top: 0,
-    width: "100%",
-    padding: "1.75rem 3rem",
+  navContainer: {
+    maxWidth: "1400px",
+    margin: "0 auto",
+    padding: "1.5rem 3rem",
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    backdropFilter: "blur(12px)",
-    backgroundColor: "rgba(252, 250, 245, 0.85)",
-    borderBottom: `1px solid ${Theme.BORDER}`,
-    zIndex: 50,
+    '@media (max-width: 768px)': {
+      padding: "1.5rem 1.5rem",
+    },
   },
 
-  navLeft: {
+  brandContainer: {
     display: "flex",
     alignItems: "center",
     gap: "1rem",
@@ -377,17 +494,131 @@ const styles = {
     color: Theme.CHARCOAL,
   },
 
-  navDivider: {
+  brandDivider: {
     width: "1px",
     height: "16px",
     backgroundColor: Theme.BORDER,
   },
 
-  navTag: {
+  brandTag: {
     fontSize: "0.75rem",
     color: Theme.STONE,
     letterSpacing: "0.5px",
     fontWeight: 500,
+  },
+
+  desktopNav: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1.5rem",
+    '@media (max-width: 768px)': {
+      display: 'none',
+    },
+  },
+
+  navLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: "6px",
+    textDecoration: "none",
+    fontSize: "0.8rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    fontWeight: 500,
+    padding: "0.5rem 0",
+    transition: "color 0.3s ease",
+  },
+
+  navLinkText: {
+    '@media (max-width: 1024px)': {
+      display: 'none',
+    },
+    '@media (min-width: 1025px)': {
+      display: 'block',
+    },
+  },
+
+  mobileMenu: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    background: Theme.PAPER,
+    borderTop: `1px solid ${Theme.BORDER}`,
+    padding: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "0.5rem",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+    zIndex: 1001,
+  },
+
+  mobileLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    textDecoration: "none",
+    padding: "0.75rem 1rem",
+    fontSize: "0.85rem",
+    textTransform: "uppercase",
+    letterSpacing: "0.5px",
+    fontWeight: 500,
+    borderRadius: "8px",
+    transition: "all 0.3s ease",
+    '&:hover': {
+      backgroundColor: Theme.LIGHT_SAGE,
+    },
+  },
+
+  menuToggle: {
+    display: "none",
+    background: "none",
+    border: `1px solid ${Theme.BORDER}`,
+    color: Theme.CHARCOAL,
+    cursor: "pointer",
+    padding: "0.5rem",
+    borderRadius: "8px",
+    '@media (max-width: 768px)': {
+      display: 'block',
+    },
+  },
+
+  // Original progress bar styles
+  progressBar: {
+    position: "fixed",
+    top: "65px",
+    left: 0,
+    right: 0,
+    height: "2px",
+    backgroundColor: Theme.BORDER,
+    zIndex: 999,
+  },
+
+  progressFill: {
+    height: "100%",
+    backgroundColor: Theme.SAGE,
+    transition: "width 0.2s ease-out",
+  },
+
+  // Original navigation styles (renamed to secondaryNavigation)
+  secondaryNavigation: {
+    position: "fixed",
+    top: 0,
+    width: "100%",
+    padding: "1.75rem 3rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+    backdropFilter: "blur(12px)",
+    backgroundColor: "rgba(252, 250, 245, 0.85)",
+    borderBottom: `1px solid ${Theme.BORDER}`,
+    zIndex: 50,
+  },
+
+  navLeft: {
+    display: "flex",
+    alignItems: "center",
+    gap: "1rem",
   },
 
   backButton: {
@@ -403,12 +634,20 @@ const styles = {
     fontSize: "0.875rem",
     fontWeight: 500,
     transition: "all 0.3s ease",
+    '&:hover': {
+      transform: "translateX(-4px)",
+    },
   },
 
   hero: {
     padding: "12rem 3rem 6rem",
     maxWidth: "1200px",
     margin: "0 auto",
+    marginTop: "80px", // Adjusted for navbar height
+    '@media (max-width: 768px)': {
+      padding: "8rem 1.5rem 4rem",
+      marginTop: "60px",
+    },
   },
 
   heroContent: {
@@ -458,6 +697,9 @@ const styles = {
     padding: "0 3rem 8rem",
     maxWidth: "1400px",
     margin: "0 auto",
+    '@media (max-width: 768px)': {
+      padding: "0 1.5rem 4rem",
+    },
   },
 
   skillsGrid: {
@@ -465,6 +707,10 @@ const styles = {
     gridTemplateColumns: "repeat(auto-fit, minmax(320px, 1fr))",
     gap: "2rem",
     alignItems: "start",
+    '@media (max-width: 768px)': {
+      gridTemplateColumns: "1fr",
+      gap: "1.5rem",
+    },
   },
 
   skillCard: {
@@ -477,6 +723,10 @@ const styles = {
     transition: "all 0.4s cubic-bezier(0.4, 0, 0.2, 1)",
     height: "100%",
     minHeight: "480px",
+    '@media (max-width: 768px)': {
+      padding: "2rem",
+      minHeight: "420px",
+    },
   },
 
   cardAccent: {
@@ -600,6 +850,9 @@ const styles = {
     padding: "2rem 3rem",
     borderTop: `1px solid ${Theme.BORDER}`,
     backgroundColor: Theme.PAPER,
+    '@media (max-width: 768px)': {
+      padding: "1.5rem",
+    },
   },
 
   footerContent: {

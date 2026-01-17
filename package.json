@@ -2,6 +2,7 @@
   "name": "jiya-portfolio",
   "version": "1.0.0",
   "private": true,
+  "homepage": "https://pratikxop.github.io/jiya-portfolio",
   "dependencies": {
     "framer-motion": "^7.10.3",
     "lucide-react": "^0.278.0",
@@ -13,9 +14,13 @@
   },
   "scripts": {
     "start": "react-scripts start",
-    "build": "react-scripts build",
+    "build": "cross-env CI=false react-scripts build", 
     "test": "react-scripts test",
-    "eject": "react-scripts eject"
+    "eject": "react-scripts eject",
+    "predeploy": "npm run build",
+    "deploy": "gh-pages -d build",
+    "update": "git add . && git commit -m \"Update\" && npm run deploy",
+    "quick-deploy": "npm run build && npx gh-pages -d build"
   },
   "browserslist": {
     "production": [
@@ -30,6 +35,7 @@
     ]
   },
   "devDependencies": {
+    "cross-env": "^7.0.3",
     "gh-pages": "^6.3.0"
   }
 }

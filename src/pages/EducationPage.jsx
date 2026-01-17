@@ -8,6 +8,15 @@ import {
   Target,
   Layers,
   MousePointer2,
+  Home,
+  User,
+  Briefcase,
+  FolderOpen,
+  FileText,
+  Mail,
+  Menu,
+  X,
+  Code,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -21,6 +30,7 @@ const Theme = {
   ACCENT_SOFT: "rgba(214, 110, 83, 0.12)",
   LINE: "rgba(27, 42, 47, 0.08)",
   WHITE: "#FFFFFF",
+  NAV_BG: "rgba(253, 252, 248, 0.95)",
 };
 
 const GlobalStyles = `
@@ -56,6 +66,26 @@ body {
   transform: scale(1.05);
 }
 
+.nav-link {
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.nav-link::after {
+  content: '';
+  position: absolute;
+  bottom: -5px;
+  left: 0;
+  width: 0;
+  height: 2px;
+  background: ${Theme.ACCENT};
+  transition: width 0.3s ease;
+}
+
+.nav-link:hover::after {
+  width: 100%;
+}
+
 @keyframes float {
   0% { transform: translateY(0px); }
   50% { transform: translateY(-10px); }
@@ -66,6 +96,32 @@ body {
 `;
 
 const EducationPage = () => {
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeLink, setActiveLink] = useState("education");
+
+  const navItems = [
+    { path: "/main2", label: "Home", icon: <Home size={16} /> },
+    { path: "/about", label: "About", icon: <User size={16} /> },
+    { path: "/work", label: "Experience", icon: <Briefcase size={16} /> },
+    { path: "/portfolio", label: "Portfolio", icon: <FolderOpen size={16} /> },
+    { path: "/education", label: "Education", icon: <GraduationCap size={16} /> },
+    { path: "/skills", label: "Skills", icon: <Code size={16} /> },
+    { path: "/cv", label: "CV", icon: <FileText size={16} /> },
+    { path: "/contact", label: "Contact", icon: <Mail size={16} /> },
+  ];
+
+  // Close mobile menu when clicking outside
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (isMenuOpen && !event.target.closest('.mobile-menu') && !event.target.closest('.menu-toggle')) {
+        setIsMenuOpen(false);
+      }
+    };
+
+    document.addEventListener('click', handleClickOutside);
+    return () => document.removeEventListener('click', handleClickOutside);
+  }, [isMenuOpen]);
+
   const educationData = [
     {
       year: "2021 – 2025",
@@ -103,10 +159,75 @@ const EducationPage = () => {
     <div style={{ backgroundColor: Theme.BG, overflowX: "hidden" }}>
       <style>{GlobalStyles}</style>
 
-      {/* BACK NAV */}
-      <Link to="/main2" style={navStyles.backBtn}>
-        <ArrowLeft size={20} />
-      </Link>
+      {/* NAVBAR */}
+      <nav style={navStyles.navbar}>
+        <div style={navStyles.navContainer}>
+          {/* Logo/Brand */}
+          <Link 
+            to="/jiya-portfolio#/main2" 
+            style={navStyles.brand}
+            onClick={() => setActiveLink("home")}
+          >
+            <GraduationCap size={24} style={{ color: Theme.ACCENT }} />
+            <span style={navStyles.brandText}>Portfolio</span>
+          </Link>
+
+          {/* Desktop Navigation */}
+          <div style={navStyles.desktopNav}>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                style={{
+                  ...navStyles.navLink,
+                  color: activeLink === item.label.toLowerCase() 
+                    ? Theme.ACCENT 
+                    : Theme.TEXT_MAIN,
+                }}
+                onClick={() => setActiveLink(item.label.toLowerCase())}
+                className="nav-link"
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </div>
+
+          {/* Mobile Menu Toggle */}
+          <button
+            className="menu-toggle"
+            onClick={() => setIsMenuOpen(!isMenuOpen)}
+            style={navStyles.menuToggle}
+          >
+            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
+
+        {/* Mobile Navigation */}
+        {isMenuOpen && (
+          <div className="mobile-menu" style={navStyles.mobileMenu}>
+            {navItems.map((item) => (
+              <Link
+                key={item.path}
+                to={item.path}
+                style={{
+                  ...navStyles.mobileLink,
+                  color: activeLink === item.label.toLowerCase() 
+                    ? Theme.ACCENT 
+                    : Theme.TEXT_MAIN,
+                }}
+                onClick={() => {
+                  setActiveLink(item.label.toLowerCase());
+                  setIsMenuOpen(false);
+                }}
+              >
+                {item.icon}
+                <span>{item.label}</span>
+              </Link>
+            ))}
+          </div>
+        )}
+      </nav>
 
       {/* HERO */}
       <section style={heroStyles.container}>
@@ -227,6 +348,7 @@ const heroStyles = {
     justifyContent: "center",
     textAlign: "center",
     padding: "0 1.5rem",
+    paddingTop: "100px", // Added padding for navbar
   },
   content: { maxWidth: "800px" },
   badge: {
@@ -354,6 +476,93 @@ const sectionStyles = {
 };
 
 const navStyles = {
+  navbar: {
+    position: "fixed",
+    top: 0,
+    left: 0,
+    right: 0,
+    background: Theme.NAV_BG,
+    backdropFilter: "blur(10px)",
+    borderBottom: `1px solid ${Theme.LINE}`,
+    zIndex: 1000,
+  },
+  navContainer: {
+    maxWidth: "1200px",
+    margin: "0 auto",
+    padding: "1rem 2rem",
+    display: "flex",
+    justifyContent: "space-between",
+    alignItems: "center",
+  },
+  brand: {
+    display: "flex",
+    alignItems: "center",
+    gap: "10px",
+    textDecoration: "none",
+    color: Theme.TEXT_MAIN,
+    fontWeight: 600,
+    fontSize: "1.1rem",
+  },
+  brandText: {
+    fontFamily: "'Playfair Display', serif",
+    fontStyle: "italic",
+  },
+  desktopNav: {
+    display: "flex",
+    gap: "2rem",
+    alignItems: "center",
+    '@media (max-width: 768px)': {
+      display: 'none',
+    },
+  },
+  navLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: "8px",
+    textDecoration: "none",
+    fontSize: "0.85rem",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+    fontWeight: 500,
+    padding: "0.5rem 0",
+  },
+  mobileMenu: {
+    position: "absolute",
+    top: "100%",
+    left: 0,
+    right: 0,
+    background: Theme.WHITE,
+    borderTop: `1px solid ${Theme.LINE}`,
+    padding: "1rem",
+    display: "flex",
+    flexDirection: "column",
+    gap: "1rem",
+    boxShadow: "0 10px 30px rgba(0,0,0,0.1)",
+  },
+  mobileLink: {
+    display: "flex",
+    alignItems: "center",
+    gap: "12px",
+    textDecoration: "none",
+    padding: "0.75rem 1rem",
+    fontSize: "0.9rem",
+    textTransform: "uppercase",
+    letterSpacing: "1px",
+    fontWeight: 500,
+    borderRadius: "4px",
+    transition: "all 0.3s ease",
+  },
+  menuToggle: {
+    display: "none",
+    background: "none",
+    border: "none",
+    color: Theme.TEXT_MAIN,
+    cursor: "pointer",
+    padding: "0.5rem",
+    '@media (max-width: 768px)': {
+      display: 'block',
+    },
+  },
   backBtn: {
     position: "fixed",
     top: "2rem",
@@ -396,5 +605,21 @@ const navStyles = {
     letterSpacing: "1px",
   },
 };
+
+// Add media queries for responsive design
+const mediaQueries = `
+@media (max-width: 768px) {
+  .desktop-nav { display: none; }
+  .menu-toggle { display: block; }
+  .mobile-menu { display: flex; }
+  .nav-link span { display: none; }
+  .mobile-link span { display: block; }
+  .nav-container { padding: 1rem; }
+  .bottom-nav { display: none; }
+}
+`;
+
+// Add media queries to global styles
+const enhancedGlobalStyles = GlobalStyles + mediaQueries;
 
 export default EducationPage;

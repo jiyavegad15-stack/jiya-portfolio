@@ -10,7 +10,6 @@ import {
 
 import profileImage from "../assets/profile3.png";
 
-/* ---------- COLOR PALETTE ---------- */
 const Colors = {
   BG: "#FDFCF8",
   TEXT_MAIN: "#1B2A2F",
@@ -22,7 +21,6 @@ const Colors = {
   DARK_BG: "#0F1A1E",
 };
 
-/* ---------- VIEWPORT HOOK ---------- */
 const useViewport = () => {
   const [size, setSize] = useState({
     width: window.innerWidth,
@@ -40,7 +38,6 @@ const useViewport = () => {
   return size;
 };
 
-/* ---------- GLOBAL STYLES ---------- */
 const GlobalStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
 
@@ -110,7 +107,6 @@ body {
 }
 `;
 
-/* ---------- COMPONENT ---------- */
 export default function ElegantPortfolio() {
   const { width } = useViewport();
   const isMobile = width < 768;
@@ -126,7 +122,6 @@ export default function ElegantPortfolio() {
     return () => clearTimeout(timer);
   }, []);
 
-  /* ---------- STYLES ---------- */
   const Styles = {
     Container: {
       minHeight: "100svh",
@@ -161,7 +156,7 @@ export default function ElegantPortfolio() {
 
     HeroText: {
       position: "relative",
-      marginBottom: isOpen ? 0 : "4rem", // ✅ increased space below name
+      marginBottom: isOpen ? 0 : "4rem",
     },
 
     NamePreReveal: {
@@ -196,7 +191,7 @@ export default function ElegantPortfolio() {
       textTransform: "uppercase",
       fontSize: "0.8rem",
       color: isOpen ? Colors.ACCENT : Colors.TEXT_LIGHT,
-      marginTop: "1.5rem",   // ✅ spacing from name
+      marginTop: "1.5rem", 
       marginBottom: "2.5rem",
       opacity: isOpen ? 1 : 0.7,
       transition: "all 0.8s ease",
@@ -333,7 +328,7 @@ export default function ElegantPortfolio() {
                 Jiya Vegad.
               </h1>
               <div style={Styles.Subtitle} className="reveal reveal-delay-1">
-                Fashion Designer · 2025
+                Fashion Designer
               </div>
               <p style={Styles.BodyText} className="reveal reveal-delay-2">
                 Merging artisanal craft with digital innovation. Exploring
@@ -348,6 +343,8 @@ export default function ElegantPortfolio() {
                 ["02", "Experience", "#/work"],
                 ["03", "About", "#/about"],
                 ["04", "Contact", "#/contact"],
+                ["05", "Curriculum Vitae", "#/cv"],
+                ["06", "Education", "#/education"],
               ].map(([num, label, link]) => (
                 <a
                   key={label}
