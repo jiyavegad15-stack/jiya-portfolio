@@ -677,7 +677,7 @@ const ElegantPortfolio = () => {
               <span style={Styles.NameJiya}>Jiya</span>
               <span style={Styles.NameVegad}>Vegad</span>
             </h1>
-            <div style={Styles.Subtitle} aria-label="Fashion Design Portfolio 2025">
+            <div style={Styles.Subtitle} aria-label="Fashion Design Portfolio">
               Fashion Design Portfolio 2025
             </div>
           </div>

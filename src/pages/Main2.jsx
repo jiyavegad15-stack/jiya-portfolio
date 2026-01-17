@@ -374,7 +374,7 @@ export default function ElegantPortfolio() {
               <span style={Styles.NameJiya}>Jiya</span>
               <span style={Styles.NameVegad}>Vegad</span>
             </h1>
-            <div style={Styles.Subtitle}>Fashion Design Portfolio 2025</div>
+            <div style={Styles.Subtitle}>Fashion Design Portfolio</div>
           </div>
         )}
       </div>
