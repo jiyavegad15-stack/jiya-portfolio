@@ -506,15 +506,15 @@ const NavigationBar = () => {
   const currentPath = window.location.hash || "#/contact";
 
   const navItems = [
-    { path: "#/main2", label: "Home", icon: <Home size={18} /> },
-    { path: "#/about", label: "About", icon: <User size={18} /> },
-    { path: "#/work", label: "Experience", icon: <Briefcase size={18} /> },
-    { path: "#/portfolio", label: "Portfolio", icon: <FolderOpen size={18} /> },
-    { path: "#/education", label: "Education", icon: <GraduationCap size={18} /> },
-    { path: "#/skills", label: "Skills", icon: <Award size={18} /> },
-    { path: "#/cv", label: "CV", icon: <FileText size={18} /> },
-    { path: "#/contact", label: "Contact", icon: <Mail size={18} /> },
-  ];
+  { path: "#/main2", label: "Home", icon: <Home size={18} /> },
+  { path: "#/about", label: "About", icon: <User size={18} /> },
+  { path: "#/portfolio", label: "Portfolio", icon: <FolderOpen size={18} /> },
+  { path: "#/work", label: "Experience", icon: <Briefcase size={18} /> },
+  { path: "#/skills", label: "Skills", icon: <Award size={18} /> },
+  { path: "#/education", label: "Education", icon: <GraduationCap size={18} /> },
+  { path: "#/cv", label: "CV", icon: <FileText size={18} /> },
+  { path: "#/contact", label: "Contact", icon: <Mail size={18} /> },
+];
 
   const handleNavigation = (path) => {
     setIsMobileMenuOpen(false);
@@ -623,7 +623,7 @@ const ContactPage = () => {
           <BrandSubtitle>FASHION DESIGNER</BrandSubtitle>
           <HeroBadge>
             <Sparkles size={16} />
-            Available for Collaboration
+            Where Design Meets Creative Passion
           </HeroBadge>
         </BrandHeader>
 
@@ -658,10 +658,7 @@ const ContactPage = () => {
         </ContactCard>
 
         <EnhancedFooter>
-          <div>JIYA VEGAD DESIGN STUDIO</div>
-          <div>
-            © 2026 • Designed with <Heart size={14} fill="currentColor" /> in India
-          </div>
+          
         </EnhancedFooter>
       </ContentWrapper>
     </PageContainer>

@@ -77,16 +77,16 @@ const CVPage = () => {
 
   const cvRef = useRef();
 
-  const navItems = [
-    { id: "home", label: "Home", icon: <Home size={18} />, type: "external", path: "/jiya-portfolio#/main2" },
-    { id: "about", label: "About", icon: <User size={18} />, type: "external", path: "/jiya-portfolio#/about" },
-    { id: "work", label: "Experience", icon: <Briefcase size={18} />, type: "external", path: "/jiya-portfolio#/work" },
-    { id: "portfolio", label: "Portfolio", icon: <Grid size={18} />, type: "external", path: "/jiya-portfolio#/portfolio" },
-    { id: "education", label: "Education", icon: <BookOpen size={18} />, type: "external", path: "/jiya-portfolio#/education" },
-    { id: "skills", label: "Skills", icon: <Award size={18} />, type: "external", path: "/jiya-portfolio#/skills" },
-    { id: "cv", label: "CV", icon: <FileText size={18} />, type: "external", path: "/jiya-portfolio#/cv" },
-    { id: "contact", label: "Contact", icon: <Mail size={18} />, type: "external", path: "/jiya-portfolio#/contact" },
-  ];
+const navItems = [
+  { id: "home", label: "Home", icon: <Home size={18} />, type: "external", path: "/jiya-portfolio#/main2" },
+  { id: "about", label: "About", icon: <User size={18} />, type: "external", path: "/jiya-portfolio#/about" },
+  { id: "portfolio", label: "Portfolio", icon: <Grid size={18} />, type: "external", path: "/jiya-portfolio#/portfolio" },
+  { id: "work", label: "Experience", icon: <Briefcase size={18} />, type: "external", path: "/jiya-portfolio#/work" },
+  { id: "skills", label: "Skills", icon: <Award size={18} />, type: "external", path: "/jiya-portfolio#/skills" },
+  { id: "education", label: "Education", icon: <BookOpen size={18} />, type: "external", path: "/jiya-portfolio#/education" },
+  { id: "cv", label: "CV", icon: <FileText size={18} />, type: "external", path: "/jiya-portfolio#/cv" },
+  { id: "contact", label: "Contact", icon: <Mail size={18} />, type: "external", path: "/jiya-portfolio#/contact" },
+];
 
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -251,7 +251,7 @@ const CVPage = () => {
               className="menu-toggle"
               style={styles.mobileMenuToggle}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="no-print"
+              className="noprint"
               aria-label="Menu"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -729,7 +729,7 @@ const SectionHeader = ({ icon, title, onClick, isExpanded, isMobile }) => (
           fontSize: "0.875rem",
           letterSpacing: "3px",
           textTransform: "uppercase",
-          color: isMobile ? Theme.ACCENT : Theme.TEXT_LIGHT,
+          color: isMobile ? Theme.ACCENT : Theme.ACCENT,
           fontWeight: 600,
           margin: 0,
         }}

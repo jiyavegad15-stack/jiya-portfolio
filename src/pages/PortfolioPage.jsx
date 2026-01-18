@@ -109,7 +109,7 @@ const Work = [
     tags: ["Raw Emotion", "Primal Instinct", "Expressive Forms", "Conceptual Couture", "Art-Led Fashion"], 
     image: getCollectionImages(1)[0],
     collectionPath: "1X",
-    year: "2023",
+    year: "2025",
     status: "Featured"
   },
   { 
@@ -120,7 +120,7 @@ const Work = [
     description: "Herdesher presents a cohesive collection merging fantasy, feminism, sustainability, and speculative storytelling through fashion narratives design systems power hierarchy.",
     image: getCollectionImages(2)[0],
     collectionPath: "2X",
-    year: "2023",
+    year: "2024",
     status: "Active"
   },
   { 
@@ -131,7 +131,7 @@ const Work = [
     tags: ["Mycelium Forms", "Fantasy Worldbuilding", "Organic Textures", "Eco-Futurism", "Conceptual Craft"], 
     image: getCollectionImages(3)[0],
     collectionPath: "3X",
-    year: "2022",
+    year: "2024",
     status: "Limited"
   },
   { 
@@ -142,7 +142,7 @@ const Work = [
     tags: ["Leather", "Accessories", "Handmade"], 
     image: getCollectionImages(4)[0],
     collectionPath: "4X",
-    year: "2023",
+    year: "2021 - 2025",
     status: "Limited"
   },
 ];
@@ -1263,11 +1263,11 @@ const PortfolioPage = () => {
         </button>
         
         <div style={pageStyles.navLinks}>
-          <a href="/jiya-portfolio/#work" style={pageStyles.navLink}>Experience</a>
-          <a href="/jiya-portfolio/#about" style={pageStyles.navLink}>About</a>
-          <a href="/jiya-portfolio/#cv" style={pageStyles.navLink}>CV</a>
-          <a href="/jiya-portfolio/#skills" style={pageStyles.navLink}>Skills</a>
           <a href="/jiya-portfolio/#main2" style={pageStyles.navLink}>Home</a>
+          <a href="/jiya-portfolio/#about" style={pageStyles.navLink}>About</a>
+          <a href="/jiya-portfolio/#work" style={pageStyles.navLink}>Experience</a>
+          <a href="/jiya-portfolio/#skills" style={pageStyles.navLink}>Skills</a>
+          <a href="/jiya-portfolio/#cv" style={pageStyles.navLink}>CV</a>
           <a href="/jiya-portfolio/#contact" style={pageStyles.navLink}>Contact</a>
           <div style={{ display: 'flex', alignItems: 'center', gap: '10px' }}>
             <Zap size={18} fill={Palette.ACCENT} stroke={Palette.ACCENT} />

@@ -3,392 +3,220 @@ import {
   Instagram,
   Linkedin,
   Mail,
-  ChevronRight,
   X,
   Menu,
+  ArrowUpRight,
 } from "lucide-react";
 
 import profileImage from "../assets/profile3.png";
 
-const Colors = {
-  BG: "#FDFCF8",
-  TEXT_MAIN: "#1B2A2F",
-  TEXT_MUTED: "#6C757D",
-  TEXT_LIGHT: "#8A9EA6",
-  ACCENT: "#D66E53",
-  LINE: "rgba(27, 42, 47, 0.1)",
-  WHITE: "#FFFFFF",
-  DARK_BG: "#0F1A1E",
+const Theme = {
+  Canvas: "#FDFCF8",      
+  Ink: "#1B2A2F",         
+  Muted: "#6C757D",    
+  Accent: "#D66E53",      
+  Void: "#0F1A1E",        
+  Border: "rgba(27, 42, 47, 0.1)",
 };
 
-const useViewport = () => {
-  const [size, setSize] = useState({
-    width: window.innerWidth,
-    height: window.innerHeight,
+const useScreenSize = () => {
+  const [dimensions, setDimensions] = useState({
+    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
+    height: typeof window !== 'undefined' ? window.innerHeight : 800,
   });
 
   useEffect(() => {
-    const onResize = () =>
-      setSize({ width: window.innerWidth, height: window.innerHeight });
-
-    window.addEventListener("resize", onResize);
-    return () => window.removeEventListener("resize", onResize);
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
+    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return size;
+  return {
+    ...dimensions,
+    isMobile: dimensions.width < 768,
+    isTablet: dimensions.width >= 768 && dimensions.width < 1100,
+    isDesktop: dimensions.width >= 1100,
+  };
 };
 
-const GlobalStyles = `
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
-
-body {
-  margin: 0;
-  background: ${Colors.BG};
-  overflow: hidden;
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.9s ease forwards;
-}
-
-.reveal-delay-1 { animation-delay: 0.2s; }
-.reveal-delay-2 { animation-delay: 0.4s; }
-.reveal-delay-3 { animation-delay: 0.6s; }
-
-@keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.nav-item {
-  position: relative;
-  transition: transform 0.3s ease;
-}
-
-.nav-item:hover {
-  transform: translateX(10px);
-}
-
-.nav-item::before {
-  content: "";
-  position: absolute;
-  left: -20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  background: ${Colors.ACCENT};
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.nav-item:hover::before {
-  opacity: 1;
-}
-
-.slide-in-right {
-  animation: slideInRight 1s cubic-bezier(0.77, 0, 0.175, 1) forwards;
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-`;
-
-export default function ElegantPortfolio() {
-  const { width } = useViewport();
-  const isMobile = width < 768;
-  const isTablet = width >= 768 && width < 1024;
-  const isDesktop = width >= 1024;
-  const screen = isMobile ? "mobile" : isTablet ? "tablet" : "desktop";
-
+const ElegantPortfolio = () => {
+  const { isMobile, isDesktop } = useScreenSize();
   const [isOpen, setIsOpen] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => setIsInitialLoad(false), 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  const Styles = {
-    Container: {
-      minHeight: "100svh",
-      width: "100%",
-      position: "relative",
-      fontFamily: "'Montserrat', sans-serif",
-      color: Colors.TEXT_MAIN,
-      overflow: "hidden",
-      background: isOpen ? Colors.BG : Colors.DARK_BG,
-      transition: "background 0.8s cubic-bezier(0.77,0,0.175,1)",
-    },
-
-    LeftPanel: {
-      position: "absolute",
-      left: 0,
-      top: 0,
-      bottom: 0,
-      width: isOpen ? (screen === "desktop" ? "50%" : "100%") : "100%",
-      maxWidth: isOpen && screen === "desktop" ? "720px" : "100%",
-      padding: isOpen
-        ? screen === "mobile"
-          ? "2rem"
-          : "clamp(2.5rem, 5vw, 5rem)"
-        : "clamp(1.5rem, 4vw, 3rem)",
-      background: isOpen ? Colors.BG : "transparent",
-      zIndex: 20,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: isOpen ? "space-between" : "center",
-      transition: "all 1s cubic-bezier(0.77,0,0.175,1)",
-    },
-
-    HeroText: {
-      position: "relative",
-      marginBottom: isOpen ? 0 : "4rem",
-    },
-
-    NamePreReveal: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: "clamp(3rem, 10vw, 8rem)",
-      lineHeight: 0.9,
-      fontWeight: 700,
-      margin: 0,
-    },
-
-    NameJiya: {
-      color: Colors.WHITE,
-      display: "block",
-    },
-
-    NameVegad: {
-      marginTop:"1.5rem",
-      color: Colors.TEXT_LIGHT,
-      display: "block",
-      marginLeft: isDesktop ? "4rem" : "2rem",
-    },
-
-    NameRevealed: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: "clamp(2.5rem, 6vw, 4.5rem)",
-      lineHeight: 1.05,
-      fontWeight: 600,
-      color: Colors.TEXT_MAIN,
-    },
-
-    Subtitle: {
-      letterSpacing: "4px",
-      textTransform: "uppercase",
-      fontSize: "0.8rem",
-      color: isOpen ? Colors.ACCENT : Colors.TEXT_LIGHT,
-      marginTop: "2.5rem", 
-      marginBottom: "2.5rem",
-      opacity: isOpen ? 1 : 0.7,
-      transition: "all 0.8s ease",
-    },
-
-    BodyText: {
-      maxWidth: "420px",
-      fontSize: "clamp(0.95rem, 2.5vw, 1rem)",
-      lineHeight: 1.8,
-      color: Colors.TEXT_MUTED,
-      borderLeft: `2px solid ${Colors.ACCENT}`,
-      paddingLeft: "1.5rem",
-      marginBottom: "3rem",
-    },
-
-    NavMenu: {
-      display: "flex",
-      flexDirection: "column",
-      gap: "clamp(1rem, 2vw, 1.5rem)",
-      marginTop: "auto",
-    },
-
-    NavLink: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: "clamp(1.4rem, 4vw, 2.2rem)",
-      color: Colors.TEXT_MAIN,
-      textDecoration: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: "0.5rem 0",
-      borderBottom: `1px solid ${Colors.LINE}`,
-    },
-
-    NavLabel: {
-      display: "flex",
-      alignItems: "center",
-      gap: "1rem",
-    },
-
-    NavNum: {
-      fontSize: "0.9rem",
-      color: Colors.ACCENT,
-      fontWeight: 500,
-      minWidth: "30px",
-    },
-
-    Socials: {
-      display: "flex",
-      gap: "1.5rem",
-      marginTop: "2rem",
-      paddingTop: "1.5rem",
-      borderTop: `1px solid ${Colors.LINE}`,
-    },
-
-    SocialIcon: {
-      color: Colors.TEXT_MUTED,
-      cursor: "pointer",
-      transition: "color 0.3s ease",
-    },
-
-    RightPanel: {
-      position: "absolute",
-      right: 0,
-      top: 0,
-      bottom: 0,
-      width: isOpen && screen === "desktop" ? "50%" : "0%",
-      overflow: "hidden",
-      transition: "width 1s cubic-bezier(0.77,0,0.175,1)",
-    },
-
-    ImageContainer: {
-      width: "100%",
-      height: "100%",
-      opacity: isOpen ? 1 : 0,
-      transition: "opacity 0.8s ease 0.3s",
-    },
-
-    HeroImage: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      transform: isOpen ? "scale(1)" : "scale(1.1)",
-      transition: "transform 1.2s cubic-bezier(0.77,0,0.175,1)",
-    },
-
-    Toggle: {
-      position: "absolute",
-      top: isOpen ? "2.5rem" : "50%",
-      right: isOpen ? "calc(50% - 25px)" : "50%",
-      transform: "translate(50%, -50%)",
-      width: "56px",
-      height: "56px",
-      borderRadius: "50%",
-      background: isOpen ? Colors.ACCENT : Colors.WHITE,
-      border: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 50,
-      cursor: "pointer",
-      boxShadow: "0 10px 40px rgba(0,0,0,0.25)",
-      transition: "all 0.8s cubic-bezier(0.77,0,0.175,1)",
-    },
-
-    MenuButton: {
-      position: "absolute",
-      top: "2rem",
-      right: "2rem",
-      background: "none",
-      border: "none",
-      color: Colors.WHITE,
-      cursor: "pointer",
-      zIndex: 30,
-      display: isMobile && !isOpen ? "block" : "none",
-    },
+  const layoutStyle = {
+    display: "grid",
+    gridTemplateColumns: (isDesktop && isOpen) ? "1.2fr 0.8fr" : "100%",
+    minHeight: "100svh", 
+    width: "100%",
+    background: isOpen ? Theme.Canvas : Theme.Void,
+    transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+    position: "relative",
+    overflow: "hidden",
+    fontFamily: "'Inter', sans-serif",
   };
 
+  const contentPadding = isMobile ? "10vh 7vw" : "5vh 10vw";
+
   return (
-    <div style={Styles.Container}>
-      <style>{GlobalStyles}</style>
+    <main style={layoutStyle}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+        
+        .reveal-content {
+          animation: slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
-      {!isOpen && isMobile && (
-        <button style={Styles.MenuButton} onClick={() => setIsOpen(true)}>
-          <Menu size={28} />
-        </button>
-      )}
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
 
-      <div style={Styles.LeftPanel} className={isOpen && !isInitialLoad ? "slide-in-right" : ""}>
-        {isOpen ? (
-          <>
-            <div>
-              <h1 style={Styles.NameRevealed} className="reveal">
-                Jiya Vegad.
-              </h1>
-              <div style={Styles.Subtitle} className="reveal reveal-delay-1">
-                Fashion Designer
-              </div>
-              <p style={Styles.BodyText} className="reveal reveal-delay-2">
-                Merging artisanal craft with digital innovation. Exploring
-                structure, emotion, and modern silhouettes through sustainable
-                design practices.
-              </p>
-            </div>
+        .nav-item {
+          text-decoration: none;
+          color: inherit;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: clamp(0.8rem, 2vh, 1.2rem) 0;
+          border-bottom: 1px solid ${Theme.Border};
+          transition: 0.4s ease;
+        }
 
-            <nav style={Styles.NavMenu}>
+        .nav-item:hover {
+          padding-left: 1rem;
+          color: ${Theme.Accent};
+        }
+
+        .profile-mask {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: grayscale(20%);
+          transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .profile-mask:hover {
+          transform: scale(1.05);
+        }
+      `}</style>
+
+      <section style={{
+        padding: contentPadding,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        zIndex: 10,
+        color: isOpen ? Theme.Ink : "white",
+      }}>
+        
+        {!isOpen ? (
+          <div className="reveal-content">
+            <p style={{ letterSpacing: "0.4em", fontSize: "0.7rem", marginBottom: "1.5rem", opacity: 0.6 }}>
+              FASHION DESIGNER
+            </p>
+            <h1 style={{ 
+              fontFamily: "'Playfair Display', serif", 
+              fontSize: "clamp(3.5rem, 14vw, 10rem)", 
+              lineHeight: 0.85, 
+              margin: 0 
+            }}>
+              Jiya<br />
+              <span style={{ fontStyle: "italic", fontWeight: "400", color: Theme.Accent }}>Vegad</span>
+            </h1>
+          </div>
+        ) : (
+          <div className="reveal-content" style={{ width: "100%", maxWidth: "550px" }}>
+            <h2 style={{ 
+              fontFamily: "'Playfair Display', serif", 
+              fontSize: "clamp(2.2rem, 5vw, 3.5rem)", 
+              marginBottom: "1.5rem" 
+            }}>
+              Explore<span style={{color: Theme.Accent}}>.</span>
+            </h2>
+            
+            <nav style={{ display: "flex", flexDirection: "column" }}>
               {[
-                ["01", "Portfolio", "#/portfolio"],
-                ["02", "Experience", "#/work"],
-                ["03", "About", "#/about"],
-                ["04", "Contact", "#/contact"],
-                ["05", "Curriculum Vitae", "#/cv"],
-                ["06", "Education", "#/education"],
-              ].map(([num, label, link]) => (
-                <a
-                  key={label}
-                  href={link}
-                  className="nav-item reveal"
-                  style={Styles.NavLink}
-                >
-                  <div style={Styles.NavLabel}>
-                    <span style={Styles.NavNum}>{num}</span>
-                    <span>{label}</span>
-                  </div>
-                  <ChevronRight size={20} color={Colors.TEXT_MUTED} />
+                { id: "01", title: "About", link: "#about" },
+                { id: "02", title: "Portfolio", link: "#portfolio" },
+                { id: "03", title: "Experience", link: "#work" },
+                { id: "04", title: "Skills", link: "#skills" },
+                { id: "05", title: "Education", link: "#education" },
+                { id: "06", title: "Curriculum Vitae", link: "#cv" },
+                { id: "07", title: "Contact", link: "#contact" }
+              ].map((item) => (
+                <a key={item.id} href={item.link} className="nav-item">
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ 
+                      fontSize: "0.65rem", 
+                      color: Theme.Accent, 
+                      marginRight: "1.2rem",
+                      fontWeight: "600" 
+                    }}>{item.id}</span> 
+                    <span style={{ fontWeight: "400" }}>{item.title}</span>
+                  </span>
+                  <ArrowUpRight size={18} opacity={0.4} />
                 </a>
               ))}
             </nav>
 
-
-            <div style={Styles.Socials} className="reveal reveal-delay-3">
-              <Instagram size={20} style={Styles.SocialIcon} />
-              <Linkedin size={20} style={Styles.SocialIcon} />
-              <Mail size={20} style={Styles.SocialIcon} />
+            <div style={{ marginTop: "2.5rem", display: "flex", gap: "1.5rem", opacity: 0.7 }}>
+              <Instagram size={20} style={{ cursor: "pointer" }} />
+              <Linkedin size={20} style={{ cursor: "pointer" }} />
+              <Mail size={20} style={{ cursor: "pointer" }} />
             </div>
-          </>
-        ) : (
-          <div style={Styles.HeroText}>
-            <h1 style={Styles.NamePreReveal}>
-              <span style={Styles.NameJiya}>Jiya</span>
-              <span style={Styles.NameVegad}>Vegad</span>
-            </h1>
-            <div style={Styles.Subtitle}>Fashion Design Portfolio</div>
           </div>
         )}
-      </div>
+      </section>
 
-      <div style={Styles.RightPanel}>
-        <div style={Styles.ImageContainer}>
-          <img src={profileImage} alt="Jiya Vegad" style={Styles.HeroImage} />
-        </div>
-      </div>
+      {isDesktop && isOpen && (
+        <section style={{
+          height: "100%",
+          width: "100%",
+          overflow: "hidden",
+          animation: "slideUp 1.5s ease",
+          background: Theme.Void
+        }}>
+          <img 
+            src={profileImage} 
+            alt="Jiya Vegad Profile" 
+            className="profile-mask"
+          />
+        </section>
+      )}
 
-      <button style={Styles.Toggle} onClick={() => setIsOpen(!isOpen)}>
-        {isOpen ? <X size={28} color={Colors.WHITE} /> : <ChevronRight size={28} />}
+      <button 
+        onClick={() => setIsOpen(!isOpen)}
+        aria-label={isOpen ? "Close Menu" : "Open Menu"}
+        style={{
+          position: "fixed",
+          bottom: "clamp(1.5rem, 5vh, 4rem)",
+          right: "clamp(1.5rem, 5vw, 4rem)",
+          width: "clamp(60px, 7vw, 80px)",
+          height: "clamp(60px, 7vw, 80px)",
+          borderRadius: "50%",
+          backgroundColor: isOpen ? Theme.Accent : "white",
+          color: isOpen ? "white" : Theme.Ink,
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 15px 35px rgba(0,0,0,0.2)",
+          zIndex: 1000,
+          transition: "all 0.5s cubic-bezier(0.19, 1, 0.22, 1)"
+        }}
+      >
+        {isOpen ? <X size={28} /> : <Menu size={28} />}
       </button>
-    </div>
+    </main>
   );
+};
+
+export default function Main2() {
+  return <ElegantPortfolio />;
 }

@@ -99,16 +99,16 @@ const EducationPage = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeLink, setActiveLink] = useState("education");
 
-  const navItems = [
-    { path: "/main2", label: "Home", icon: <Home size={16} /> },
-    { path: "/about", label: "About", icon: <User size={16} /> },
-    { path: "/work", label: "Experience", icon: <Briefcase size={16} /> },
-    { path: "/portfolio", label: "Portfolio", icon: <FolderOpen size={16} /> },
-    { path: "/education", label: "Education", icon: <GraduationCap size={16} /> },
-    { path: "/skills", label: "Skills", icon: <Code size={16} /> },
-    { path: "/cv", label: "CV", icon: <FileText size={16} /> },
-    { path: "/contact", label: "Contact", icon: <Mail size={16} /> },
-  ];
+const navItems = [
+  { path: "/main2", label: "Home", icon: <Home size={16} /> },
+  { path: "/about", label: "About", icon: <User size={16} /> },
+  { path: "/portfolio", label: "Portfolio", icon: <FolderOpen size={16} /> },
+  { path: "/work", label: "Experience", icon: <Briefcase size={16} /> },
+  { path: "/skills", label: "Skills", icon: <Code size={16} /> },
+  { path: "/education", label: "Education", icon: <GraduationCap size={16} /> },
+  { path: "/cv", label: "CV", icon: <FileText size={16} /> },
+  { path: "/contact", label: "Contact", icon: <Mail size={16} /> },
+];
 
   // Close mobile menu when clicking outside
   useEffect(() => {
@@ -127,7 +127,7 @@ const EducationPage = () => {
       year: "2021 – 2025",
       institution: "Footwear Design & Development Institute",
       degree: "Bachelor of Design",
-      spec: "Fashion Technology",
+      spec: "Fashion Technology--------------9.05CGPA",
       location: "Kolkata, WB",
       description:
         "Merging industrial precision with avant-garde aesthetics. Focusing on the future of footwear through sustainable material research and 3D prototyping.",

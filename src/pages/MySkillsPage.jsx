@@ -169,10 +169,10 @@ const SkillsPage = () => {
   const navItems = [
     { path: "/jiya-portfolio#/main2", label: "Home", icon: <Home size={16} /> },
     { path: "/jiya-portfolio#/about", label: "About", icon: <User size={16} /> },
-    { path: "/jiya-portfolio#/work", label: "Experience", icon: <Briefcase size={16} /> },
     { path: "/jiya-portfolio#/portfolio", label: "Portfolio", icon: <FolderOpen size={16} /> },
-    { path: "/jiya-portfolio#/education", label: "Education", icon: <GraduationCap size={16} /> },
+    { path: "/jiya-portfolio#/work", label: "Experience", icon: <Briefcase size={16} /> },
     { path: "/jiya-portfolio#/skills", label: "Skills", icon: <Code size={16} /> },
+    { path: "/jiya-portfolio#/education", label: "Education", icon: <GraduationCap size={16} /> },
     { path: "/jiya-portfolio#/cv", label: "CV", icon: <FileText size={16} /> },
     { path: "/jiya-portfolio#/contact", label: "Contact", icon: <Mail size={16} /> },
   ];

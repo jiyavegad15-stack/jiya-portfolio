@@ -1,717 +1,222 @@
-import React, { useState, useEffect, useCallback } from "react";
+import React, { useState, useEffect } from "react";
 import {
   Instagram,
   Linkedin,
   Mail,
-  ChevronRight,
   X,
   Menu,
+  ArrowUpRight,
 } from "lucide-react";
 
 import EntryAnimation from "../components/EntryAnimation";
 import profileImage from "../assets/profile3.png";
 
-/* ---------- COLOR PALETTE ---------- */
-const Colors = {
-  BG: "#FDFCF8",
-  TEXT_MAIN: "#1B2A2F",
-  TEXT_MUTED: "#6C757D",
-  TEXT_LIGHT: "#8A9EA6",
-  ACCENT: "#D66E53",
-  LINE: "rgba(27, 42, 47, 0.1)",
-  WHITE: "#FFFFFF",
-  DARK_BG: "#0F1A1E",
+const Theme = {
+  Canvas: "#FDFCF8",      
+  Ink: "#1B2A2F",         
+  Muted: "#6C757D",    
+  Accent: "#D66E53",      
+  Void: "#0F1A1E",        
+  Border: "rgba(27, 42, 47, 0.1)",
 };
 
-/* ---------- VIEWPORT HOOK WITH DEBOUNCE ---------- */
-const useViewport = () => {
-  const [size, setSize] = useState({
+const useScreenSize = () => {
+  const [dimensions, setDimensions] = useState({
     width: typeof window !== 'undefined' ? window.innerWidth : 1200,
     height: typeof window !== 'undefined' ? window.innerHeight : 800,
-    zoomLevel: typeof window !== 'undefined' ? window.devicePixelRatio : 1,
   });
 
   useEffect(() => {
-    if (typeof window === 'undefined') return;
-
-    let timeoutId;
-    const onResize = () => {
-      clearTimeout(timeoutId);
-      timeoutId = setTimeout(() => {
-        setSize({ 
-          width: window.innerWidth, 
-          height: window.innerHeight,
-          zoomLevel: window.devicePixelRatio 
-        });
-      }, 100);
+    const handleResize = () => {
+      setDimensions({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      });
     };
-
-    window.addEventListener("resize", onResize);
-    return () => {
-      window.removeEventListener("resize", onResize);
-      clearTimeout(timeoutId);
-    };
+    window.addEventListener("resize", handleResize);
+    return () => window.removeEventListener("resize", handleResize);
   }, []);
 
-  return size;
-};
-
-/* ---------- USE RESPONSIVE HOOK ---------- */
-const useResponsive = () => {
-  const { width, zoomLevel } = useViewport();
-  
-  // Adjust breakpoints based on zoom level
-  const getAdjustedBreakpoint = (baseBreakpoint) => {
-    return baseBreakpoint / zoomLevel;
-  };
-
-  const isMobile = width < getAdjustedBreakpoint(640);
-  const isTablet = width >= getAdjustedBreakpoint(640) && width < getAdjustedBreakpoint(1024);
-  const isDesktop = width >= getAdjustedBreakpoint(1024);
-  const isLargeDesktop = width >= getAdjustedBreakpoint(1440);
-  
-  // For extra small devices
-  const isExtraSmall = width < getAdjustedBreakpoint(400);
-  // For landscape orientation
-  const isLandscape = typeof window !== 'undefined' ? window.innerWidth > window.innerHeight : false;
-  
-  const screen = isMobile ? "mobile" : isTablet ? "tablet" : "desktop";
-  
   return {
-    width,
-    zoomLevel,
-    isMobile,
-    isTablet,
-    isDesktop,
-    isLargeDesktop,
-    isExtraSmall,
-    isLandscape,
-    screen
+    ...dimensions,
+    isMobile: dimensions.width < 768,
+    isTablet: dimensions.width >= 768 && dimensions.width < 1100,
+    isDesktop: dimensions.width >= 1100,
   };
 };
 
-/* ---------- GLOBAL STYLES ---------- */
-const GlobalStyles = (isExtraSmall) => `
-@import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=Montserrat:wght@300;400;500;600&display=swap');
-
-* {
-  box-sizing: border-box;
-  -webkit-tap-highlight-color: transparent;
-}
-
-body {
-  margin: 0;
-  background: ${Colors.BG};
-  overflow-x: hidden;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-}
-
-html {
-  font-size: ${isExtraSmall ? '14px' : '16px'};
-}
-
-@media (min-resolution: 2dppx) {
-  html {
-    font-size: ${isExtraSmall ? '15px' : '17px'};
-  }
-}
-
-@media (max-width: 400px) {
-  html {
-    font-size: 14px;
-  }
-}
-
-@media (min-width: 2000px) {
-  html {
-    font-size: 18px;
-  }
-}
-
-.reveal {
-  opacity: 0;
-  transform: translateY(20px);
-  animation: fadeUp 0.9s ease forwards;
-}
-
-.reveal-delay-1 {
-  animation-delay: 0.2s;
-}
-
-.reveal-delay-2 {
-  animation-delay: 0.4s;
-}
-
-.reveal-delay-3 {
-  animation-delay: 0.6s;
-}
-
-@keyframes fadeUp {
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-.nav-item {
-  position: relative;
-  transition: transform 0.3s ease;
-}
-
-.nav-item:hover {
-  transform: translateX(10px);
-}
-
-.nav-item::before {
-  content: "";
-  position: absolute;
-  left: -20px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 6px;
-  height: 6px;
-  background: ${Colors.ACCENT};
-  border-radius: 50%;
-  opacity: 0;
-  transition: opacity 0.3s ease;
-}
-
-.nav-item:hover::before {
-  opacity: 1;
-}
-
-.slide-in-right {
-  animation: slideInRight 1s cubic-bezier(0.77, 0, 0.175, 1) forwards;
-}
-
-@keyframes slideInRight {
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-}
-
-/* Touch device optimizations */
-@media (hover: none) and (pointer: coarse) {
-  .nav-item:hover {
-    transform: none;
-  }
-  
-  .nav-item:hover::before {
-    opacity: 0;
-  }
-  
-  button, a {
-    min-height: 44px;
-    min-width: 44px;
-  }
-}
-
-/* High contrast mode support */
-@media (prefers-contrast: high) {
-  body {
-    --text-main: #000000;
-    --accent: #B33A1A;
-  }
-}
-
-/* Reduced motion preference */
-@media (prefers-reduced-motion: reduce) {
-  .reveal,
-  .slide-in-right,
-  .nav-item,
-  button {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
-}
-`;
-
-/* ---------- COMPONENT ---------- */
 const ElegantPortfolio = () => {
-  const { 
-    isMobile, 
-    isTablet, 
-    isDesktop, 
-    isLargeDesktop,
-    isExtraSmall,
-    isLandscape,
-    screen,
-    width,
-    zoomLevel
-  } = useResponsive();
-
+  const { isMobile, isDesktop } = useScreenSize();
   const [isOpen, setIsOpen] = useState(false);
-  const [isInitialLoad, setIsInitialLoad] = useState(true);
 
-  useEffect(() => {
-    const timer = setTimeout(() => {
-      setIsInitialLoad(false);
-    }, 500);
-    return () => clearTimeout(timer);
-  }, []);
-
-  // Handle escape key to close menu
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape' && isOpen) {
-        setIsOpen(false);
-      }
-    };
-    
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, [isOpen]);
-
-  // Handle click outside on mobile to close menu
-  const handleBackdropClick = useCallback((e) => {
-    if (isMobile && isOpen && e.target.id === 'mobile-backdrop') {
-      setIsOpen(false);
-    }
-  }, [isMobile, isOpen]);
-
-  // Dynamic font sizes based on screen width and zoom
-  const getResponsiveValue = (mobile, tablet, desktop, largeDesktop = desktop) => {
-    if (isMobile) return mobile;
-    if (isTablet) return tablet;
-    if (isLargeDesktop) return largeDesktop;
-    return desktop;
+  const layoutStyle = {
+    display: "grid",
+    gridTemplateColumns: (isDesktop && isOpen) ? "1.2fr 0.8fr" : "100%",
+    minHeight: "100svh", 
+    width: "100%",
+    background: isOpen ? Theme.Canvas : Theme.Void,
+    transition: "all 0.8s cubic-bezier(0.4, 0, 0.2, 1)",
+    position: "relative",
+    overflow: "hidden",
+    fontFamily: "'Inter', sans-serif",
   };
 
-  /* ---------- STYLES ---------- */
-  const Styles = {
-    Container: {
-      minHeight: "100svh",
-      minHeight: "100vh",
-      width: "100vw",
-      maxWidth: "100vw",
-      position: "relative",
-      fontFamily: "'Montserrat', sans-serif",
-      color: Colors.TEXT_MAIN,
-      overflowX: "hidden",
-      overflowY: isOpen ? "auto" : "hidden",
-      background: isOpen ? Colors.BG : Colors.DARK_BG,
-      transition: "background 0.8s cubic-bezier(0.77,0,0.175,1)",
-      WebkitOverflowScrolling: 'touch',
-    },
-
-    // Left Panel (Content Panel)
-    LeftPanel: {
-      position: isMobile && isOpen ? "relative" : "absolute",
-      left: 0,
-      top: 0,
-      bottom: 0,
-      width: isOpen 
-        ? (screen === "desktop" || isLandscape) 
-          ? getResponsiveValue("100%", "50%", "50%", "45%")
-          : "100%"
-        : "100%",
-      maxWidth: isOpen ? "100%" : "100%",
-      padding: isOpen
-        ? getResponsiveValue(
-            isExtraSmall ? "1.5rem" : "2rem",
-            "clamp(2rem, 4vw, 4rem)",
-            "clamp(2.5rem, 5vw, 5rem)",
-            "clamp(3rem, 6vw, 6rem)"
-          )
-        : getResponsiveValue(
-            "1.5rem",
-            "clamp(1.5rem, 3vw, 3rem)",
-            "clamp(2rem, 4vw, 4rem)"
-          ),
-      background: isOpen ? Colors.BG : "transparent",
-      zIndex: 20,
-      display: "flex",
-      flexDirection: "column",
-      justifyContent: isOpen ? "space-between" : "center",
-      transition: "all 1s cubic-bezier(0.77,0,0.175,1)",
-      overflowY: isMobile && isOpen ? "auto" : "visible",
-    },
-
-    HeroText: {
-      position: "relative",
-      marginBottom: isOpen ? 0 : getResponsiveValue("3rem", "4rem", "4rem"),
-    },
-
-    NamePreReveal: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: getResponsiveValue(
-        isExtraSmall ? "2.5rem" : "clamp(2.8rem, 12vw, 5rem)",
-        "clamp(4rem, 12vw, 6rem)",
-        "clamp(5rem, 10vw, 8rem)",
-        "clamp(6rem, 12vw, 10rem)"
-      ),
-      lineHeight: 0.9,
-      fontWeight: 700,
-      margin: 0,
-      transition: "all 0.8s cubic-bezier(0.77,0,0.175,1)",
-      wordBreak: "break-word",
-      overflowWrap: "break-word",
-    },
-
-    NameJiya: {
-      color: Colors.WHITE,
-      display: "block",
-    },
-
-    NameVegad: {
-      color: Colors.TEXT_LIGHT,
-      display: "block",
-      marginTop:"1.5rem",
-      marginLeft: getResponsiveValue(
-        isExtraSmall ? "1rem" : "1.5rem",
-        "3rem",
-        "4rem",
-        "6rem"
-      ),
-    },
-
-    NameRevealed: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: getResponsiveValue(
-        isExtraSmall ? "2rem" : "clamp(2rem, 8vw, 3rem)",
-        "clamp(2.5rem, 6vw, 3.5rem)",
-        "clamp(3rem, 6vw, 4.5rem)",
-        "clamp(3.5rem, 7vw, 5rem)"
-      ),
-      lineHeight: 1.05,
-      fontWeight: 600,
-      color: Colors.TEXT_MAIN,
-      marginBottom: "0.5rem",
-      wordBreak: "break-word",
-    },
-
-    Subtitle: {
-      letterSpacing: getResponsiveValue("2px", "3px", "4px"),
-      textTransform: "uppercase",
-      fontSize: getResponsiveValue("0.75rem", "0.8rem", "0.8rem"),
-      color: isOpen ? Colors.ACCENT : Colors.TEXT_LIGHT,
-      marginBottom: getResponsiveValue("1.5rem", "2rem", "2rem"),
-      opacity: isOpen ? 1 : 0.7,
-      transition: "all 0.8s ease",
-      marginTop: getResponsiveValue("1rem", "1.5rem", "2.5rem"),
-    },
-
-    BodyText: {
-      maxWidth: getResponsiveValue("100%", "420px", "420px", "500px"),
-      fontSize: getResponsiveValue(
-        isExtraSmall ? "0.85rem" : "0.9rem",
-        "0.95rem",
-        "1rem",
-        "1.1rem"
-      ),
-      lineHeight: getResponsiveValue(1.7, 1.8, 1.8),
-      color: Colors.TEXT_MUTED,
-      borderLeft: `2px solid ${Colors.ACCENT}`,
-      paddingLeft: getResponsiveValue("1rem", "1.5rem", "1.5rem"),
-      marginBottom: getResponsiveValue("2rem", "3rem", "3rem"),
-      overflowWrap: "break-word",
-    },
-
-    NavMenu: {
-      display: "flex",
-      flexDirection: "column",
-      gap: getResponsiveValue(
-        isExtraSmall ? "0.75rem" : "1rem",
-        "1.25rem",
-        "1.5rem"
-      ),
-      marginTop: "auto",
-      marginBottom: getResponsiveValue("2rem", "0", "0"),
-    },
-
-    NavLink: {
-      fontFamily: "'Playfair Display', serif",
-      fontSize: getResponsiveValue(
-        isExtraSmall ? "1.2rem" : "clamp(1.2rem, 5vw, 1.8rem)",
-        "clamp(1.4rem, 3vw, 2rem)",
-        "clamp(1.6rem, 4vw, 2.2rem)",
-        "clamp(1.8rem, 4vw, 2.5rem)"
-      ),
-      color: Colors.TEXT_MAIN,
-      textDecoration: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "space-between",
-      padding: getResponsiveValue("0.4rem 0", "0.5rem 0", "0.5rem 0"),
-      borderBottom: `1px solid ${Colors.LINE}`,
-      minHeight: getResponsiveValue("44px", "auto", "auto"),
-    },
-
-    NavLabel: {
-      display: "flex",
-      alignItems: "center",
-      gap: getResponsiveValue("0.75rem", "1rem", "1rem"),
-    },
-
-    NavNum: {
-      fontSize: getResponsiveValue("0.8rem", "0.85rem", "0.9rem"),
-      color: Colors.ACCENT,
-      fontWeight: 500,
-      minWidth: getResponsiveValue("25px", "30px", "30px"),
-    },
-
-    Socials: {
-      display: "flex",
-      gap: getResponsiveValue("1rem", "1.5rem", "1.5rem"),
-      marginTop: getResponsiveValue("1.5rem", "2rem", "2rem"),
-      paddingTop: getResponsiveValue("1rem", "1.5rem", "1.5rem"),
-      borderTop: `1px solid ${Colors.LINE}`,
-    },
-
-    SocialIcon: {
-      color: Colors.TEXT_MUTED,
-      transition: "all 0.3s ease",
-      cursor: "pointer",
-      minWidth: "44px",
-      minHeight: "44px",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-    },
-
-    RightPanel: {
-      position: isMobile && isOpen ? "relative" : "absolute",
-      right: 0,
-      top: 0,
-      bottom: 0,
-      width: isOpen 
-        ? (screen === "desktop" || isLandscape) 
-          ? getResponsiveValue("0%", "50%", "50%", "55%")
-          : "0%"
-        : "0%",
-      height: isMobile && isOpen ? "50vh" : "100%",
-      overflow: "hidden",
-      transition: "width 1s cubic-bezier(0.77,0,0.175,1), height 1s cubic-bezier(0.77,0,0.175,1)",
-    },
-
-    ImageContainer: {
-      width: "100%",
-      height: "100%",
-      position: "relative",
-      opacity: isOpen ? 1 : 0,
-      transition: "opacity 0.8s ease 0.3s",
-    },
-
-    HeroImage: {
-      width: "100%",
-      height: "100%",
-      objectFit: "cover",
-      objectPosition: "center",
-      transform: isOpen ? "scale(1)" : "scale(1.1)",
-      transition: "all 1.2s cubic-bezier(0.77,0,0.175,1)",
-    },
-
-    Toggle: {
-      position: isMobile && isOpen ? "fixed" : "absolute",
-      top: isMobile 
-        ? (isOpen ? "1.5rem" : "auto") 
-        : (isOpen ? getResponsiveValue("2rem", "2.5rem", "2.5rem") : "50%"),
-      bottom: isMobile && !isOpen ? "2rem" : "auto",
-      right: isMobile 
-        ? (isOpen ? "1.5rem" : "50%")
-        : (isOpen ? getResponsiveValue("auto", "calc(50% - 25px)", "calc(50% - 25px)") : "50%"),
-      left: isMobile 
-        ? "auto" 
-        : (isOpen ? "auto" : "50%"),
-      transform: isMobile && !isOpen ? "translateX(-50%)" : "translate(0, 0)",
-      width: getResponsiveValue("44px", "50px", "60px"),
-      height: getResponsiveValue("44px", "50px", "60px"),
-      borderRadius: "50%",
-      background: isOpen ? Colors.ACCENT : Colors.WHITE,
-      border: "none",
-      display: "flex",
-      alignItems: "center",
-      justifyContent: "center",
-      zIndex: 50,
-      cursor: "pointer",
-      transition: "all 0.8s cubic-bezier(0.77,0,0.175,1)",
-      boxShadow: isOpen 
-        ? "0 4px 20px rgba(214, 110, 83, 0.3)"
-        : "0 10px 40px rgba(0,0,0,0.25)",
-      touchAction: "manipulation",
-    },
-
-    MenuButton: {
-      position: "absolute",
-      top: getResponsiveValue("1.5rem", "2rem", "2rem"),
-      right: getResponsiveValue("1.5rem", "2rem", "2rem"),
-      background: "none",
-      border: "none",
-      color: Colors.WHITE,
-      cursor: "pointer",
-      zIndex: 30,
-      padding: "0.5rem",
-      display: isMobile && !isOpen ? "block" : "none",
-      minWidth: "44px",
-      minHeight: "44px",
-      touchAction: "manipulation",
-    },
-
-    MobileBackdrop: {
-      position: "fixed",
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      background: "rgba(0,0,0,0.5)",
-      zIndex: 15,
-      display: isMobile && isOpen ? "block" : "none",
-    },
-  };
+  const contentPadding = isMobile ? "10vh 7vw" : "5vh 10vw";
 
   return (
-    <div style={Styles.Container}>
-      <style>{GlobalStyles(isExtraSmall)}</style>
+    <main style={layoutStyle}>
+      <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,700;1,400&family=Inter:wght@300;400;600&display=swap');
+        
+        .reveal-content {
+          animation: slideUp 1.2s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
 
-      <div 
-        id="mobile-backdrop"
-        style={Styles.MobileBackdrop}
-        onClick={handleBackdropClick}
-        aria-hidden="true"
-      />
+        @keyframes slideUp {
+          from { opacity: 0; transform: translateY(30px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
 
-      {!isOpen && isMobile && (
-        <button 
-          style={Styles.MenuButton} 
-          onClick={() => setIsOpen(true)}
-          className="reveal"
-          aria-label="Open menu"
-        >
-          <Menu size={28} />
-        </button>
-      )}
+        .nav-item {
+          text-decoration: none;
+          color: inherit;
+          display: flex;
+          justify-content: space-between;
+          align-items: center;
+          padding: clamp(0.8rem, 2vh, 1.2rem) 0;
+          border-bottom: 1px solid ${Theme.Border};
+          transition: 0.4s ease;
+        }
 
-      
-      <div 
-        style={Styles.LeftPanel} 
-        className={isOpen && !isInitialLoad ? "slide-in-right" : ""}
-        role="main"
-        aria-label={isOpen ? "Portfolio content" : "Hero section"}
-      >
-        {isOpen ? (
-          <>
-            <div>
-              <h1 style={Styles.NameRevealed} className="reveal">
-                Jiya Vegad.
-              </h1>
-              <div style={Styles.Subtitle} className="reveal reveal-delay-1">
-                Fashion Designer
-              </div>
-              <p style={Styles.BodyText} className="reveal reveal-delay-2">
-                Merging artisanal craft with digital innovation. Exploring
-                structure, emotion, and modern silhouettes through sustainable
-                design practices.
-              </p>
-            </div>
+        .nav-item:hover {
+          padding-left: 1rem;
+          color: ${Theme.Accent};
+        }
 
-            <nav style={Styles.NavMenu} aria-label="Main navigation">
+        .profile-mask {
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          filter: grayscale(20%);
+          transition: transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+
+        .profile-mask:hover {
+          transform: scale(1.05);
+        }
+      `}</style>
+
+      <section style={{
+        padding: contentPadding,
+        display: "flex",
+        flexDirection: "column",
+        justifyContent: "center",
+        zIndex: 10,
+        color: isOpen ? Theme.Ink : "white",
+      }}>
+        
+        {!isOpen ? (
+          <div className="reveal-content">
+            <p style={{ letterSpacing: "0.4em", fontSize: "0.7rem", marginBottom: "1.5rem", opacity: 0.6 }}>
+              FASHION DESIGNER
+            </p>
+            <h1 style={{ 
+              fontFamily: "'Playfair Display', serif", 
+              fontSize: "clamp(3.5rem, 14vw, 10rem)", 
+              lineHeight: 0.85, 
+              margin: 0 
+            }}>
+              Jiya<br />
+              <span style={{ fontStyle: "italic", fontWeight: "400", color: Theme.Accent }}>Vegad</span>
+            </h1>
+          </div>
+        ) : (
+          <div className="reveal-content" style={{ width: "100%", maxWidth: "550px" }}>
+            <h2 style={{ 
+              fontFamily: "'Playfair Display', serif", 
+              fontSize: "clamp(2.2rem, 5vw, 3.5rem)", 
+              marginBottom: "1.5rem" 
+            }}>
+              Explore<span style={{color: Theme.Accent}}>.</span>
+            </h2>
+            
+            <nav style={{ display: "flex", flexDirection: "column" }}>
               {[
-                ["01", "Portfolio", "#/portfolio"],
-                ["02", "Experience", "#/work"],
-                ["03", "About", "#/about"],
-                ["04", "Contact", "#/contact"],
-                ["05", "Curriculum Vitae", "#/cv"],
-                ["06", "Education", "#/education"],
-              ].map(([num, label, link], index) => (
-                <a
-                  key={label}
-                  href={link}
-                  className="nav-item reveal"
-                  style={Styles.NavLink}
-                  aria-label={`Navigate to ${label}`}
-                >
-                  <div style={Styles.NavLabel}>
-                    <span style={Styles.NavNum}>{num}</span>
-                    <span>{label}</span>
-                  </div>
-                  <ChevronRight 
-                    size={getResponsiveValue(18, 20, 20)} 
-                    color={Colors.TEXT_MUTED} 
-                    aria-hidden="true"
-                  />
+                { id: "01", title: "About", link: "#about" },
+                { id: "02", title: "Portfolio", link: "#portfolio" },
+                { id: "03", title: "Experience", link: "#work" },
+                { id: "04", title: "Skills", link: "#skills" },
+                { id: "05", title: "Education", link: "#education" },
+                { id: "06", title: "Curriculum Vitae", link: "#cv" },
+                { id: "07", title: "Contact", link: "#contact" }
+              ].map((item) => (
+                <a key={item.id} href={item.link} className="nav-item">
+                  <span style={{ display: 'flex', alignItems: 'center' }}>
+                    <span style={{ 
+                      fontSize: "0.65rem", 
+                      color: Theme.Accent, 
+                      marginRight: "1.2rem",
+                      fontWeight: "600" 
+                    }}>{item.id}</span> 
+                    <span style={{ fontWeight: "400" }}>{item.title}</span>
+                  </span>
+                  <ArrowUpRight size={18} opacity={0.4} />
                 </a>
               ))}
             </nav>
 
-            <div style={Styles.Socials} className="reveal reveal-delay-3" aria-label="Social links">
-              <Instagram 
-                size={20} 
-                style={Styles.SocialIcon}
-                aria-label="Instagram profile"
-                onMouseEnter={(e) => e.currentTarget.style.color = Colors.ACCENT}
-                onMouseLeave={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
-                onFocus={(e) => e.currentTarget.style.color = Colors.ACCENT}
-                onBlur={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
-              />
-              <Linkedin 
-                size={20} 
-                style={Styles.SocialIcon}
-                aria-label="LinkedIn profile"
-                onMouseEnter={(e) => e.currentTarget.style.color = Colors.ACCENT}
-                onMouseLeave={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
-                onFocus={(e) => e.currentTarget.style.color = Colors.ACCENT}
-                onBlur={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
-              />
-              <Mail 
-                size={20} 
-                style={Styles.SocialIcon}
-                aria-label="Email contact"
-                onMouseEnter={(e) => e.currentTarget.style.color = Colors.ACCENT}
-                onMouseLeave={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
-                onFocus={(e) => e.currentTarget.style.color = Colors.ACCENT}
-                onBlur={(e) => e.currentTarget.style.color = Colors.TEXT_MUTED}
-              />
-            </div>
-          </>
-        ) : (
-          
-          <div style={Styles.HeroText}>
-            <h1 style={Styles.NamePreReveal} aria-label="Jiya Vegad">
-              <span style={Styles.NameJiya}>Jiya</span>
-              <span style={Styles.NameVegad}>Vegad</span>
-            </h1>
-            <div style={Styles.Subtitle} aria-label="Fashion Design Portfolio">
-              Fashion Design Portfolio
+            <div style={{ marginTop: "2.5rem", display: "flex", gap: "1.5rem", opacity: 0.7 }}>
+              <Instagram size={20} style={{ cursor: "pointer" }} />
+              <Linkedin size={20} style={{ cursor: "pointer" }} />
+              <Mail size={20} style={{ cursor: "pointer" }} />
             </div>
           </div>
         )}
-      </div>
+      </section>
 
-      <div style={Styles.RightPanel} aria-hidden={!isOpen}>
-        <div style={Styles.ImageContainer}>
+      {isDesktop && isOpen && (
+        <section style={{
+          height: "100%",
+          width: "100%",
+          overflow: "hidden",
+          animation: "slideUp 1.5s ease",
+          background: Theme.Void
+        }}>
           <img 
             src={profileImage} 
-            alt="Jiya Vegad" 
-            style={Styles.HeroImage}
-            loading="eager"
+            alt="Jiya Vegad Profile" 
+            className="profile-mask"
           />
-        </div>
-      </div>
+        </section>
+      )}
 
       <button 
-        style={Styles.Toggle} 
         onClick={() => setIsOpen(!isOpen)}
-        aria-label={isOpen ? "Close menu" : "Open portfolio"}
-        aria-expanded={isOpen}
+        aria-label={isOpen ? "Close Menu" : "Open Menu"}
+        style={{
+          position: "fixed",
+          bottom: "clamp(1.5rem, 5vh, 4rem)",
+          right: "clamp(1.5rem, 5vw, 4rem)",
+          width: "clamp(60px, 7vw, 80px)",
+          height: "clamp(60px, 7vw, 80px)",
+          borderRadius: "50%",
+          backgroundColor: isOpen ? Theme.Accent : "white",
+          color: isOpen ? "white" : Theme.Ink,
+          border: "none",
+          cursor: "pointer",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          boxShadow: "0 15px 35px rgba(0,0,0,0.2)",
+          zIndex: 1000,
+          transition: "all 0.5s cubic-bezier(0.19, 1, 0.22, 1)"
+        }}
       >
-        {isOpen ? (
-          <X size={getResponsiveValue(24, 28, 28)} color={Colors.WHITE} aria-hidden="true" />
-        ) : (
-          <ChevronRight size={getResponsiveValue(24, 28, 28)} color={Colors.TEXT_MAIN} aria-hidden="true" />
-        )}
+        {isOpen ? <X size={28} /> : <Menu size={28} />}
       </button>
-    </div>
+    </main>
   );
 };
-
 
 export default function Main() {
   return (

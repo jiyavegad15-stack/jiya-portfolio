@@ -46,13 +46,12 @@ const NavigationBar = () => {
     const navItems = [
         { id: 'home', label: 'Home', icon: Home, href: '/jiya-portfolio/#/main2' },
         { id: 'about', label: 'About', icon: User, href: '/jiya-portfolio/#about' },
-        { id: 'skills', label: 'Skills', icon: Code, href: '/jiya-portfolio/#skills' },
-        { id: 'work', label: 'Experience', icon: Briefcase, href: '/jiya-portfolio/#work' },
-        { id: 'cv', label: 'CV', icon: FileCheck, href: '/jiya-portfolio/#cv' },
         { id: 'portfolio', label: 'Portfolio', icon: Aperture, href: '/jiya-portfolio/#portfolio' },
+        { id: 'work', label: 'Experience', icon: Briefcase, href: '/jiya-portfolio/#work' },
+        { id: 'skills', label: 'Skills', icon: Code, href: '/jiya-portfolio/#skills' },
         { id: 'education', label: 'Education', icon: BookOpen, href: '/jiya-portfolio/#education' },
+        { id: 'cv', label: 'CV', icon: FileCheck, href: '/jiya-portfolio/#cv' },
         { id: 'contact', label: 'Contact', icon: Mail, href: '/jiya-portfolio/#contact' }
-
     ];
 
     const toggleMenu = () => {

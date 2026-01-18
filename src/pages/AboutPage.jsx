@@ -145,10 +145,12 @@ const Navbar = () => {
     const items = [
         { name: "Home", path: "/main2" },
         { name: "About", path: "/about" },
-        { name: "Experience", path: "/work" },
-        { name: "Contact", path: "/contact" },
         { name: "Portfolio", path: "/portfolio" },
-        { name: "CV", path: "/cv" }
+        { name: "Experience", path: "/work" },
+        { name: "Skills", path: "/skills" },
+        { name: "Education", path: "/education" },
+        { name: "CV", path: "/cv" },
+        { name: "Contact", path: "/contact" }
     ];
 
     return (
