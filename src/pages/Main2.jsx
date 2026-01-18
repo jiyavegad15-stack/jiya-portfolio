@@ -112,6 +112,7 @@ const ElegantPortfolio = () => {
         justifyContent: "center",
         zIndex: 10,
         color: isOpen ? Theme.Ink : "white",
+        transition: "color 0.6s ease"
       }}>
         
         {!isOpen ? (
@@ -189,15 +190,21 @@ const ElegantPortfolio = () => {
         </section>
       )}
 
+      {/* --- ANIMATED CENTER-TO-CORNER BUTTON --- */}
       <button 
         onClick={() => setIsOpen(!isOpen)}
         aria-label={isOpen ? "Close Menu" : "Open Menu"}
         style={{
           position: "fixed",
-          bottom: "clamp(1.5rem, 5vh, 4rem)",
-          right: "clamp(1.5rem, 5vw, 4rem)",
-          width: "clamp(60px, 7vw, 80px)",
-          height: "clamp(60px, 7vw, 80px)",
+          // Toggles between dead center (50%) and top-right corner
+          top: isOpen ? (isMobile ? "40px" : "50px") : "50%",
+          left: isOpen ? (isMobile ? "calc(100% - 40px)" : "calc(100% - 60px)") : "50%",
+          
+          // Keeps it centered on the coordinate point
+          transform: "translate(-50%, -50%)",
+          
+          width: "clamp(65px, 8vw, 90px)",
+          height: "clamp(65px, 8vw, 90px)",
           borderRadius: "50%",
           backgroundColor: isOpen ? Theme.Accent : "white",
           color: isOpen ? "white" : Theme.Ink,
@@ -206,12 +213,15 @@ const ElegantPortfolio = () => {
           display: "flex",
           alignItems: "center",
           justifyContent: "center",
-          boxShadow: "0 15px 35px rgba(0,0,0,0.2)",
+          boxShadow: isOpen 
+            ? "0 10px 30px rgba(214, 110, 83, 0.3)" 
+            : "0 20px 40px rgba(0,0,0,0.3)",
           zIndex: 1000,
-          transition: "all 0.5s cubic-bezier(0.19, 1, 0.22, 1)"
+          // Cubic bezier creates a fluid, organic movement
+          transition: "all 0.8s cubic-bezier(0.16, 1, 0.3, 1)"
         }}
       >
-        {isOpen ? <X size={28} /> : <Menu size={28} />}
+        {isOpen ? <X size={32} /> : <Menu size={32} />}
       </button>
     </main>
   );

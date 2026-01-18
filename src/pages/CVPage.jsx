@@ -1,15 +1,17 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import {
-  Github, Linkedin, Mail, Phone, MapPin,
+  Mail, Phone, MapPin,
   Briefcase, BookOpen, Award, Trophy,
-  Music, Plane, Star, ChevronRight, Instagram,
+  Star, ChevronRight, Instagram,
   FileText, Palette, Users, Target, Cpu,
-  ArrowLeft, Zap, Download, Printer, Home,
-  Menu, X, ChevronDown, ChevronUp,
-  User, Settings, LogOut, Bell, Search, Grid, MessageSquare
+  Zap, Download, Printer, Home,
+  Menu, X,
+  User, Grid,
+  Linkedin, Sparkles, Eye, ExternalLink
 } from "lucide-react";
 
 import ProfilePic from "../assets/cv.jpg";
+import CVPDF from "../assets/cvpdf.pdf";
 
 const useViewport = () => {
   const [viewport, setViewport] = useState({
@@ -18,25 +20,17 @@ const useViewport = () => {
     isMobile: false,
     isTablet: false,
     isDesktop: true,
-    isLandscape: false,
-    isExtraSmall: false,
-    isPortrait: true,
   });
 
   useEffect(() => {
     const updateViewport = () => {
       const width = window.innerWidth;
-      const height = window.innerHeight;
-      
       setViewport({
         width,
-        height,
+        height: window.innerHeight,
         isMobile: width < 768,
         isTablet: width >= 768 && width < 1024,
         isDesktop: width >= 1024,
-        isLandscape: width > height,
-        isPortrait: width <= height,
-        isExtraSmall: width < 400,
       });
     };
 
@@ -56,6 +50,7 @@ const Theme = {
   TEXT_LIGHT: "#F5F5EE",
   MUTED: "#6F6F68",
   ACCENT: "#9CAF88",
+  SECONDARY_ACCENT: "#D4A574",
   LIGHT_ACCENT: "rgba(156, 175, 136, 0.1)",
   BORDER: "#E4E1D9",
   SHADOW: "0 20px 60px rgba(0, 0, 0, 0.08)",
@@ -64,29 +59,22 @@ const Theme = {
 
 const CVPage = () => {
   const viewport = useViewport();
-  const [hoverState, setHoverState] = useState({
-    returnButton: false,
-    downloadButton: false,
-    printButton: false,
-    navItem: null,
-  });
-  const [isPrinting, setIsPrinting] = useState(false);
+  const [hoverState, setHoverState] = useState({});
+  const [isProcessing, setIsProcessing] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [expandedSections, setExpandedSections] = useState({});
   const [activeNav, setActiveNav] = useState("cv");
 
-  const cvRef = useRef();
-
-const navItems = [
-  { id: "home", label: "Home", icon: <Home size={18} />, type: "external", path: "/jiya-portfolio#/main2" },
-  { id: "about", label: "About", icon: <User size={18} />, type: "external", path: "/jiya-portfolio#/about" },
-  { id: "portfolio", label: "Portfolio", icon: <Grid size={18} />, type: "external", path: "/jiya-portfolio#/portfolio" },
-  { id: "work", label: "Experience", icon: <Briefcase size={18} />, type: "external", path: "/jiya-portfolio#/work" },
-  { id: "skills", label: "Skills", icon: <Award size={18} />, type: "external", path: "/jiya-portfolio#/skills" },
-  { id: "education", label: "Education", icon: <BookOpen size={18} />, type: "external", path: "/jiya-portfolio#/education" },
-  { id: "cv", label: "CV", icon: <FileText size={18} />, type: "external", path: "/jiya-portfolio#/cv" },
-  { id: "contact", label: "Contact", icon: <Mail size={18} />, type: "external", path: "/jiya-portfolio#/contact" },
-];
+  const navItems = [
+    { id: "home", label: "Home", icon: <Home size={18} />, type: "external", path: "/jiya-portfolio#/main2" },
+    { id: "about", label: "About", icon: <User size={18} />, type: "external", path: "/jiya-portfolio#/about" },
+    { id: "portfolio", label: "Portfolio", icon: <Grid size={18} />, type: "external", path: "/jiya-portfolio#/portfolio" },
+    { id: "work", label: "Experience", icon: <Briefcase size={18} />, type: "external", path: "/jiya-portfolio#/work" },
+    { id: "skills", label: "Skills", icon: <Award size={18} />, type: "external", path: "/jiya-portfolio#/skills" },
+    { id: "education", label: "Education", icon: <BookOpen size={18} />, type: "external", path: "/jiya-portfolio#/education" },
+    { id: "cv", label: "CV", icon: <FileText size={18} />, type: "external", path: "/jiya-portfolio#/cv" },
+    { id: "contact", label: "Contact", icon: <Mail size={18} />, type: "external", path: "/jiya-portfolio#/contact" },
+  ];
 
   const toggleSection = (sectionId) => {
     setExpandedSections(prev => ({
@@ -95,54 +83,78 @@ const navItems = [
     }));
   };
 
-  const handlePrint = () => {
-    setIsPrinting(true);
-    
-    const originalStyles = {
-      bodyOverflow: document.body.style.overflow,
-      bodyBackground: document.body.style.background,
-      bodyHeight: document.body.style.minHeight,
-    };
-
-    document.body.style.overflow = 'visible';
-    document.body.style.background = Theme.WHITE;
-    document.body.style.minHeight = 'auto';
-
-    setTimeout(() => {
-      window.print();
-      
-      document.body.style.overflow = originalStyles.bodyOverflow;
-      document.body.style.background = originalStyles.bodyBackground;
-      document.body.style.minHeight = originalStyles.bodyHeight;
-      
-      setTimeout(() => setIsPrinting(false), 500);
-    }, 100);
+  // View PDF in new tab
+  const handleViewPDF = () => {
+    window.open(CVPDF, '_blank');
   };
 
+  // Download PDF
   const handleDownloadPDF = () => {
-    handlePrint();
+    setIsProcessing(true);
+    
+    try {
+      // Create a link element
+      const link = document.createElement('a');
+      link.href = CVPDF;
+      link.download = 'Jiya_Vegad_CV.pdf';
+      link.target = '_blank';
+      
+      // Trigger download
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      
+      setTimeout(() => {
+        setIsProcessing(false);
+      }, 1000);
+    } catch (error) {
+      console.error('Error downloading PDF:', error);
+      setIsProcessing(false);
+      alert('Error downloading PDF. Please try again.');
+    }
+  };
+
+  // Print PDF
+  const handlePrintPDF = () => {
+    setIsProcessing(true);
+    
+    // Open PDF in new tab for printing
+    const printWindow = window.open(CVPDF, '_blank');
+    
+    if (printWindow) {
+      // Wait for PDF to load, then trigger print
+      printWindow.onload = () => {
+        setTimeout(() => {
+          try {
+            printWindow.print();
+          } catch (e) {
+            // If print fails, fall back to download
+            handleDownloadPDF();
+          }
+          setTimeout(() => {
+            setIsProcessing(false);
+          }, 500);
+        }, 1000);
+      };
+    } else {
+      // Fallback: download
+      handleDownloadPDF();
+      setIsProcessing(false);
+    }
   };
 
   const handleNavClick = (navItem) => {
     setActiveNav(navItem.id);
     
-    if (navItem.type === "section") {
-      const section = document.getElementById(navItem.id);
-      if (section) {
-        section.scrollIntoView({ behavior: 'smooth' });
-      }
-    } else if (navItem.type === "external") {
-      // Navigate to external page
+    if (navItem.type === "external") {
       window.location.href = navItem.path;
     }
     
-    // Close mobile menu if open
     if (viewport.isMobile) {
       setIsMobileMenuOpen(false);
     }
   };
 
-  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (isMobileMenuOpen && !event.target.closest('.mobile-menu') && !event.target.closest('.menu-toggle')) {
@@ -154,60 +166,14 @@ const navItems = [
     return () => document.removeEventListener('click', handleClickOutside);
   }, [isMobileMenuOpen]);
 
-  // Scroll to section on mount if hash exists
-  useEffect(() => {
-    const hash = window.location.hash.substring(1);
-    if (hash) {
-      const section = document.getElementById(hash);
-      if (section) {
-        setTimeout(() => {
-          section.scrollIntoView({ behavior: 'smooth' });
-          setActiveNav(hash);
-        }, 100);
-      }
-    }
-  }, []);
-
-  // Responsive styles
   const styles = getResponsiveStyles(viewport);
 
   return (
     <div style={styles.pageContainer}>
-      {/* Global Styles */}
-      <style>{GlobalStyles(viewport)}</style>
-      <style>{PrintStyles}</style>
-      <style>{MobileStyles}</style>
-      <style>{`
-        .nav-link {
-          position: relative;
-          transition: all 0.3s ease;
-        }
-        
-        .nav-link::after {
-          content: '';
-          position: absolute;
-          bottom: -5px;
-          left: 0;
-          width: 0;
-          height: 1px;
-          background: ${Theme.ACCENT};
-          transition: width 0.3s ease;
-        }
-        
-        .nav-link:hover::after {
-          width: 100%;
-        }
-        
-        @media (max-width: 768px) {
-          .desktop-nav { display: none; }
-          .mobile-menu { display: flex; }
-          .menu-toggle { display: block; }
-        }
-      `}</style>
-
-      <header style={styles.navbar}>
+      <style>{GlobalStyles}</style>
+      
+      <header style={styles.navbar} className="no-print">
         <div style={styles.navbarContent}>
-
           <div style={styles.navbarBrand}>
             <div style={styles.logo}>
               <span style={styles.logoText}>JV</span>
@@ -229,12 +195,9 @@ const navItems = [
                     borderBottom: activeNav === item.id
                       ? `2px solid ${Theme.ACCENT}`
                       : "none",
-                    transform: hoverState.navItem === item.id ? 'translateY(-2px)' : 'translateY(0)',
                   }}
                   onClick={() => handleNavClick(item)}
-                  onMouseEnter={() => setHoverState(prev => ({ ...prev, navItem: item.id }))}
-                  onMouseLeave={() => setHoverState(prev => ({ ...prev, navItem: null }))}
-                  className="nav-link no-print"
+                  className="nav-link"
                 >
                   <div style={styles.navIcon}>
                     {item.icon}
@@ -246,12 +209,10 @@ const navItems = [
           )}
 
           <div style={styles.navbarActions}>
-
             <button
-              className="menu-toggle"
+              className="menu-toggle no-print"
               style={styles.mobileMenuToggle}
               onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-              className="noprint"
               aria-label="Menu"
             >
               {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
@@ -262,18 +223,33 @@ const navItems = [
                 <button
                   style={{
                     ...styles.actionButton,
+                    ...styles.viewButton,
+                    transform: hoverState.viewButton ? "translateY(-2px)" : "translateY(0)",
+                  }}
+                  onClick={handleViewPDF}
+                  onMouseEnter={() => setHoverState(prev => ({ ...prev, viewButton: true }))}
+                  onMouseLeave={() => setHoverState(prev => ({ ...prev, viewButton: false }))}
+                  className="no-print"
+                >
+                  <Eye size={14} />
+                  <span>View PDF</span>
+                </button>
+
+                <button
+                  style={{
+                    ...styles.actionButton,
                     ...styles.printButton,
                     transform: hoverState.printButton ? "translateY(-2px)" : "translateY(0)",
-                    opacity: isPrinting ? 0.7 : 1,
+                    opacity: isProcessing ? 0.7 : 1,
                   }}
-                  onClick={handlePrint}
+                  onClick={handlePrintPDF}
                   onMouseEnter={() => setHoverState(prev => ({ ...prev, printButton: true }))}
                   onMouseLeave={() => setHoverState(prev => ({ ...prev, printButton: false }))}
-                  disabled={isPrinting}
+                  disabled={isProcessing}
                   className="no-print"
                 >
                   <Printer size={14} />
-                  <span>{isPrinting ? "Preparing..." : "Print"}</span>
+                  <span>{isProcessing ? "Processing..." : "Print PDF"}</span>
                 </button>
 
                 <button
@@ -281,27 +257,29 @@ const navItems = [
                     ...styles.actionButton,
                     ...styles.downloadButton,
                     transform: hoverState.downloadButton ? "translateY(-2px)" : "translateY(0)",
+                    opacity: isProcessing ? 0.7 : 1,
                   }}
                   onClick={handleDownloadPDF}
                   onMouseEnter={() => setHoverState(prev => ({ ...prev, downloadButton: true }))}
                   onMouseLeave={() => setHoverState(prev => ({ ...prev, downloadButton: false }))}
+                  disabled={isProcessing}
                   className="no-print"
                 >
                   <Download size={14} />
-                  <span>PDF</span>
+                  <span>{isProcessing ? "Downloading..." : "Download PDF"}</span>
                 </button>
               </div>
             )}
 
             <div style={styles.statusBadge} className="no-print">
               <Zap size={12} />
-              <span>Online CV</span>
+              <span>Professional CV</span>
             </div>
           </div>
         </div>
 
         {isMobileMenuOpen && (
-          <div className="mobile-menu" style={styles.mobileNavMenu}>
+          <div className="mobile-menu no-print" style={styles.mobileNavMenu}>
             <div style={styles.mobileNavHeader}>
               <span style={styles.mobileNavTitle}>Navigation</span>
               <button
@@ -336,18 +314,27 @@ const navItems = [
               
               <div style={styles.mobileActionButtons}>
                 <button
+                  style={styles.mobileViewButton}
+                  onClick={handleViewPDF}
+                >
+                  <Eye size={16} />
+                  <span>View PDF</span>
+                </button>
+                <button
                   style={styles.mobileDownloadButton}
                   onClick={handleDownloadPDF}
+                  disabled={isProcessing}
                 >
                   <Download size={16} />
-                  <span>Save PDF</span>
+                  <span>{isProcessing ? "Processing..." : "Download PDF"}</span>
                 </button>
                 <button
                   style={styles.mobilePrintButton}
-                  onClick={handlePrint}
+                  onClick={handlePrintPDF}
+                  disabled={isProcessing}
                 >
                   <Printer size={16} />
-                  <span>Print CV</span>
+                  <span>{isProcessing ? "Processing..." : "Print PDF"}</span>
                 </button>
               </div>
             </nav>
@@ -355,397 +342,411 @@ const navItems = [
         )}
       </header>
 
-      <div ref={cvRef} style={styles.wrapper} className="cv-container">
+      <div style={styles.wrapper} className="cv-container">
+        {/* PDF Download Section */}
+        <div style={styles.pdfDownloadSection}>
+          <div style={styles.pdfDownloadHeader}>
+            <div style={styles.pdfDownloadHeaderContent}>
+              <FileText size={24} color={Theme.ACCENT} />
+              <h2 style={styles.pdfDownloadTitle}>Professional CV Document</h2>
+              <p style={styles.pdfDownloadSubtitle}>
+                Download or print the professionally formatted CV document for job applications and professional use.
+              </p>
+            </div>
+          </div>
 
-        <div style={styles.printHeader} className="print-only">
-          <div style={styles.printHeaderContent}>
-            <h1 style={styles.printHeaderTitle}>Jiya Vegad</h1>
-            <div style={styles.printHeaderInfo}>
-              <span>Fashion Designer • Curriculum Vitae • {new Date().toLocaleDateString('en-US', { 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}</span>
+          <div style={styles.pdfDownloadGrid}>
+            <div style={styles.pdfDownloadCard}>
+              <div style={styles.pdfDownloadIcon}>
+                <Eye size={24} color={Theme.ACCENT} />
+              </div>
+              <h3 style={styles.pdfDownloadCardTitle}>Preview</h3>
+              <p style={styles.pdfDownloadCardText}>
+                View the complete CV document in PDF format before downloading.
+              </p>
+              <button
+                style={styles.pdfDownloadCardButton}
+                onClick={handleViewPDF}
+              >
+                <Eye size={16} />
+                <span>Preview PDF</span>
+              </button>
+            </div>
+
+            <div style={styles.pdfDownloadCard}>
+              <div style={styles.pdfDownloadIcon}>
+                <Download size={24} color={Theme.ACCENT} />
+              </div>
+              <h3 style={styles.pdfDownloadCardTitle}>Download</h3>
+              <p style={styles.pdfDownloadCardText}>
+                Download the professionally formatted CV document in PDF format.
+              </p>
+              <button
+                style={{
+                  ...styles.pdfDownloadCardButton,
+                  background: Theme.ACCENT,
+                  color: Theme.WHITE,
+                  opacity: isProcessing ? 0.7 : 1,
+                }}
+                onClick={handleDownloadPDF}
+                disabled={isProcessing}
+              >
+                <Download size={16} />
+                <span>{isProcessing ? "Downloading..." : "Download PDF"}</span>
+              </button>
+            </div>
+
+            <div style={styles.pdfDownloadCard}>
+              <div style={styles.pdfDownloadIcon}>
+                <Printer size={24} color={Theme.ACCENT} />
+              </div>
+              <h3 style={styles.pdfDownloadCardTitle}>Print</h3>
+              <p style={styles.pdfDownloadCardText}>
+                Print the CV document directly from your browser with optimized formatting.
+              </p>
+              <button
+                style={{
+                  ...styles.pdfDownloadCardButton,
+                  border: `1px solid ${Theme.ACCENT}`,
+                  color: Theme.ACCENT,
+                  background: Theme.WHITE,
+                  opacity: isProcessing ? 0.7 : 1,
+                }}
+                onClick={handlePrintPDF}
+                disabled={isProcessing}
+              >
+                <Printer size={16} />
+                <span>{isProcessing ? "Processing..." : "Print PDF"}</span>
+              </button>
+            </div>
+          </div>
+
+          <div style={styles.pdfDownloadInfo}>
+            <div style={styles.pdfDownloadInfoItem}>
+              <ExternalLink size={16} color={Theme.ACCENT} />
+              <span>Professional A4 Format</span>
+            </div>
+            <div style={styles.pdfDownloadInfoItem}>
+              <ExternalLink size={16} color={Theme.ACCENT} />
+              <span>Optimized for Print</span>
+            </div>
+            <div style={styles.pdfDownloadInfoItem}>
+              <ExternalLink size={16} color={Theme.ACCENT} />
+              <span>Ready for Job Applications</span>
             </div>
           </div>
         </div>
 
-        <div style={styles.layoutContainer}>
+        {/* CV Preview Section */}
+        <div style={styles.cvPreviewSection}>
+          <h2 style={styles.previewTitle}>CV Preview</h2>
+          <p style={styles.previewSubtitle}>
+            Below is a preview of the CV content. For the complete professionally formatted document, 
+            use the download options above.
+          </p>
+          
+          <div style={styles.layoutContainer}>
+            {/* SIDEBAR */}
+            <aside style={styles.sidebar} className="sidebar-print">
+              <div style={styles.profileSection}>
+                <div style={styles.imageContainer}>
+                  <div style={styles.imageWrapper}>
+                    <img
+                      src={ProfilePic}
+                      alt="Jiya Vegad Portrait"
+                      style={styles.profileImage}
+                      className="profile-image-print"
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "https://via.placeholder.com/300x400?text=Profile+Image";
+                      }}
+                    />
+                  </div>
+                  <div style={styles.imageAccent} />
+                </div>
 
-          <aside style={styles.sidebar} className="sidebar-print">
-  
-            <div style={styles.profileSection}>
-              <div style={styles.imageContainer}>
-                <div style={styles.imageWrapper}>
-                  <img
-                    src={ProfilePic}
-                    alt="Jiya Vegad Portrait"
-                    style={styles.profileImage}
-                    className="profile-image-print"
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src =
-                        "https://via.placeholder.com/300x400?text=Profile+Image";
-                    }}
+                <div style={styles.profileText}>
+                  <h1 style={styles.name}>Jiya Vegad</h1>
+                  <p style={styles.role}>Fashion Designer</p>
+                  <div style={styles.titleDivider} />
+                  <p style={styles.tagline}>
+                    Creative designer focused on sustainable fashion and traditional craft innovation
+                  </p>
+                </div>
+              </div>
+
+              {/* Contact */}
+              <div style={styles.sectionContainer}>
+                <div style={styles.sectionHeader}>
+                  <Mail size={18} />
+                  <h3 style={styles.sectionTitle}>Contact</h3>
+                </div>
+                <div style={styles.contactSection}>
+                  <InfoRow icon={<Mail size={16} />} text="jiyavegad15@gmail.com" />
+                  <InfoRow icon={<Phone size={16} />} text="+91 77648 4208" />
+                  <InfoRow icon={<MapPin size={16} />} text="Chaibasa, Jharkhand, India" />
+                </div>
+              </div>
+
+              {/* Education */}
+              <div style={styles.sectionContainer}>
+                <div style={styles.sectionHeader}>
+                  <BookOpen size={18} />
+                  <h3 style={styles.sectionTitle}>Education</h3>
+                </div>
+                <div style={styles.educationSection}>
+                  <EducationItem
+                    title="BACHELOR OF DESIGN"
+                    subtitle="Footwear Design And Development Institute"
+                    time="2021 - 2025"
+                    gpa="CGPA: 9.05"
+                  />
+                  <EducationItem
+                    title="HIGHER SECONDARY SCHOOL"
+                    subtitle="S.J. DAV Public School"
+                    time="2018 - 2020"
                   />
                 </div>
-                <div style={styles.imageAccent} />
               </div>
 
-              <div style={styles.profileText}>
-                <h1 style={styles.name}>Jiya Vegad</h1>
-                <p style={styles.role}>Fashion Designer</p>
-                <div style={styles.titleDivider} />
-                <p style={styles.tagline}>
-                  Creative designer focused on sustainable fashion and traditional craft innovation
-                </p>
-              </div>
-            </div>
-
-            {/* Contact */}
-            <SectionHeader 
-              icon={<Mail size={18} />} 
-              title="Contact" 
-              onClick={() => toggleSection('contact')}
-              isExpanded={expandedSections.contact}
-              isMobile={viewport.isMobile}
-            />
-            {(!viewport.isMobile || expandedSections.contact) && (
-              <div style={styles.contactSection}>
-                <InfoRow icon={<Mail size={16} />} text="jiyavegad15@gmail.com" />
-                <InfoRow icon={<Phone size={16} />} text="+91 77648 4208" />
-                <InfoRow icon={<MapPin size={16} />} text="Chaibasa, Jharkhand, India" />
-              </div>
-            )}
-
-            {/* Education */}
-            <SectionHeader 
-              icon={<BookOpen size={18} />} 
-              title="Education" 
-              onClick={() => toggleSection('education')}
-              isExpanded={expandedSections.education}
-              isMobile={viewport.isMobile}
-            />
-            {(!viewport.isMobile || expandedSections.education) && (
-              <div style={styles.educationSection}>
-                <EducationItem
-                  title="BACHELOR OF DESIGN"
-                  subtitle="Footwear Design And Development Institute"
-                  time="2021 - 2025"
-                  gpa="CGPA: 9.05"
-                />
-                <EducationItem
-                  title="HIGHER SECONDARY SCHOOL"
-                  subtitle="S.J. DAV Public School"
-                  time="2018 - 2020"
-                />
-              </div>
-            )}
-
-            {/* Achievements */}
-            <SectionHeader 
-              icon={<Trophy size={18} />} 
-              title="Achievements" 
-              onClick={() => toggleSection('achievements')}
-              isExpanded={expandedSections.achievements}
-              isMobile={viewport.isMobile}
-            />
-            {(!viewport.isMobile || expandedSections.achievements) && (
-              <div style={styles.achievementSection}>
-                {[
-                  "1st Prize – Face Painting, FDDI",
-                  "2nd Prize – Fashion Show, NIFT Spectrum 2023",
-                  "2nd Prize – National Gujarati Drawing Competition"
-                ].map((item, idx) => (
-                  <AchievementItem key={idx} item={item} />
-                ))}
-              </div>
-            )}
-
-            {/* Software Skills */}
-            <SectionHeader 
-              icon={<Cpu size={18} />} 
-              title="Software" 
-              onClick={() => toggleSection('software')}
-              isExpanded={expandedSections.software}
-              isMobile={viewport.isMobile}
-            />
-            {(!viewport.isMobile || expandedSections.software) && (
-              <div style={styles.skillSection}>
-                {["Procreate", "Illustrator", "Microsoft Excel"].map((skill) => (
-                  <div key={skill} style={styles.softwareSkill} className="skill-tag-print">
-                    {skill}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Soft Skills */}
-            <SectionHeader 
-              icon={<Users size={18} />} 
-              title="Soft Skills" 
-              onClick={() => toggleSection('softSkills')}
-              isExpanded={expandedSections.softSkills}
-              isMobile={viewport.isMobile}
-            />
-            {(!viewport.isMobile || expandedSections.softSkills) && (
-              <div style={styles.skillSection}>
-                {[
-                  "Surface Embellishment", "Pattern Making", "Trend Analysis", 
-                  "Team Communication", "Problem Solving"
-                ].map((skill) => (
-                  <div key={skill} style={styles.softSkill} className="skill-tag-print">
-                    {skill}
-                  </div>
-                ))}
-              </div>
-            )}
-
-            {/* Social Links */}
-            <div style={styles.socialLinks} className="no-print">
-              <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
-                <Linkedin size={18} />
-              </a>
-              <a href="https://instagram.com/jiya_vegad" target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
-                <Instagram size={18} />
-              </a>
-              <a href="mailto:jiyavegad15@gmail.com" style={styles.socialLink}>
-                <Mail size={18} />
-              </a>
-            </div>
-          </aside>
-
-          {/* MAIN CONTENT */}
-          <main style={styles.main} className="main-print">
-            {/* Profile Statement */}
-            <section id="cv" style={styles.contentBlock}>
-              <div style={styles.quoteCard}>
-                <div style={styles.quoteIcon}>
-                  <Zap size={20} color={Theme.ACCENT} />
+              {/* Achievements */}
+              <div style={styles.sectionContainer}>
+                <div style={styles.sectionHeader}>
+                  <Trophy size={18} />
+                  <h3 style={styles.sectionTitle}>Achievements</h3>
                 </div>
-                <p style={styles.profileQuote}>
-                  A creative fashion designer drawn to fantasy-driven storytelling and sustainable design. 
-                  I experiment, learn, and create through hands-on processes, 
-                  while travel music, dance, and sports keep my mind open, balanced, and inspired to develop innovative design solutions
-                </p>
+                <div style={styles.achievementSection}>
+                  {[
+                    "1st Prize – Face Painting, FDDI",
+                    "2nd Prize – Fashion Show, NIFT Spectrum 2023",
+                    "2nd Prize – National Gujarati Drawing Competition"
+                  ].map((item, idx) => (
+                    <AchievementItem key={idx} item={item} />
+                  ))}
+                </div>
               </div>
-            </section>
 
-            {/* Experience */}
-            <section id="experience" style={styles.contentBlock}>
-              <SectionHeader icon={<Briefcase size={20} />} title="Work Experience" />
+              {/* Software Skills */}
+              <div style={styles.sectionContainer}>
+                <div style={styles.sectionHeader}>
+                  <Cpu size={18} />
+                  <h3 style={styles.sectionTitle}>Software</h3>
+                </div>
+                <div style={styles.skillSection}>
+                  {["Procreate", "Illustrator", "Microsoft Excel"].map((skill) => (
+                    <div key={skill} style={styles.softwareSkill}>
+                      {skill}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-              {/* AMIT AGGARWAL */}
-              <ExperienceCard
-                company="Amit Aggarwal"
-                role="Design Intern"
-                time="Sept – Dec 2025"
-                sections={[
-                  {
-                    title: "AM.IT – Pret Collection (1 Month)",
-                    points: [
-                      "Assisted the design and product development teams for the pret collection.",
-                      "Coordinated muslins for initial samples and prototypes.",
-                      "Supported R&D focused on materials, surface development, and design feasibility.",
-                      "Handled material sourcing as per design requirements.",
-                      "Prepared and updated tech packs for sampling accuracy.",
-                      "Created line sheets and maintained the master sheet.",
-                      "Worked closely with pattern masters and technical teams during construction."
-                    ]
-                  },
-                  {
-                    title: "CULT – Spring/Summer 2026 Collection (2 Months)",
-                    points: [
-                      "Contributed to design and R&D for the SS'26 collection.",
-                      "Developed swatches exploring materials, textures, and finishes.",
-                      "Assisted in textile and embroidery exploration aligned with the brand language.",
-                      "Coordinated with karigars and artisans for sample execution.",
-                      "Prepared detailed tech packs for production consistency.",
-                      "Created line sheets and swatch boards for reviews and presentations.",
-                      "Contributed to world-record experimental projects as a motif designer."
-                    ]
-                  }
-                ]}
-                viewport={viewport}
-              />
+              {/* Soft Skills */}
+              <div style={styles.sectionContainer}>
+                <div style={styles.sectionHeader}>
+                  <Users size={18} />
+                  <h3 style={styles.sectionTitle}>Soft Skills</h3>
+                </div>
+                <div style={styles.skillSection}>
+                  {[
+                    "Surface Embellishment", "Pattern Making", "Trend Analysis", 
+                    "Team Communication", "Problem Solving"
+                  ].map((skill) => (
+                    <div key={skill} style={styles.softSkill}>
+                      {skill}
+                    </div>
+                  ))}
+                </div>
+              </div>
 
-              {/* TOIE */}
-              <ExperienceCard
-                company="TOIE"
-                role="Brand Development Assistant"
-                time="June 2025 – Aug 2025"
-                sections={[
-                  {
-                    title: "Brand Development Projects",
-                    points: [
-                      "Supported end-to-end brand development: research, ideation, design, and sourcing.",
-                      "Worked on garment segmentation, market research, tech packs, and PR packages.",
-                      "Assisted with content creation and sales planning.",
-                      "Strengthened teamwork and professional communication skills.",
-                      "Participated in strategic planning sessions and client presentations."
-                    ]
-                  }
-                ]}
-                viewport={viewport}
-              />
+              {/* Social Links - Hidden in print */}
+              <div style={styles.socialLinks} className="no-print">
+                <a href="https://linkedin.com" target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
+                  <Linkedin size={18} />
+                </a>
+                <a href="https://instagram.com/jiya_vegad" target="_blank" rel="noopener noreferrer" style={styles.socialLink}>
+                  <Instagram size={18} />
+                </a>
+                <a href="mailto:jiyavegad15@gmail.com" style={styles.socialLink}>
+                  <Mail size={18} />
+                </a>
+              </div>
+            </aside>
 
-              {/* SAYANTAN SARKAR */}
-              <ExperienceCard
-                company="Sayantan Sarkar"
-                role="Design Assistant"
-                time="Jan – Mar 2024"
-                sections={[
-                  {
-                    title: "DOMARI – Collection for Khadi Festival 2024 × FDCB",
-                    points: [
-                      "Assisted in fashion collection showcased in khadi festival organized by FDCB.",
-                      "Contributed in design process, pattern making, and construction.",
-                      "Supported surface embellishments and textile development.",
-                      "Worked as social media manager for the collection's promotion.",
-                      "Coordinated photoshoots in various locations across Kolkata streets."
-                    ]
-                  },
-                  {
-                    title: "MIMOSA – Collection for Bharat Tex 2024",
-                    points: [
-                      "Assisted in designing, surface embellishments and trend research.",
-                      "Supported material sourcing and sample development.",
-                      "Contributed to exhibition preparation and display planning.",
-                      "Participated in client meetings and design presentations."
-                    ]
-                  }
-                ]}
-                viewport={viewport}
-              />
-
-              {/* THE BLUR MAGAZINE */}
-              <ExperienceCard
-                company="THE BLUR MAGAZINE"
-                role="Fashion Department Contributor"
-                time="Aug – Sept 2024"
-                sections={[
-                  {
-                    title: "Editorial Contributions",
-                    points: [
-                      "Worked in fashion department for the magazine.",
-                      "Provided content for regular Instagram posts and digital campaigns.",
-                      "Contributed to digital projects and online publication content.",
-                      "Assisted in editorial planning and content strategy development.",
-                      "Supported photo shoot coordination and styling sessions."
-                    ]
-                  }
-                ]}
-                viewport={viewport}
-              />
-            </section>
-
-            {/* Craft Cluster */}
-            <section id="skills" style={styles.contentBlock}>
-              <SectionHeader icon={<Palette size={20} />} title="Craft Cluster Research" />
-              
-              <div style={styles.craftCard}>
-                <div style={styles.craftHeader}>
-                  <div>
-                    <h3 style={styles.craftTitle}>BLUE ART POTTERY</h3>
-                    <span style={styles.craftLocation}>Jaipur, Rajasthan</span>
+            {/* MAIN CONTENT */}
+            <main style={styles.main} className="main-print">
+              {/* Profile Statement */}
+              <section style={styles.contentBlock}>
+                <div style={styles.quoteCard}>
+                  <div style={styles.quoteIcon}>
+                    <Sparkles size={20} color={Theme.ACCENT} />
                   </div>
-                  {!viewport.isMobile && (
+                  <p style={styles.profileQuote}>
+                    A creative fashion designer drawn to fantasy-driven storytelling and sustainable design. 
+                    I experiment, learn, and create through hands-on processes, while travel, music, dance, 
+                    and sports keep my mind open, balanced, and inspired to develop innovative design solutions.
+                  </p>
+                </div>
+              </section>
+
+              {/* Work Experience */}
+              <section style={styles.contentBlock}>
+                <div style={styles.sectionHeaderMain}>
+                  <Briefcase size={20} />
+                  <h2 style={styles.sectionTitleMain}>Work Experience</h2>
+                </div>
+
+                {/* AMIT AGGARWAL */}
+                <div className="page-break-avoid">
+                  <ExperienceCard
+                    company="Amit Aggarwal"
+                    role="Design Intern"
+                    time="Sept – Dec 2025"
+                    sections={[
+                      {
+                        title: "AM.IT – Pret Collection (1 Month)",
+                        points: [
+                          "Assisted the design and product development teams for the pret collection",
+                          "Coordinated muslins for initial samples and prototypes",
+                          "Supported R&D focused on materials, surface development, and design feasibility",
+                          "Handled material sourcing as per design requirements",
+                          "Prepared and updated tech packs for sampling accuracy",
+                          "Created line sheets and maintained the master sheet",
+                          "Worked closely with pattern masters and technical teams during construction"
+                        ]
+                      },
+                      {
+                        title: "CULT – Spring/Summer 2026 Collection (2 Months)",
+                        points: [
+                          "Contributed to design and R&D for the SS'26 collection",
+                          "Developed swatches exploring materials, textures, and finishes",
+                          "Assisted in textile and embroidery exploration aligned with the brand language",
+                          "Coordinated with karigars and artisans for sample execution",
+                          "Prepared detailed tech packs for production consistency",
+                          "Created line sheets and swatch boards for reviews and presentations",
+                          "Contributed to world-record experimental projects as a motif designer"
+                        ]
+                      }
+                    ]}
+                  />
+                </div>
+
+                {/* TOIE */}
+                <ExperienceCard
+                  company="TOIE"
+                  role="Brand Development Assistant"
+                  time="June 2025 – Aug 2025"
+                  sections={[
+                    {
+                      title: "Brand Development Projects",
+                      points: [
+                        "Supported end-to-end brand development: research, ideation, design, and sourcing",
+                        "Worked on garment segmentation, market research, tech packs, and PR packages",
+                        "Assisted with content creation and sales planning",
+                        "Strengthened teamwork and professional communication skills",
+                        "Participated in strategic planning sessions and client presentations"
+                      ]
+                    }
+                  ]}
+                />
+
+                {/* SAYANTAN SARKAR */}
+                <ExperienceCard
+                  company="Sayantan Sarkar"
+                  role="Design Assistant"
+                  time="Jan – Mar 2024"
+                  sections={[
+                    {
+                      title: "DOMARI – Collection for Khadi Festival 2024 × FDCB",
+                      points: [
+                        "Assisted in fashion collection showcased in khadi festival organized by FDCB",
+                        "Contributed in design process, pattern making, and construction",
+                        "Supported surface embellishments and textile development",
+                        "Worked as social media manager for the collection's promotion",
+                        "Coordinated photoshoots in various locations across Kolkata streets"
+                      ]
+                    },
+                    {
+                      title: "MIMOSA – Collection for Bharat Tex 2024",
+                      points: [
+                        "Assisted in designing, surface embellishments and trend research",
+                        "Supported material sourcing and sample development",
+                        "Contributed to exhibition preparation and display planning",
+                        "Participated in client meetings and design presentations"
+                      ]
+                    }
+                  ]}
+                />
+
+                {/* THE BLUR MAGAZINE */}
+                <ExperienceCard
+                  company="THE BLUR MAGAZINE"
+                  role="Fashion Department Contributor"
+                  time="Aug – Sept 2024"
+                  sections={[
+                    {
+                      title: "Editorial Contributions",
+                      points: [
+                        "Worked in fashion department for the magazine",
+                        "Provided content for regular Instagram posts and digital campaigns",
+                        "Contributed to digital projects and online publication content",
+                        "Assisted in editorial planning and content strategy development",
+                        "Supported photo shoot coordination and styling sessions"
+                      ]
+                    }
+                  ]}
+                />
+              </section>
+
+              {/* Craft Cluster */}
+              <section style={styles.contentBlock} className="page-break-avoid">
+                <div style={styles.sectionHeaderMain}>
+                  <Palette size={20} />
+                  <h2 style={styles.sectionTitleMain}>Craft Cluster Research</h2>
+                </div>
+                
+                <div style={styles.craftCard}>
+                  <div style={styles.craftHeader}>
+                    <div>
+                      <h3 style={styles.craftTitle}>BLUE ART POTTERY</h3>
+                      <span style={styles.craftLocation}>Jaipur, Rajasthan</span>
+                    </div>
                     <div style={styles.craftBadge}>
                       <Target size={14} />
                       <span>Traditional Craft Innovation</span>
                     </div>
-                  )}
+                  </div>
+                  
+                  <ul style={styles.craftDescription}>
+                    <li>Innovatively merged pottery techniques with garment design</li>
+                    <li>Designed contemporary, aesthetic products by upcycling cancelled and waste materials</li>
+                    <li>Craft Cluster (Blue Art Pottery): Translated Jaipuri ceramic motifs into contemporary textile surfaces</li>
+                    <li>Material-led design exploration bridging traditional craft with modern fashion</li>
+                  </ul>
+                  
+                  <div style={styles.craftHighlights}>
+                    <div style={styles.craftHighlight}>
+                      <Target size={16} color={Theme.ACCENT} />
+                      <span>Traditional to Contemporary Translation</span>
+                    </div>
+                    <div style={styles.craftHighlight}>
+                      <Cpu size={16} color={Theme.ACCENT} />
+                      <span>Material Innovation & Upcycling</span>
+                    </div>
+                    <div style={styles.craftHighlight}>
+                      <Users size={16} color={Theme.ACCENT} />
+                      <span>Craft Preservation through Modern Design</span>
+                    </div>
+                  </div>
                 </div>
-                
-                <ul style={styles.craftDescription}>
-                  <li>Innovatively merged pottery techniques with garment design</li>
-                  <li>Designed contemporary, aesthetic products by upcycling cancelled and waste materials</li>
-                  <li>Craft Cluster (Blue Art Pottery): Translated Jaipuri ceramic motifs into contemporary textile surfaces</li>
-                  <li>Material-led design exploration bridging traditional craft with modern fashion</li>
-                </ul>
-                
-                <div style={styles.craftHighlights}>
-                  <div style={styles.craftHighlight}>
-                    <Target size={16} color={Theme.ACCENT} />
-                    <span>Traditional to Contemporary Translation</span>
-                  </div>
-                  <div style={styles.craftHighlight}>
-                    <Cpu size={16} color={Theme.ACCENT} />
-                    <span>Material Innovation & Upcycling</span>
-                  </div>
-                  <div style={styles.craftHighlight}>
-                    <Users size={16} color={Theme.ACCENT} />
-                    <span>Craft Preservation through Modern Design</span>
-                  </div>
-                </div>
-              </div>
-            </section>
-
-            {/* Print Footer */}
-            <div style={styles.printFooter} className="print-only">
-              <div style={styles.printFooterContent}>
-                <span>Jiya Vegad • Fashion Designer • jiyavegad15@gmail.com</span>
-                <span>Page 1 of 1 • Generated on {new Date().toLocaleDateString()}</span>
-              </div>
-            </div>
-          </main>
+              </section>
+            </main>
+          </div>
         </div>
       </div>
     </div>
   );
 };
-
-/* ---------- ENHANCED SECTION HEADER WITH TOGGLE ---------- */
-const SectionHeader = ({ icon, title, onClick, isExpanded, isMobile }) => (
-  <div
-    style={{
-      margin: "2rem 0 1rem",
-      cursor: isMobile ? "pointer" : "default",
-      display: "flex",
-      justifyContent: "space-between",
-      alignItems: "center",
-      padding: isMobile ? "0.5rem 0" : "0",
-    }}
-    onClick={onClick}
-  >
-    <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-      <div
-        style={{
-          width: "36px",
-          height: "36px",
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-          backgroundColor: `${Theme.ACCENT}20`,
-          borderRadius: "8px",
-          color: Theme.ACCENT,
-        }}
-      >
-        {icon}
-      </div>
-
-      <h3
-        style={{
-          fontSize: "0.875rem",
-          letterSpacing: "3px",
-          textTransform: "uppercase",
-          color: isMobile ? Theme.ACCENT : Theme.ACCENT,
-          fontWeight: 600,
-          margin: 0,
-        }}
-      >
-        {title}
-      </h3>
-    </div>
-
-    {isMobile && (
-      <div style={{ color: Theme.ACCENT }}>
-        {isExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-      </div>
-    )}
-  </div>
-);
-
 
 /* ---------- REUSABLE COMPONENTS ---------- */
 const InfoRow = ({ icon, text }) => (
@@ -755,10 +756,11 @@ const InfoRow = ({ icon, text }) => (
     gap: "0.75rem",
     marginBottom: "0.75rem",
     fontSize: "0.875rem",
+    color: "inherit",
     opacity: 0.9,
   }}>
-    <div style={{ color: Theme.ACCENT }}>{icon}</div>
-    <span>{text}</span>
+    <div style={{ color: Theme.ACCENT, flexShrink: 0 }}>{icon}</div>
+    <span style={{ wordBreak: "break-word" }}>{text}</span>
   </div>
 );
 
@@ -798,37 +800,38 @@ const AchievementItem = ({ item }) => (
     marginBottom: "0.75rem",
     lineHeight: 1.4,
   }}>
-    <Trophy size={12} style={{ marginRight: "10px", color: Theme.ACCENT, flexShrink: 0, marginTop: "2px" }} />
+    <div style={{ marginRight: "10px", color: Theme.ACCENT, flexShrink: 0, marginTop: "2px" }}>
+      <Star size={12} fill={Theme.ACCENT} color={Theme.ACCENT} />
+    </div>
     <span>{item}</span>
   </div>
 );
 
-const ExperienceCard = ({ company, role, time, sections, viewport }) => (
+const ExperienceCard = ({ company, role, time, sections }) => (
   <div style={{
     backgroundColor: "rgba(156, 175, 136, 0.03)",
     border: `1px solid ${Theme.BORDER}`,
     borderRadius: "8px",
-    padding: viewport.isMobile ? "1rem" : "1.5rem",
-    marginBottom: "1rem",
+    padding: "1.5rem",
+    marginBottom: "1.5rem",
+    breakInside: "avoid",
   }}>
     <div style={{
       display: "flex",
-      flexDirection: viewport.isMobile ? "column" : "row",
       justifyContent: "space-between",
-      alignItems: viewport.isMobile ? "flex-start" : "flex-start",
+      alignItems: "flex-start",
       marginBottom: "1rem",
-      gap: viewport.isMobile ? "0.5rem" : "0",
     }}>
       <div>
         <h3 style={{
           fontFamily: "'Playfair Display', serif",
-          fontSize: viewport.isMobile ? "1.1rem" : "1.25rem",
+          fontSize: "1.25rem",
           color: Theme.TEXT_DARK,
           marginBottom: "0.25rem",
         }}>{company}</h3>
         <p style={{
           fontSize: "0.875rem",
-          letterSpacing: "2px",
+          letterSpacing: "1.5px",
           textTransform: "uppercase",
           color: Theme.ACCENT,
           fontWeight: 500,
@@ -836,10 +839,13 @@ const ExperienceCard = ({ company, role, time, sections, viewport }) => (
       </div>
       <span style={{
         fontSize: "0.75rem",
-        letterSpacing: "2px",
+        letterSpacing: "1.5px",
         textTransform: "uppercase",
         color: Theme.MUTED,
         fontWeight: 500,
+        backgroundColor: Theme.LIGHT_ACCENT,
+        padding: "0.25rem 0.75rem",
+        borderRadius: "4px",
       }}>{time}</span>
     </div>
     
@@ -847,10 +853,11 @@ const ExperienceCard = ({ company, role, time, sections, viewport }) => (
       {sections.map((section, sectionIdx) => (
         <div key={sectionIdx} style={{ marginBottom: "1rem" }}>
           <h4 style={{
-            fontSize: viewport.isMobile ? "0.9rem" : "0.95rem",
+            fontSize: "0.95rem",
             fontWeight: '600',
-            color: Theme.ACCENT,
+            color: Theme.SECONDARY_ACCENT,
             margin: '0 0 0.5rem 0',
+            fontStyle: 'italic',
           }}>{section.title}</h4>
           <ul style={{ listStyle: 'none', padding: 0, margin: 0 }}>
             {section.points.map((p, idx) => (
@@ -858,7 +865,7 @@ const ExperienceCard = ({ company, role, time, sections, viewport }) => (
                 display: 'flex',
                 gap: '0.75rem',
                 marginBottom: '0.5rem',
-                fontSize: viewport.isMobile ? "0.85rem" : "0.875rem",
+                fontSize: "0.875rem",
                 lineHeight: 1.5,
                 color: Theme.MUTED,
                 alignItems: 'flex-start',
@@ -881,17 +888,15 @@ const ExperienceCard = ({ company, role, time, sections, viewport }) => (
   </div>
 );
 
-/* ---------- RESPONSIVE STYLES GENERATOR ---------- */
+/* ---------- RESPONSIVE STYLES ---------- */
 const getResponsiveStyles = (viewport) => ({
   pageContainer: {
     background: Theme.BG,
     minHeight: "100vh",
     position: "relative",
-    padding: viewport.isMobile ? "0" : "0",
-    overflowX: "hidden",
   },
 
-  // Navbar Styles
+  // Navbar
   navbar: {
     position: "sticky",
     top: 0,
@@ -964,7 +969,7 @@ const getResponsiveStyles = (viewport) => ({
   navbarNav: {
     display: "flex",
     alignItems: "center",
-    gap: viewport.isMobile ? "0.5rem" : "1rem",
+    gap: "1rem",
     flex: 1,
     justifyContent: "center",
     flexWrap: "wrap",
@@ -974,10 +979,10 @@ const getResponsiveStyles = (viewport) => ({
     display: "flex",
     alignItems: "center",
     gap: "0.5rem",
-    padding: viewport.isMobile ? "0.5rem" : "0.5rem 0.75rem",
+    padding: "0.5rem 0.75rem",
     background: "none",
     border: "none",
-    fontSize: viewport.isMobile ? "0.75rem" : "0.8rem",
+    fontSize: "0.8rem",
     fontWeight: 500,
     cursor: "pointer",
     transition: "all 0.3s ease",
@@ -997,7 +1002,7 @@ const getResponsiveStyles = (viewport) => ({
   navbarActions: {
     display: "flex",
     alignItems: "center",
-    gap: viewport.isMobile ? "0.5rem" : "1rem",
+    gap: "1rem",
     flexShrink: 0,
   },
 
@@ -1035,6 +1040,12 @@ const getResponsiveStyles = (viewport) => ({
     whiteSpace: "nowrap",
   },
 
+  viewButton: {
+    background: Theme.WHITE,
+    border: `1px solid ${Theme.BORDER}`,
+    color: Theme.TEXT_DARK,
+  },
+
   downloadButton: {
     background: Theme.ACCENT,
     color: Theme.WHITE,
@@ -1058,7 +1069,7 @@ const getResponsiveStyles = (viewport) => ({
     color: Theme.ACCENT,
   },
 
-  // Mobile Navigation Menu
+  // Mobile Navigation
   mobileNavMenu: {
     position: "absolute",
     top: "100%",
@@ -1127,12 +1138,28 @@ const getResponsiveStyles = (viewport) => ({
 
   mobileActionButtons: {
     display: "flex",
-    gap: "1rem",
+    flexDirection: "column",
+    gap: "0.75rem",
     marginTop: "1rem",
   },
 
+  mobileViewButton: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.5rem",
+    padding: "1rem",
+    background: Theme.WHITE,
+    border: `1px solid ${Theme.BORDER}`,
+    color: Theme.TEXT_DARK,
+    borderRadius: "8px",
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    cursor: "pointer",
+    minHeight: "44px",
+  },
+
   mobileDownloadButton: {
-    flex: 1,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -1149,7 +1176,6 @@ const getResponsiveStyles = (viewport) => ({
   },
 
   mobilePrintButton: {
-    flex: 1,
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
@@ -1165,6 +1191,134 @@ const getResponsiveStyles = (viewport) => ({
     minHeight: "44px",
   },
 
+  // PDF Download Section
+  pdfDownloadSection: {
+    padding: viewport.isMobile ? "1.5rem" : "2.5rem",
+    background: "linear-gradient(135deg, rgba(156, 175, 136, 0.05) 0%, rgba(212, 165, 116, 0.05) 100%)",
+    borderBottom: `1px solid ${Theme.BORDER}`,
+  },
+
+  pdfDownloadHeader: {
+    textAlign: "center",
+    marginBottom: "2rem",
+  },
+
+  pdfDownloadHeaderContent: {
+    maxWidth: "600px",
+    margin: "0 auto",
+  },
+
+  pdfDownloadTitle: {
+    fontFamily: "'Playfair Display', serif",
+    fontSize: viewport.isMobile ? "1.5rem" : "2rem",
+    color: Theme.TEXT_DARK,
+    margin: "1rem 0 0.5rem 0",
+  },
+
+  pdfDownloadSubtitle: {
+    fontSize: viewport.isMobile ? "0.9rem" : "1rem",
+    color: Theme.MUTED,
+    lineHeight: 1.6,
+  },
+
+  pdfDownloadGrid: {
+    display: "grid",
+    gridTemplateColumns: viewport.isMobile ? "1fr" : "repeat(3, 1fr)",
+    gap: "1.5rem",
+    marginBottom: "2rem",
+  },
+
+  pdfDownloadCard: {
+    background: Theme.WHITE,
+    border: `1px solid ${Theme.BORDER}`,
+    borderRadius: "12px",
+    padding: "1.5rem",
+    display: "flex",
+    flexDirection: "column",
+    alignItems: "center",
+    textAlign: "center",
+  },
+
+  pdfDownloadIcon: {
+    width: "56px",
+    height: "56px",
+    backgroundColor: Theme.LIGHT_ACCENT,
+    borderRadius: "50%",
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: "1rem",
+  },
+
+  pdfDownloadCardTitle: {
+    fontSize: "1.125rem",
+    fontWeight: 600,
+    color: Theme.TEXT_DARK,
+    margin: "0 0 0.5rem 0",
+  },
+
+  pdfDownloadCardText: {
+    fontSize: "0.875rem",
+    color: Theme.MUTED,
+    lineHeight: 1.5,
+    marginBottom: "1.5rem",
+    flex: 1,
+  },
+
+  pdfDownloadCardButton: {
+    display: "flex",
+    alignItems: "center",
+    justifyContent: "center",
+    gap: "0.5rem",
+    padding: "0.75rem 1.5rem",
+    border: `1px solid ${Theme.BORDER}`,
+    borderRadius: "8px",
+    fontSize: "0.875rem",
+    fontWeight: 500,
+    cursor: "pointer",
+    transition: "all 0.3s ease",
+    width: "100%",
+    minHeight: "44px",
+    background: Theme.WHITE,
+    color: Theme.TEXT_DARK,
+  },
+
+  pdfDownloadInfo: {
+    display: "flex",
+    flexWrap: "wrap",
+    justifyContent: "center",
+    gap: "1.5rem",
+    fontSize: "0.875rem",
+    color: Theme.MUTED,
+  },
+
+  pdfDownloadInfoItem: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.5rem",
+  },
+
+  // CV Preview Section
+  cvPreviewSection: {
+    padding: viewport.isMobile ? "1.5rem" : "2.5rem",
+  },
+
+  previewTitle: {
+    fontFamily: "'Playfair Display', serif",
+    fontSize: viewport.isMobile ? "1.5rem" : "2rem",
+    color: Theme.TEXT_DARK,
+    margin: "0 0 0.5rem 0",
+  },
+
+  previewSubtitle: {
+    fontSize: viewport.isMobile ? "0.9rem" : "1rem",
+    color: Theme.MUTED,
+    lineHeight: 1.6,
+    marginBottom: "2rem",
+    maxWidth: "800px",
+  },
+
+  // Main CV Layout
   wrapper: {
     maxWidth: "1400px",
     margin: viewport.isMobile ? "0" : "2rem auto",
@@ -1183,6 +1337,7 @@ const getResponsiveStyles = (viewport) => ({
     flex: 1,
   },
 
+  // Sidebar Styles
   sidebar: {
     width: viewport.isMobile ? "100%" : "360px",
     background: viewport.isMobile ? Theme.WHITE : Theme.SIDEBAR,
@@ -1197,12 +1352,12 @@ const getResponsiveStyles = (viewport) => ({
 
   profileSection: {
     textAlign: "center",
-    marginBottom: viewport.isMobile ? "1.5rem" : "2rem",
+    marginBottom: "2rem",
   },
 
   imageContainer: {
     position: "relative",
-    marginBottom: viewport.isMobile ? "1rem" : "1.5rem",
+    marginBottom: "1.5rem",
   },
 
   imageWrapper: {
@@ -1212,6 +1367,7 @@ const getResponsiveStyles = (viewport) => ({
     position: "relative",
     overflow: "hidden",
     borderRadius: "4px",
+    border: `1px solid ${Theme.BORDER}`,
   },
 
   profileImage: {
@@ -1241,6 +1397,7 @@ const getResponsiveStyles = (viewport) => ({
     fontWeight: 500,
     margin: 0,
     letterSpacing: "-0.02em",
+    color: "inherit",
   },
 
   role: {
@@ -1249,12 +1406,12 @@ const getResponsiveStyles = (viewport) => ({
     textTransform: "uppercase",
     opacity: 0.7,
     marginTop: "0.25rem",
-    color: viewport.isMobile ? Theme.MUTED : Theme.TEXT_LIGHT,
+    color: "inherit",
   },
 
   tagline: {
     fontSize: viewport.isMobile ? "0.8rem" : "0.875rem",
-    color: viewport.isMobile ? Theme.MUTED : Theme.TEXT_LIGHT,
+    color: "inherit",
     opacity: 0.8,
     marginTop: "0.75rem",
     lineHeight: 1.5,
@@ -1266,6 +1423,26 @@ const getResponsiveStyles = (viewport) => ({
     backgroundColor: Theme.ACCENT,
     margin: "0.75rem auto",
     opacity: 0.5,
+  },
+
+  sectionContainer: {
+    marginBottom: "2rem",
+  },
+
+  sectionHeader: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    marginBottom: "1rem",
+    color: Theme.ACCENT,
+  },
+
+  sectionTitle: {
+    fontSize: "0.875rem",
+    letterSpacing: "3px",
+    textTransform: "uppercase",
+    fontWeight: 600,
+    margin: 0,
   },
 
   contactSection: {
@@ -1288,21 +1465,21 @@ const getResponsiveStyles = (viewport) => ({
   },
 
   softwareSkill: {
-    background: viewport.isMobile ? Theme.LIGHT_ACCENT : "rgba(255, 255, 255, 0.1)",
+    background: "rgba(156, 175, 136, 0.1)",
     border: `1px solid ${Theme.ACCENT}`,
-    padding: viewport.isMobile ? "0.375rem 0.75rem" : "0.5rem 1rem",
-    fontSize: viewport.isMobile ? "0.7rem" : "0.75rem",
+    padding: "0.5rem 1rem",
+    fontSize: "0.75rem",
     borderRadius: "4px",
     color: Theme.ACCENT,
   },
 
   softSkill: {
-    background: viewport.isMobile ? Theme.LIGHT_ACCENT : "rgba(255, 255, 255, 0.05)",
-    border: viewport.isMobile ? `1px solid ${Theme.ACCENT}30` : `1px solid rgba(255, 255, 255, 0.2)`,
-    padding: viewport.isMobile ? "0.375rem 0.75rem" : "0.5rem 1rem",
-    fontSize: viewport.isMobile ? "0.7rem" : "0.75rem",
+    background: "rgba(255, 255, 255, 0.05)",
+    border: `1px solid rgba(255, 255, 255, 0.2)`,
+    padding: "0.5rem 1rem",
+    fontSize: "0.75rem",
     borderRadius: "4px",
-    color: viewport.isMobile ? Theme.TEXT_DARK : Theme.TEXT_LIGHT,
+    color: "inherit",
   },
 
   socialLinks: {
@@ -1319,28 +1496,46 @@ const getResponsiveStyles = (viewport) => ({
     display: "flex",
     alignItems: "center",
     justifyContent: "center",
-    border: `1px solid ${viewport.isMobile ? Theme.ACCENT : 'rgba(156, 175, 136, 0.3)'}`,
+    border: `1px solid rgba(156, 175, 136, 0.3)`,
     borderRadius: "50%",
-    color: viewport.isMobile ? Theme.TEXT_DARK : Theme.TEXT_LIGHT,
+    color: "inherit",
     transition: "all 0.3s ease",
     textDecoration: "none",
-    backgroundColor: viewport.isMobile ? Theme.LIGHT_ACCENT : 'transparent',
+    backgroundColor: 'transparent',
   },
 
+  // Main Content Styles
   main: {
     flex: 1,
     padding: viewport.isMobile ? "1.5rem" : "3rem",
     overflowY: "auto",
   },
 
+  sectionHeaderMain: {
+    display: "flex",
+    alignItems: "center",
+    gap: "0.75rem",
+    marginBottom: "1.5rem",
+    color: Theme.ACCENT,
+  },
+
+  sectionTitleMain: {
+    fontSize: "1.25rem",
+    letterSpacing: "2px",
+    textTransform: "uppercase",
+    fontWeight: 600,
+    margin: 0,
+    color: Theme.TEXT_DARK,
+  },
+
   contentBlock: {
-    marginBottom: viewport.isMobile ? "2rem" : "3rem",
+    marginBottom: "3rem",
   },
 
   quoteCard: {
     borderLeft: `4px solid ${Theme.ACCENT}`,
     paddingLeft: "1.25rem",
-    marginBottom: viewport.isMobile ? "1.5rem" : "2rem",
+    marginBottom: "2rem",
     position: "relative",
   },
 
@@ -1364,27 +1559,26 @@ const getResponsiveStyles = (viewport) => ({
     lineHeight: 1.6,
     color: Theme.TEXT_DARK,
     fontWeight: 300,
+    fontStyle: "italic",
   },
 
   craftCard: {
     backgroundColor: Theme.LIGHT_ACCENT,
     border: `1px solid ${Theme.ACCENT}30`,
     borderRadius: "8px",
-    padding: viewport.isMobile ? "1rem" : "1.5rem",
+    padding: "1.5rem",
   },
 
   craftHeader: {
     display: "flex",
-    flexDirection: viewport.isMobile ? "column" : "row",
     justifyContent: "space-between",
-    alignItems: viewport.isMobile ? "flex-start" : "flex-start",
+    alignItems: "flex-start",
     marginBottom: "1rem",
-    gap: viewport.isMobile ? "0.5rem" : "0",
   },
 
   craftTitle: {
     fontFamily: "'Playfair Display', serif",
-    fontSize: viewport.isMobile ? "1.1rem" : "1.25rem",
+    fontSize: "1.25rem",
     color: Theme.TEXT_DARK,
     marginBottom: "0.25rem",
   },
@@ -1410,7 +1604,7 @@ const getResponsiveStyles = (viewport) => ({
     fontSize: "0.875rem",
     lineHeight: 1.6,
     color: Theme.MUTED,
-    marginBottom: viewport.isMobile ? "1rem" : "1.5rem",
+    marginBottom: "1.5rem",
     paddingLeft: "1rem",
   },
 
@@ -1427,51 +1621,12 @@ const getResponsiveStyles = (viewport) => ({
     fontSize: "0.875rem",
     color: Theme.TEXT_DARK,
   },
-
-  printHeader: {
-    display: "none",
-    padding: "1rem 0",
-    borderBottom: "2px solid #333",
-    marginBottom: "2rem",
-  },
-
-  printHeaderContent: {
-    maxWidth: "1200px",
-    margin: "0 auto",
-  },
-
-  printHeaderTitle: {
-    fontSize: "24px",
-    fontWeight: "bold",
-    margin: 0,
-    textAlign: "center",
-  },
-
-  printHeaderInfo: {
-    textAlign: "center",
-    marginTop: "0.5rem",
-    fontSize: "14px",
-    color: "#666",
-  },
-
-  printFooter: {
-    display: "none",
-    marginTop: "3rem",
-    paddingTop: "1rem",
-    borderTop: "1px solid #ddd",
-    fontSize: "12px",
-    color: "#666",
-  },
-
-  printFooterContent: {
-    display: "flex",
-    justifyContent: "space-between",
-  },
 });
 
 /* ---------- GLOBAL STYLES ---------- */
-const GlobalStyles = (viewport) => `
+const GlobalStyles = `
 @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@300;400;500;600;700&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
 * {
   box-sizing: border-box;
@@ -1482,39 +1637,36 @@ body {
   margin: 0;
   padding: 0;
   background: ${Theme.BG};
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  overflow-x: hidden;
+  line-height: 1.5;
 }
 
-/* Responsive Typography */
-html {
-  font-size: ${viewport.isExtraSmall ? '14px' : 
-              viewport.isMobile ? '14px' : 
-              viewport.isTablet ? '15px' : '16px'};
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Playfair Display', serif;
+  font-weight: 500;
+  margin-top: 0;
 }
 
-/* Touch Device Optimizations */
-@media (hover: none) and (pointer: coarse) {
-  button, a {
-    min-height: 44px;
-    min-width: 44px;
-  }
-  
-  .experience-card,
-  .craft-card {
-    padding: 1rem !important;
-  }
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
-/* Reduced Motion */
-@media (prefers-reduced-motion: reduce) {
-  * {
-    animation-duration: 0.01ms !important;
-    animation-iteration-count: 1 !important;
-    transition-duration: 0.01ms !important;
-  }
+button {
+  font-family: inherit;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+button:hover:not(:disabled) {
+  transform: translateY(-2px);
+}
+
+button:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
 }
 
 /* Selection */
@@ -1525,7 +1677,7 @@ html {
 
 /* Scrollbar */
 ::-webkit-scrollbar {
-  width: 6px;
+  width: 8px;
 }
 ::-webkit-scrollbar-track {
   background: ${Theme.BG};
@@ -1538,8 +1690,8 @@ html {
   background: ${Theme.ACCENT};
 }
 
-/* Navbar Hover Effects */
-.nav-item:hover {
+/* Hover Effects */
+.nav-link:hover {
   background-color: ${Theme.LIGHT_ACCENT};
 }
 
@@ -1549,247 +1701,10 @@ html {
   transform: translateY(-2px);
 }
 
-/* Print Styles */
-@media print {
-  @page {
-    size: A4;
-    margin: 0.5in;
-  }
-  
-  body {
-    background: white !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    min-height: auto !important;
-  }
-  
-  .no-print {
-    display: none !important;
-  }
-  
-  .cv-container {
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 !important;
-    padding: 0 !important;
-    max-width: 100% !important;
-    min-height: auto !important;
-  }
-  
-  .sidebar-print {
-    background: white !important;
-    color: black !important;
-    border-right: 1px solid #ddd !important;
-    padding: 1.5rem !important;
-  }
-  
-  .main-print {
-    background: white !important;
-    padding: 1.5rem !important;
-  }
-  
-  .profile-image-print {
-    filter: grayscale(100%) !important;
-  }
-  
-  .experience-card-print,
-  .craft-card-print {
-    break-inside: avoid;
-    page-break-inside: avoid;
-  }
-  
-  .skill-tag-print {
-    border: 1px solid #333 !important;
-    background: white !important;
-    color: #333 !important;
-  }
-  
-  .section-header-icon {
-    background: #f5f5f5 !important;
-    color: #333 !important;
-  }
-  
-  .contact-button-print {
-    background: #f5f5f5 !important;
-    color: #333 !important;
-    border: 1px solid #ddd !important;
-  }
-  
-  a {
-    color: black !important;
-    text-decoration: none !important;
-  }
-  
-  * {
-    -webkit-print-color-adjust: exact !important;
-    print-color-adjust: exact !important;
-  }
-}
-
-@media screen {
-  .print-only {
-    display: none !important;
-  }
-}
-`;
-
-/* ---------- MOBILE STYLES ---------- */
-const MobileStyles = `
-@media (max-width: 768px) {
-  .navbar-brand {
-    flex: 1;
-  }
-  
-  .brand-text {
-    display: block !important;
-  }
-  
-  .navbar-nav {
-    display: none !important;
-  }
-}
-
-@media (max-width: 480px) {
-  html {
-    font-size: 14px !important;
-  }
-  
-  .profile-name {
-    font-size: 1.5rem !important;
-  }
-  
-  .profile-role {
-    font-size: 0.7rem !important;
-    letter-spacing: 2px !important;
-  }
-  
-  .experience-company {
-    font-size: 1rem !important;
-  }
-  
-  .experience-point {
-    font-size: 0.85rem !important;
-    line-height: 1.4 !important;
-  }
-}
-
-/* Landscape Mode */
-@media (max-height: 600px) and (orientation: landscape) {
-  .sidebar {
-    padding: 1rem !important;
-  }
-  
-  .main {
-    padding: 1rem !important;
-  }
-  
-  .profile-image-wrapper {
-    width: 100px !important;
-    height: 130px !important;
-  }
-  
-  .profile-name {
-    font-size: 1.25rem !important;
-  }
-}
-
-/* Tablet Styles */
-@media (min-width: 768px) and (max-width: 1024px) {
-  .wrapper {
-    margin: 1rem auto !important;
-  }
-  
-  .sidebar {
-    width: 300px !important;
-    padding: 2rem 1.5rem !important;
-  }
-  
-  .main {
-    padding: 2rem !important;
-  }
-  
-  .profile-image-wrapper {
-    width: 180px !important;
-    height: 240px !important;
-  }
-  
-  .profile-name {
-    font-size: 1.75rem !important;
-  }
-}
-
-/* Large Screens */
-@media (min-width: 1600px) {
-  .wrapper {
-    max-width: 1400px !important;
-  }
-  
-  .sidebar {
-    width: 400px !important;
-  }
-  
-  .main {
-    padding: 4rem !important;
-  }
-}
-`;
-
-/* ---------- PRINT STYLES ---------- */
-const PrintStyles = `
-@media print {
-  @page {
-    size: A4;
-    margin: 0.5in;
-  }
-  
-  body {
-    background: white !important;
-    margin: 0 !important;
-    padding: 0 !important;
-  }
-  
-  .no-print {
-    display: none !important;
-  }
-  
-  .cv-container {
-    box-shadow: none !important;
-    border: none !important;
-    margin: 0 !important;
-    max-width: 100% !important;
-    min-height: auto !important;
-  }
-  
-  .sidebar-print {
-    background: white !important;
-    color: black !important;
-    border-right: 1px solid #ddd !important;
-    padding: 1.5rem !important;
-    width: 35% !important;
-  }
-  
-  .main-print {
-    background: white !important;
-    padding: 1.5rem !important;
-    width: 65% !important;
-  }
-  
-  .profile-image-print {
-    filter: grayscale(100%) !important;
-  }
-  
-  * {
-    -webkit-print-color-adjust: exact;
-    print-color-adjust: exact;
-  }
-  
-  .print-header {
-    display: block !important;
-  }
-  
-  .print-footer {
-    display: flex !important;
-  }
+.pdf-download-card-button:hover:not(:disabled) {
+  background: ${Theme.ACCENT} !important;
+  color: ${Theme.WHITE} !important;
+  border-color: ${Theme.ACCENT} !important;
 }
 `;
 
