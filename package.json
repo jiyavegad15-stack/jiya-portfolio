@@ -2,7 +2,7 @@
   "name": "jiya-portfolio",
   "version": "1.0.0",
   "private": true,
-  "homepage": "https://pratikxop.github.io/jiya-portfolio",
+  "homepage": "https://github.com/jiyavegad15-stack/jiya-portfolio",
   "dependencies": {
     "framer-motion": "^7.10.3",
     "lucide-react": "^0.278.0",

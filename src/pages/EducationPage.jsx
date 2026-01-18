@@ -142,15 +142,15 @@ const EducationPage = () => {
       year: "2019 – 2021",
       institution: "S.J. DAV Public School",
       degree: "Higher Secondary",
-      spec: "Science Stream",
-      location: "Chaibasa, JHK",
+      spec: "Commerce Stream",
+      location: "Chaibasa, JH",
       description:
-        "A foundation built on physics and geometry. This period defined my analytical approach to structural design and spatial composition.",
+        "A foundation built on economics and quantitative analysis. This period defined my strategic approach to fashion market dynamics, supply chain optimization, and cost-effective design structuring.",
       icon: <Target size={22} />,
       highlights: [
-        "Advanced Mathematics",
-        "Structural Physics",
-        "Visual Arts",
+        "Economics",
+        "Businuess Studies",
+        "Accountancy",
       ],
     },
   ];
@@ -234,9 +234,9 @@ const EducationPage = () => {
         <div style={heroStyles.content}>
           <span style={heroStyles.badge}>Academic Portfolio</span>
           <h1 style={heroStyles.title}>
-            Intellectual <br />
+            Academic <br />
             <span style={{ fontStyle: "italic", fontWeight: 400 }}>
-              Curriculum
+              Journey
             </span>
           </h1>
           <p style={heroStyles.subtitle}>

@@ -364,6 +364,7 @@ const ElegantPortfolio = () => {
     NameVegad: {
       color: Colors.TEXT_LIGHT,
       display: "block",
+      marginTop:"1.5rem",
       marginLeft: getResponsiveValue(
         isExtraSmall ? "1rem" : "1.5rem",
         "3rem",
@@ -395,7 +396,7 @@ const ElegantPortfolio = () => {
       marginBottom: getResponsiveValue("1.5rem", "2rem", "2rem"),
       opacity: isOpen ? 1 : 0.7,
       transition: "all 0.8s ease",
-      marginTop: getResponsiveValue("1rem", "1.5rem", "1.5rem"),
+      marginTop: getResponsiveValue("1rem", "1.5rem", "2.5rem"),
     },
 
     BodyText: {
@@ -678,7 +679,7 @@ const ElegantPortfolio = () => {
               <span style={Styles.NameVegad}>Vegad</span>
             </h1>
             <div style={Styles.Subtitle} aria-label="Fashion Design Portfolio">
-              Fashion Design Portfolio 2025
+              Fashion Design Portfolio
             </div>
           </div>
         )}

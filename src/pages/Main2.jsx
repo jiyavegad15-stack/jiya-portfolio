@@ -173,6 +173,7 @@ export default function ElegantPortfolio() {
     },
 
     NameVegad: {
+      marginTop:"1.5rem",
       color: Colors.TEXT_LIGHT,
       display: "block",
       marginLeft: isDesktop ? "4rem" : "2rem",
@@ -191,7 +192,7 @@ export default function ElegantPortfolio() {
       textTransform: "uppercase",
       fontSize: "0.8rem",
       color: isOpen ? Colors.ACCENT : Colors.TEXT_LIGHT,
-      marginTop: "1.5rem", 
+      marginTop: "2.5rem", 
       marginBottom: "2.5rem",
       opacity: isOpen ? 1 : 0.7,
       transition: "all 0.8s ease",
