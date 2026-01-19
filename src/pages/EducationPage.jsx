@@ -139,7 +139,7 @@ const navItems = [
       ],
     },
     {
-      year: "2019 – 2021",
+      year: "2018 – 2020",
       institution: "S.J. DAV Public School",
       degree: "Higher Secondary",
       spec: "Commerce Stream",
