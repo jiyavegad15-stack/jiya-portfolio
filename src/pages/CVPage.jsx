@@ -342,101 +342,6 @@ const CVPage = () => {
         )}
       </header>
 
-      <div style={styles.wrapper} className="cv-container">
-        {/* PDF Download Section */}
-        <div style={styles.pdfDownloadSection}>
-          <div style={styles.pdfDownloadHeader}>
-            <div style={styles.pdfDownloadHeaderContent}>
-              <FileText size={24} color={Theme.ACCENT} />
-              <h2 style={styles.pdfDownloadTitle}>Professional CV Document</h2>
-              <p style={styles.pdfDownloadSubtitle}>
-                Download or print the professionally formatted CV document for job applications and professional use.
-              </p>
-            </div>
-          </div>
-
-          <div style={styles.pdfDownloadGrid}>
-            <div style={styles.pdfDownloadCard}>
-              <div style={styles.pdfDownloadIcon}>
-                <Eye size={24} color={Theme.ACCENT} />
-              </div>
-              <h3 style={styles.pdfDownloadCardTitle}>Preview</h3>
-              <p style={styles.pdfDownloadCardText}>
-                View the complete CV document in PDF format before downloading.
-              </p>
-              <button
-                style={styles.pdfDownloadCardButton}
-                onClick={handleViewPDF}
-              >
-                <Eye size={16} />
-                <span>Preview PDF</span>
-              </button>
-            </div>
-
-            <div style={styles.pdfDownloadCard}>
-              <div style={styles.pdfDownloadIcon}>
-                <Download size={24} color={Theme.ACCENT} />
-              </div>
-              <h3 style={styles.pdfDownloadCardTitle}>Download</h3>
-              <p style={styles.pdfDownloadCardText}>
-                Download the professionally formatted CV document in PDF format.
-              </p>
-              <button
-                style={{
-                  ...styles.pdfDownloadCardButton,
-                  background: Theme.ACCENT,
-                  color: Theme.WHITE,
-                  opacity: isProcessing ? 0.7 : 1,
-                }}
-                onClick={handleDownloadPDF}
-                disabled={isProcessing}
-              >
-                <Download size={16} />
-                <span>{isProcessing ? "Downloading..." : "Download PDF"}</span>
-              </button>
-            </div>
-
-            <div style={styles.pdfDownloadCard}>
-              <div style={styles.pdfDownloadIcon}>
-                <Printer size={24} color={Theme.ACCENT} />
-              </div>
-              <h3 style={styles.pdfDownloadCardTitle}>Print</h3>
-              <p style={styles.pdfDownloadCardText}>
-                Print the CV document directly from your browser with optimized formatting.
-              </p>
-              <button
-                style={{
-                  ...styles.pdfDownloadCardButton,
-                  border: `1px solid ${Theme.ACCENT}`,
-                  color: Theme.ACCENT,
-                  background: Theme.WHITE,
-                  opacity: isProcessing ? 0.7 : 1,
-                }}
-                onClick={handlePrintPDF}
-                disabled={isProcessing}
-              >
-                <Printer size={16} />
-                <span>{isProcessing ? "Processing..." : "Print PDF"}</span>
-              </button>
-            </div>
-          </div>
-
-          <div style={styles.pdfDownloadInfo}>
-            <div style={styles.pdfDownloadInfoItem}>
-              <ExternalLink size={16} color={Theme.ACCENT} />
-              <span>Professional A4 Format</span>
-            </div>
-            <div style={styles.pdfDownloadInfoItem}>
-              <ExternalLink size={16} color={Theme.ACCENT} />
-              <span>Optimized for Print</span>
-            </div>
-            <div style={styles.pdfDownloadInfoItem}>
-              <ExternalLink size={16} color={Theme.ACCENT} />
-              <span>Ready for Job Applications</span>
-            </div>
-          </div>
-        </div>
-
         {/* CV Preview Section */}
         <div style={styles.cvPreviewSection}>
           <h2 style={styles.previewTitle}>CV Preview</h2>
@@ -483,7 +388,7 @@ const CVPage = () => {
                 </div>
                 <div style={styles.contactSection}>
                   <InfoRow icon={<Mail size={16} />} text="jiyavegad15@gmail.com" />
-                  <InfoRow icon={<Phone size={16} />} text="+91 77648 4208" />
+                  <InfoRow icon={<Phone size={16} />} text="+91 77648 34208" />
                   <InfoRow icon={<MapPin size={16} />} text="Chaibasa, Jharkhand, India" />
                 </div>
               </div>
@@ -741,6 +646,100 @@ const CVPage = () => {
                 </div>
               </section>
             </main>
+          </div>
+        </div>
+      <div style={styles.wrapper} className="cv-container">
+        {/* PDF Download Section */}
+        <div style={styles.pdfDownloadSection}>
+          <div style={styles.pdfDownloadHeader}>
+            <div style={styles.pdfDownloadHeaderContent}>
+              <FileText size={24} color={Theme.ACCENT} />
+              <h2 style={styles.pdfDownloadTitle}>Professional CV Document</h2>
+              <p style={styles.pdfDownloadSubtitle}>
+                Download or print the professionally formatted CV document for job applications and professional use.
+              </p>
+            </div>
+          </div>
+
+          <div style={styles.pdfDownloadGrid}>
+            <div style={styles.pdfDownloadCard}>
+              <div style={styles.pdfDownloadIcon}>
+                <Eye size={24} color={Theme.ACCENT} />
+              </div>
+              <h3 style={styles.pdfDownloadCardTitle}>Preview</h3>
+              <p style={styles.pdfDownloadCardText}>
+                View the complete CV document in PDF format before downloading.
+              </p>
+              <button
+                style={styles.pdfDownloadCardButton}
+                onClick={handleViewPDF}
+              >
+                <Eye size={16} />
+                <span>Preview PDF</span>
+              </button>
+            </div>
+
+            <div style={styles.pdfDownloadCard}>
+              <div style={styles.pdfDownloadIcon}>
+                <Download size={24} color={Theme.ACCENT} />
+              </div>
+              <h3 style={styles.pdfDownloadCardTitle}>Download</h3>
+              <p style={styles.pdfDownloadCardText}>
+                Download the professionally formatted CV document in PDF format.
+              </p>
+              <button
+                style={{
+                  ...styles.pdfDownloadCardButton,
+                  background: Theme.ACCENT,
+                  color: Theme.WHITE,
+                  opacity: isProcessing ? 0.7 : 1,
+                }}
+                onClick={handleDownloadPDF}
+                disabled={isProcessing}
+              >
+                <Download size={16} />
+                <span>{isProcessing ? "Downloading..." : "Download PDF"}</span>
+              </button>
+            </div>
+
+            <div style={styles.pdfDownloadCard}>
+              <div style={styles.pdfDownloadIcon}>
+                <Printer size={24} color={Theme.ACCENT} />
+              </div>
+              <h3 style={styles.pdfDownloadCardTitle}>Print</h3>
+              <p style={styles.pdfDownloadCardText}>
+                Print the CV document directly from your browser with optimized formatting.
+              </p>
+              <button
+                style={{
+                  ...styles.pdfDownloadCardButton,
+                  border: `1px solid ${Theme.ACCENT}`,
+                  color: Theme.ACCENT,
+                  background: Theme.WHITE,
+                  opacity: isProcessing ? 0.7 : 1,
+                }}
+                onClick={handlePrintPDF}
+                disabled={isProcessing}
+              >
+                <Printer size={16} />
+                <span>{isProcessing ? "Processing..." : "Print PDF"}</span>
+              </button>
+            </div>
+          </div>
+
+          <div style={styles.pdfDownloadInfo}>
+            <div style={styles.pdfDownloadInfoItem}>
+              <ExternalLink size={16} color={Theme.ACCENT} />
+              <span>Professional A4 Format</span>
+            </div>
+            <div style={styles.pdfDownloadInfoItem}>
+              <ExternalLink size={16} color={Theme.ACCENT} />
+              <span>Optimized for Print</span>
+            </div>
+            <div style={styles.pdfDownloadInfoItem}>
+              <ExternalLink size={16} color={Theme.ACCENT} />
+              <span>Ready for Job Applications</span>
+            </div>
           </div>
         </div>
       </div>
@@ -1555,10 +1554,10 @@ const getResponsiveStyles = (viewport) => ({
 
   profileQuote: {
     fontFamily: "'Playfair Display', serif",
-    fontSize: viewport.isMobile ? "1.1rem" : "1.5rem",
+    fontSize: viewport.isMobile ? "0.9rem" : "1.1rem",
     lineHeight: 1.6,
     color: Theme.TEXT_DARK,
-    fontWeight: 300,
+    fontWeight: 200,
     fontStyle: "italic",
   },
 

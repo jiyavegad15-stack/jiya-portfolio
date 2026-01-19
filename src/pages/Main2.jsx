@@ -165,10 +165,40 @@ const ElegantPortfolio = () => {
               ))}
             </nav>
 
-            <div style={{ marginTop: "2.5rem", display: "flex", gap: "1.5rem", opacity: 0.7 }}>
-              <Instagram size={20} style={{ cursor: "pointer" }} />
-              <Linkedin size={20} style={{ cursor: "pointer" }} />
-              <Mail size={20} style={{ cursor: "pointer" }} />
+            <div style={{ 
+              marginTop: "2.5rem", 
+              display: "flex", 
+              gap: "1.5rem", 
+              opacity: 0.7 
+            }}>
+              
+              <a
+                href="https://www.instagram.com/jiya_vegad?igsh=MTg1dndtNzRxYXphdA=="  
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="Instagram"
+                style={{ color: "inherit" }}
+              >
+                <Instagram size={20} style={{ cursor: "pointer" }} />
+              </a>
+
+              <a
+                href="https://www.linkedin.com/in/jiya-vegad" 
+                target="_blank"
+                rel="noopener noreferrer"
+                aria-label="LinkedIn"
+                style={{ color: "inherit" }}
+              >
+                <Linkedin size={20} style={{ cursor: "pointer" }} />
+              </a>
+
+              <a
+                href="mailto:Jiyavegad15@gmail.com"           
+                aria-label="Email"
+                style={{ color: "inherit" }}
+              >
+                <Mail size={20} style={{ cursor: "pointer" }} />
+              </a>
             </div>
           </div>
         )}
