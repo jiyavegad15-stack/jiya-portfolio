@@ -109,24 +109,19 @@ const GlobalStyles = () => (
             50% { transform: translateY(-15px) rotate(2deg); }
         }
 
-        .arch-frame {
-            position: relative;
-            width: 100%;
-            height: 100%;
-            border-radius: 300px 300px 20px 20px;
-            overflow: hidden;
-            background: ${Theme.surface};
-            border: 1px solid white;
-            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.08);
-            z-index: 2;
-        }
-
         .arch-frame img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            border-radius: 50%;
             transition: transform 1s var(--ease);
         }
+
+
+        .arch-frame {
+            filter: drop-shadow(0 20px 40px rgba(0,0,0,0.12));
+        }
+
 
         .arch-frame:hover img {
             transform: scale(1.05);
