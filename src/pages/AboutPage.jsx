@@ -1,186 +1,234 @@
 import React, { useEffect, useRef, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
-import {
-    Sparkles, ArrowRight, Mail, Instagram, Linkedin,
-    Activity, PersonStanding, Headphones, Plane, Menu, X
+import { 
+    Sparkles, ArrowRight, Mail, Instagram, Linkedin, 
+    Activity, PersonStanding, Headphones, Plane, Menu, X 
 } from "lucide-react";
+import { Link, useLocation } from "react-router-dom";
 
 import ProfilePic from "../assets/profile3.png";
 
 const Theme = {
-    bg: "#FFFEFB",
-    dark: "#1A3A47",
-    red: "#F16D55",
-    text: "#2C3E50",
-    secondary: "#E8C07D",
-    glass: "rgba(255, 255, 255, 0.75)",
+    bg: "#FBF9F7",
+    surface: "#F4F1EE",
+    primary: "#1A1A1A",
+    accent: "#D97D6E",
+    muted: "#7C7671",
+    border: "rgba(26, 26, 26, 0.06)",
+    glass: "rgba(251, 249, 247, 0.85)",
 };
 
-const styles = `
-@import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:wght@400;500&display=swap');
+const GlobalStyles = () => (
+    <style>{`
+        @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Lora:ital,wght@0,400;0,500&family=Inter:wght@300;400;600&display=swap');
 
-:root {
-    --container-max: 1440px;
-    --section-spacing: clamp(4rem, 12vh, 10rem);
-    --transition-main: all 0.5s cubic-bezier(0.16, 1, 0.3, 1);
-}
+        :root {
+            --ease: cubic-bezier(0.23, 1, 0.32, 1);
+            --t-slow: 1.4s var(--ease);
+            --t-med: 0.8s var(--ease);
+        }
 
-* { 
-    box-sizing: border-box; 
-    -webkit-font-smoothing: antialiased;
-}
+        * { 
+            box-sizing: border-box; 
+            margin: 0; 
+            padding: 0;
+            -webkit-font-smoothing: antialiased;
+        }
 
-html { 
-    scroll-behavior: smooth;
-    font-size: 16px; /* Base for rem units */
-}
+        body {
+            background-color: ${Theme.bg};
+            color: ${Theme.primary};
+            font-family: 'Lora', serif;
+            overflow-x: hidden;
+            selection-background: ${Theme.accent};
+            selection-color: white;
+        }
 
-body {
-    background-color: ${Theme.bg};
-    color: ${Theme.text};
-    margin: 0;
-    font-family: 'Lora', serif;
-    overflow-x: hidden;
-    width: 100%;
-}
+        .reveal {
+            opacity: 0;
+            transform: translateY(40px);
+            transition: opacity var(--t-slow), transform var(--t-slow);
+        }
 
-/* Custom Cursor - Hidden on Touch Devices */
-.cursor-dot, .cursor-outline {
-    position: fixed;
-    pointer-events: none;
-    border-radius: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 9999;
-}
-.cursor-dot { width: 6px; height: 6px; background: ${Theme.red}; }
-.cursor-outline {
-    width: 34px;
-    height: 34px;
-    border: 1px solid ${Theme.red}60;
-    transition: transform 0.1s ease-out;
-}
+        .reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
 
-@media (pointer: coarse) {
-    .cursor-dot, .cursor-outline { display: none; }
-}
+        .image-stage {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            aspect-ratio: 0.85;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
 
-.reveal {
-    opacity: 0;
-    transform: translateY(30px);
-    transition: var(--transition-main);
-}
-.reveal.visible {
-    opacity: 1;
-    transform: translateY(0);
-}
+        .orbit {
+            position: absolute;
+            width: 110%;
+            height: 110%;
+            border: 1px solid ${Theme.border};
+            border-radius: 50%;
+            animation: rotate 20s linear infinite;
+        }
 
-.hero-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(min(100%, 500px), 1fr));
-    gap: clamp(2rem, 5vw, 5rem);
-    align-items: center;
-    min-height: calc(100vh - 80px);
-}
+        .orbit::after {
+            content: '';
+            position: absolute;
+            top: -5px;
+            left: 50%;
+            width: 10px;
+            height: 10px;
+            background: ${Theme.accent};
+            border-radius: 50%;
+        }
 
-.hero-stage {
-    position: relative;
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-}
+        @keyframes rotate {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
 
-.glass-arch {
-    width: min(100%, 450px);
-    aspect-ratio: 1 / 1.25;
-    background: linear-gradient(135deg, ${Theme.secondary}15, #fff);
-    backdrop-filter: blur(10px);
-    border-radius: 50% 50% 10% 10% / 40% 40% 10% 10%;
-    border: 1px solid white;
-    box-shadow: 0 30px 60px rgba(0,0,0,0.05);
-}
+        .floating-element {
+            position: absolute;
+            background: white;
+            padding: 1rem;
+            border-radius: 8px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.05);
+            font-family: 'Inter', sans-serif;
+            font-size: 0.7rem;
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            z-index: 10;
+            animation: float 6s ease-in-out infinite;
+        }
 
-.hero-img {
-    position: absolute;
-    bottom: 0;
-    width: min(110%, 500px);
-    height: auto;
-    filter: drop-shadow(0 20px 30px rgba(0,0,0,0.1));
-    z-index: 2;
-}
+        @keyframes float {
+            0%, 100% { transform: translateY(0) rotate(-2deg); }
+            50% { transform: translateY(-15px) rotate(2deg); }
+        }
 
-.interest-card {
-    background: white;
-    padding: 2.5rem;
-    height: 100%;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-start;
-    border: 1px solid rgba(0,0,0,0.03);
-    transition: var(--transition-main);
-}
+        .arch-frame {
+            position: relative;
+            width: 100%;
+            height: 100%;
+            border-radius: 300px 300px 20px 20px;
+            overflow: hidden;
+            background: ${Theme.surface};
+            border: 1px solid white;
+            box-shadow: 0 50px 100px -20px rgba(0,0,0,0.08);
+            z-index: 2;
+        }
 
-.interest-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 0 20px 40px rgba(0,0,0,0.04);
-}
+        .arch-frame img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 1s var(--ease);
+        }
 
-/* Responsive Overrides */
-@media (max-width: 1024px) {
-    .hero-grid { text-align: center; }
-    .hero-stage { order: -1; padding-bottom: 3rem; }
-    .hero-content { display: flex; flex-direction: column; align-items: center; }
-}
+        .arch-frame:hover img {
+            transform: scale(1.05);
+        }
 
-@media (max-width: 480px) {
-    .hero-img { width: 100%; }
-}
-`;
+        .nav-item {
+            text-decoration: none;
+            color: ${Theme.muted};
+            font-family: 'Inter', sans-serif;
+            font-size: 0.75rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            transition: 0.4s;
+            padding: 0.5rem 0;
+        }
 
-const CustomCursor = () => {
-    const dot = useRef(null);
-    const outline = useRef(null);
+        .nav-item:hover, .nav-item.active {
+            color: ${Theme.primary};
+        }
 
-    useEffect(() => {
-        const move = e => {
-            if (dot.current && outline.current) {
-                dot.current.style.left = `${e.clientX}px`;
-                dot.current.style.top = `${e.clientY}px`;
-                outline.current.style.left = `${e.clientX}px`;
-                outline.current.style.top = `${e.clientY}px`;
-            }
-        };
-        window.addEventListener("mousemove", move);
-        return () => window.removeEventListener("mousemove", move);
-    }, []);
+        .nav-item.active::after {
+            content: '';
+            display: block;
+            width: 100%;
+            height: 1px;
+            background: ${Theme.accent};
+            margin-top: 4px;
+        }
 
-    return (
-        <>
-            <div ref={dot} className="cursor-dot" />
-            <div ref={outline} className="cursor-outline" />
-        </>
-    );
-};
+        .interest-card {
+            background: white;
+            padding: 4rem 2rem;
+            border: 1px solid ${Theme.border};
+            transition: var(--t-med);
+            text-align: center;
+        }
 
-const Reveal = ({ children, delay = 0 }) => {
+        .interest-card:hover {
+            border-color: transparent;
+            box-shadow: 0 40px 80px -15px rgba(0,0,0,0.04);
+            transform: translateY(-12px);
+        }
+
+        .cta-button {
+            padding: 1.4rem 3.5rem;
+            background: ${Theme.primary};
+            color: white;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 1.2rem;
+            font-family: 'Inter', sans-serif;
+            font-size: 0.8rem;
+            font-weight: 600;
+            letter-spacing: 2px;
+            transition: 0.5s var(--ease);
+            border: 1px solid ${Theme.primary};
+        }
+
+        .cta-button:hover {
+            background: transparent;
+            color: ${Theme.primary};
+            transform: scale(1.05);
+        }
+
+        @media (max-width: 1024px) {
+            .hero-container { grid-template-columns: 1fr !important; text-align: center; gap: 6rem !important; }
+            .hero-text { order: 2; display: flex; flex-direction: column; align-items: center; }
+            .hero-visual { order: 1; }
+        }
+    `}</style>
+);
+
+const Reveal = ({ children, delay = 0, className = "" }) => {
     const ref = useRef(null);
     useEffect(() => {
-        const obs = new IntersectionObserver(([e]) => {
-            if (e.isIntersecting) {
-                setTimeout(() => e.target.classList.add("visible"), delay * 100);
+        const observer = new IntersectionObserver(([entry]) => {
+            if (entry.isIntersecting) {
+                setTimeout(() => {
+                    if (entry.target) entry.target.classList.add("visible");
+                }, delay);
             }
         }, { threshold: 0.1 });
-        if (ref.current) obs.observe(ref.current);
-        return () => obs.disconnect();
+        if (ref.current) observer.observe(ref.current);
+        return () => observer.disconnect();
     }, [delay]);
-    return <div ref={ref} className="reveal">{children}</div>;
+    return <div ref={ref} className={`reveal ${className}`}>{children}</div>;
 };
 
 const Navbar = () => {
     const { pathname } = useLocation();
-    const [isOpen, setIsOpen] = useState(false);
-    
-    const items = [
+    const [scrolled, setScrolled] = useState(false);
+    const [mobileOpen, setMobileOpen] = useState(false);
+
+    useEffect(() => {
+        const handleScroll = () => setScrolled(window.scrollY > 50);
+        window.addEventListener("scroll", handleScroll);
+        return () => window.removeEventListener("scroll", handleScroll);
+    }, []);
+
+    const navs = [
         { name: "Home", path: "/main2" },
         { name: "About", path: "/about" },
         { name: "Portfolio", path: "/portfolio" },
@@ -193,71 +241,52 @@ const Navbar = () => {
 
     return (
         <nav style={{
-            position: "sticky", top: 0, zIndex: 1000,
-            background: "rgba(255,255,251,0.9)", backdropFilter: "blur(10px)",
-            borderBottom: "1px solid rgba(0,0,0,0.05)"
+            position: "fixed", top: 0, left: 0, width: "100%", zIndex: 1000,
+            background: scrolled ? Theme.glass : "transparent",
+            backdropFilter: scrolled ? "blur(15px)" : "none",
+            borderBottom: scrolled ? `1px solid ${Theme.border}` : "none",
+            transition: "0.4s ease"
         }}>
             <div style={{
-                display: "flex", justifyContent: "space-between", alignItems: "center",
-                maxWidth: "var(--container-max)", margin: "0 auto", padding: "0 5%", height: "80px"
+                maxWidth: "1600px", margin: "0 auto", padding: "0 5%", height: "100px",
+                display: "flex", justifyContent: "space-between", alignItems: "center"
             }}>
                 <Link to="/main2" style={{
-                    fontFamily: "Playfair Display", fontSize: "1.5rem",
-                    color: Theme.dark, textDecoration: "none", fontWeight: 700
+                    fontFamily: "Playfair Display", fontSize: "1.8rem", fontWeight: 700,
+                    color: Theme.primary, textDecoration: "none", letterSpacing: "-1px"
                 }}>JIYA</Link>
 
-                {/* Desktop Menu */}
-                <div style={{ display: "none", gap: "0.5rem" }} className="desktop-nav">
-                    <style>{`@media (min-width: 850px) { .desktop-nav { display: flex !important; } }`}</style>
-                    {items.map(i => (
-                        <Link key={i.name} to={i.path} style={{
-                            padding: "0.5rem 1.2rem", borderRadius: 20,
-                            textDecoration: "none", fontSize: "0.9rem",
-                            color: pathname === i.path ? "#fff" : Theme.text,
-                            background: pathname === i.path ? Theme.dark : "transparent",
-                            transition: "0.3s"
-                        }}>
-                            {i.name}
+                <div style={{ display: "none", gap: "2.5rem" }} className="desktop-links">
+                    <style>{`@media (min-width: 1100px) { .desktop-links { display: flex !important; } }`}</style>
+                    {navs.map(n => (
+                        <Link key={n.name} to={n.path} className={`nav-item ${pathname === n.path ? 'active' : ''}`}>
+                            {n.name}
                         </Link>
                     ))}
                 </div>
 
-                    <div style={{ display: "flex", gap: "1.2rem", alignItems: "center" }}>
-                        <a
-                            href="https://www.instagram.com/jiya_vegad"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            aria-label="Instagram"
-                            style={{ display: "flex", alignItems: "center", color: "inherit" }}
-                        >
-                            <Instagram size={18} className="social-icon" />
-                        </a>
-
-                        <button 
-                            onClick={() => setIsOpen(!isOpen)}
-                            style={{ background: "none", border: "none", cursor: "pointer", padding: 0 }}
-                            className="mobile-toggle"
-                        >
-                            <style>{`@media (min-width: 850px) { .mobile-toggle { display: none; } }`}</style>
-                            {isOpen ? <X size={24} /> : <Menu size={24} />}
-                        </button>
-                    </div>
-
+                <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
+                    <a href="https://instagram.com/jiya_vegad" target="_blank" rel="noreferrer" style={{ color: Theme.primary }}>
+                        <Instagram size={20} strokeWidth={1.5} />
+                    </a>
+                    <button onClick={() => setMobileOpen(!mobileOpen)} style={{ background: "none", border: "none", cursor: "pointer", color: Theme.primary }}>
+                        <style>{`@media (min-width: 1100px) { .mobile-btn { display: none; } }`}</style>
+                        <div className="mobile-btn">{mobileOpen ? <X size={28} /> : <Menu size={28} />}</div>
+                    </button>
+                </div>
             </div>
 
-            {/* Mobile Sidebar */}
-            {isOpen && (
+            {mobileOpen && (
                 <div style={{
-                    position: "absolute", top: "100%", left: 0, width: "100%",
-                    background: "#fff", padding: "2rem", borderBottom: `1px solid ${Theme.dark}10`,
-                    display: "flex", flexDirection: "column", gap: "1.5rem", zIndex: 999
+                    position: "fixed", top: "100px", left: 0, width: "100%", height: "100vh",
+                    background: Theme.bg, zIndex: 999, padding: "10%", display: "flex", flexDirection: "column", gap: "2rem"
                 }}>
-                    {items.map(i => (
-                        <Link key={i.name} to={i.path} onClick={() => setIsOpen(false)} style={{
-                            textDecoration: "none", color: Theme.dark, fontSize: "1.2rem", fontWeight: 500
-                        }}>
-                            {i.name}
-                        </Link>
+                    {navs.map((n, i) => (
+                        <Reveal key={n.name} delay={i * 60}>
+                            <Link to={n.path} onClick={() => setMobileOpen(false)} style={{
+                                textDecoration: "none", color: Theme.primary, fontSize: "2.5rem", fontFamily: "Playfair Display"
+                            }}>{n.name}</Link>
+                        </Reveal>
                     ))}
                 </div>
             )}
@@ -265,43 +294,44 @@ const Navbar = () => {
     );
 };
 
-const AboutPage = () => {
+const App = () => {
     return (
         <div style={{ width: "100%" }}>
-            <style>{styles}</style>
-            <CustomCursor />
+            <GlobalStyles />
             <Navbar />
 
             <section style={{ 
-                padding: "0 5%", maxWidth: "var(--container-max)", 
-                margin: "0 auto", overflow: "hidden" 
+                padding: "180px 5% 120px", maxWidth: "1500px", margin: "0 auto", 
+                minHeight: "100vh", display: "flex", alignItems: "center"
             }}>
-                <div className="hero-grid">
-                    <div className="hero-content">
+                <div className="hero-container" style={{
+                    display: "grid", gridTemplateColumns: "1.2fr 1fr", gap: "10%", alignItems: "center", width: "100%"
+                }}>
+                    <div className="hero-text">
                         <Reveal>
-                            <div style={{ display: "flex", alignItems: "center", gap: 12, color: Theme.red, marginBottom: "1.5rem" }}>
-                                <div style={{ height: 1, width: 40, background: Theme.red }} />
-                                <span style={{ letterSpacing: 3, fontWeight: 700, fontSize: "0.7rem", textTransform: "uppercase" }}>
+                            <div style={{ display: "flex", alignItems: "center", gap: 20, color: Theme.accent, marginBottom: "2.5rem" }}>
+                                <div style={{ height: 1, width: 50, background: Theme.accent }} />
+                                <span style={{ fontFamily: "Inter", fontSize: "0.75rem", letterSpacing: 5, fontWeight: 600, textTransform: "uppercase" }}>
                                     Designer & Storyteller
                                 </span>
                             </div>
                         </Reveal>
 
-                        <Reveal delay={1}>
+                        <Reveal delay={200}>
                             <h1 style={{
-                                fontSize: "clamp(2.5rem, 8vw, 5rem)",
-                                fontFamily: "Playfair Display",
-                                color: Theme.dark, lineHeight: 1.1, margin: "0 0 2rem"
+                                fontSize: "clamp(3.5rem, 8vw, 7rem)", color: Theme.primary, 
+                                fontFamily: "Playfair Display", lineHeight: 0.95, marginBottom: "3rem", letterSpacing: "-0.03em"
                             }}>
-                                Weaving <em style={{ color: Theme.red, fontStyle: "italic", fontWeight: 400 }}>Fantasy</em><br />
-                                into Every Thread.
+                                Weaving <br />
+                                <em style={{ color: Theme.accent, fontStyle: "italic", fontWeight: 400 }}>Fantasy</em> <br />
+                                <span style={{ fontSize: "0.8em" }}>into Every Thread.</span>
                             </h1>
                         </Reveal>
 
-                        <Reveal delay={2}>
+                        <Reveal delay={400}>
                             <p style={{ 
-                                maxWidth: 540, lineHeight: 1.8, fontSize: "clamp(1rem, 2vw, 1.1rem)", 
-                                color: "#555", marginBottom: "3rem" 
+                                maxWidth: "520px", fontSize: "clamp(1.1rem, 2vw, 1.25rem)", color: Theme.muted, 
+                                lineHeight: 1.8, marginBottom: "4.5rem", fontWeight: 400
                             }}>
                                 A creative fashion designer drawn to fantasy-driven storytelling
                                 and sustainable design. Travel, music, and dance keep my
@@ -309,37 +339,46 @@ const AboutPage = () => {
                             </p>
                         </Reveal>
 
-                        <Reveal delay={3}>
-                            <Link to="/work" style={{
-                                padding: "1.2rem 3rem", background: Theme.dark,
-                                color: "#fff", borderRadius: 2, textDecoration: "none",
-                                display: "inline-flex", alignItems: "center", gap: 12,
-                                fontWeight: 500, letterSpacing: 1, transition: "0.3s"
-                            }}>
-                                EXPLORE WORK <ArrowRight size={18} />
+                        <Reveal delay={600}>
+                            <Link to="/work" className="cta-button">
+                                EXPLORE WORK <ArrowRight size={20} />
                             </Link>
                         </Reveal>
                     </div>
 
-                    <div className="hero-stage">
-                        <div className="glass-arch" />
-                        <img src={ProfilePic} alt="Jiya" className="hero-img" />
+                    <div className="hero-visual" style={{ display: "flex", justifyContent: "center" }}>
+                        <Reveal delay={300}>
+                            <div className="image-stage">
+                                <div className="orbit" />
+                                <div className="floating-element" style={{ top: "10%", right: "-10%" }}>Fantasy</div>
+                                <div className="floating-element" style={{ bottom: "20%", left: "-15%", animationDelay: "1s" }}>Sustainable</div>
+                                <div className="arch-frame">
+                                    <img 
+                                        src={ProfilePic} 
+                                        alt="Jiya" 
+                                    />
+                                </div>
+                            </div>
+                        </Reveal>
                     </div>
                 </div>
             </section>
 
-            <section style={{ background: "#FDFCF9", padding: "var(--section-spacing) 5%" }}>
-                <div style={{ maxWidth: 1200, margin: "0 auto" }}>
+            <section style={{ background: Theme.surface, padding: "clamp(6rem, 15vh, 12rem) 5%" }}>
+                <div style={{ maxWidth: "1300px", margin: "0 auto" }}>
                     <Reveal>
-                        <h2 style={{
-                            fontFamily: "Dancing Script", fontSize: "clamp(3.5rem, 10vw, 6rem)",
-                            color: Theme.red, margin: "0 0 4rem", textAlign: "center"
-                        }}>Interests</h2>
+                        <div style={{ textAlign: "center", marginBottom: "8rem" }}>
+                            <h2 style={{
+                                fontFamily: "Playfair Display", fontSize: "clamp(3.5rem, 7vw, 6rem)",
+                                color: Theme.primary, marginBottom: "1rem"
+                            }}>Interests</h2>
+                            <div style={{ width: 60, height: 2, background: Theme.accent, margin: "0 auto" }} />
+                        </div>
                     </Reveal>
 
                     <div style={{
                         display: "grid",
-                        gridTemplateColumns: "repeat(auto-fill, minmax(min(100%, 260px), 1fr))",
+                        gridTemplateColumns: "repeat(auto-fit, minmax(280px, 1fr))",
                         gap: "2rem"
                     }}>
                         {[
@@ -347,14 +386,14 @@ const AboutPage = () => {
                             { icon: <PersonStanding/>, title: "Dance", text: "Movement as a form of soulful self-expression." },
                             { icon: <Headphones/>, title: "Music", text: "Curated playlists for every creative mood and flow." },
                             { icon: <Plane/>, title: "Travel", text: "Discovering new textures and global heritage stories." }
-                        ].map((i, k) => (
-                            <Reveal key={k} delay={k}>
+                        ].map((item, idx) => (
+                            <Reveal key={idx} delay={idx * 150}>
                                 <div className="interest-card">
-                                    <div style={{ color: Theme.red, marginBottom: "1.5rem" }}>
-                                        {React.cloneElement(i.icon, { size: 32, strokeWidth: 1.5 })}
+                                    <div style={{ color: Theme.accent, marginBottom: "2.5rem" }}>
+                                        {React.cloneElement(item.icon, { size: 40, strokeWidth: 1 })}
                                     </div>
-                                    <h3 style={{ fontFamily: "Playfair Display", fontSize: "1.5rem", marginBottom: "1rem" }}>{i.title}</h3>
-                                    <p style={{ color: "#666", fontSize: "0.95rem", lineHeight: 1.6, margin: 0 }}>{i.text}</p>
+                                    <h3 style={{ fontSize: "1.6rem", marginBottom: "1.2rem" }}>{item.title}</h3>
+                                    <p style={{ color: Theme.muted, lineHeight: 1.7, fontSize: "0.95rem" }}>{item.text}</p>
                                 </div>
                             </Reveal>
                         ))}
@@ -363,28 +402,41 @@ const AboutPage = () => {
             </section>
 
             <footer style={{
-                background: Theme.dark, color: "#fff",
-                textAlign: "center", padding: "var(--section-spacing) 5%"
+                background: Theme.primary, color: "white",
+                padding: "clamp(8rem, 20vh, 15rem) 5% 5rem", textAlign: "center"
             }}>
                 <Reveal>
-                    <Mail size={40} color={Theme.secondary} style={{ marginBottom: "1.5rem" }} />
-                    <h2 style={{ 
-                        fontFamily: "Playfair Display", fontSize: "clamp(1.8rem, 5vw, 3rem)",
-                        maxWidth: 750, margin: "0 auto 3rem", fontWeight: 400
+                    <div style={{ marginBottom: "4rem" }}>
+                        <Mail size={40} strokeWidth={1} style={{ color: Theme.accent, marginBottom: "2rem" }} />
+                        <h2 style={{ 
+                            fontFamily: "Playfair Display", fontSize: "clamp(2.5rem, 6vw, 5rem)",
+                            maxWidth: "900px", margin: "0 auto", lineHeight: 1.1, fontWeight: 400
+                        }}>
+                            Let’s weave something <br />
+                            <em style={{ color: Theme.accent, fontStyle: "italic" }}>extraordinary</em>.
+                        </h2>
+                    </div>
+
+                    <a href="mailto:Jiyavegad15@gmail.com" className="cta-button" style={{ 
+                        background: Theme.accent, border: "none" 
                     }}>
-                        Let’s weave something <em style={{ color: Theme.secondary }}>extraordinary</em>.
-                    </h2>
-                    <a href="mailto:Jiyavegad15@gmail.com" style={{
-                        padding: "1.2rem 3.5rem", background: Theme.red,
-                        color: "#fff", textDecoration: "none", fontWeight: 600,
-                        borderRadius: 4, transition: "0.3s", display: "inline-block"
-                    }}>
-                        Send a Message
+                        SEND A MESSAGE
                     </a>
+
+                    <div style={{ marginTop: "10rem", paddingTop: "4rem", borderTop: "1px solid rgba(255,255,255,0.05)", 
+                        display: "flex", justifyContent: "space-between", alignItems: "center", flexWrap: "wrap", gap: "2rem" 
+                    }}>
+                        <p style={{ fontFamily: "Inter", fontSize: "0.7rem", letterSpacing: 2, opacity: 0.5 }}>© JIYA — DESIGNER PORTFOLIO</p>
+                        <div style={{ display: "flex", gap: "2rem" }}>
+                            <Instagram size={18} />
+                            <Linkedin size={18} />
+                            <Sparkles size={18} />
+                        </div>
+                    </div>
                 </Reveal>
             </footer>
         </div>
     );
 };
 
-export default AboutPage;
+export default App;

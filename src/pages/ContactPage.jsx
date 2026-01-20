@@ -1,666 +1,338 @@
 import React, { useState, useEffect } from "react";
-import styled, { keyframes } from "styled-components";
+import styled, { keyframes, createGlobalStyle } from "styled-components";
 import {
   Zap, Instagram, Mail, Sparkles, ArrowUpRight,
-  ChevronRight, Heart, Send, Home, User, Briefcase,
+  ChevronRight, Send, Home, User, Briefcase,
   FolderOpen, GraduationCap, Award, FileText, Menu, X
 } from "lucide-react";
 
-const fadeInUp = keyframes`
-  from { 
-    opacity: 0; 
-    transform: translateY(30px); 
-  }
-  to { 
-    opacity: 1; 
-    transform: translateY(0); 
-  }
-`;
-
-const floatGentle = keyframes`
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  33% { transform: translateY(-6px) rotate(1deg); }
-  66% { transform: translateY(-12px) rotate(-1deg); }
-`;
-
-const pulseGlow = keyframes`
-  0%, 100% { box-shadow: 0 0 20px rgba(156, 175, 136, 0.3); }
-  50% { box-shadow: 0 0 40px rgba(156, 175, 136, 0.6); }
-`;
-
-const shimmer = keyframes`
-  0% { background-position: -200% 0; }
-  100% { background-position: 200% 0; }
-`;
-
-const slideIn = keyframes`
-  from {
-    transform: translateX(-100%);
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
-`;
-
-const fadeIn = keyframes`
-  from { opacity: 0; }
-  to { opacity: 1; }
-`;
-
-const NavbarContainer = styled.nav`
-  position: fixed;
-  top: 2rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1000;
-  width: auto;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(228, 225, 217, 0.4);
-  border-radius: 24px;
-  padding: 0.75rem 1.5rem;
-  box-shadow: 
-    0 20px 60px rgba(0,0,0,0.1),
-    0 0 0 1px rgba(255,255,255,0.2) inset;
-  display: flex;
-  align-items: center;
-  gap: 1rem;
-  animation: ${fadeIn} 0.8s ease-out;
-
-  @media (max-width: 1024px) {
-    display: none;
-  }
-`;
-
-const MobileMenuButton = styled.button`
-  display: none;
-  position: fixed;
-  top: 2rem;
-  left: 2rem;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #1A1A18, #2D2D2A);
-  color: #FFFFF0;
-  border: none;
-  cursor: pointer;
-  z-index: 1001;
-  align-items: center;
-  justify-content: center;
-  box-shadow: 0 12px 40px rgba(26,26,24,0.4);
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: linear-gradient(145deg, #9CAF88, #8BB677);
-    transform: scale(1.1);
+const GlobalStyle = createGlobalStyle`
+  @import url('https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Inter:wght@400;500;600&display=swap');
+  
+  * {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    -webkit-tap-highlight-color: transparent;
   }
 
-  @media (max-width: 1024px) {
-    display: flex;
-  }
-`;
-
-const MobileMenu = styled.div`
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100vh;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(30px);
-  z-index: 1000;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 2rem;
-  animation: ${slideIn} 0.4s ease-out;
-
-  @media (min-width: 1025px) {
-    display: none;
-  }
-`;
-
-const NavItem = styled.a`
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: #1A1A18;
-  text-decoration: none;
-  padding: 0.75rem 1.5rem;
-  border-radius: 16px;
-  font-weight: 500;
-  font-size: 0.95rem;
-  letter-spacing: 0.02em;
-  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  position: relative;
-  overflow: hidden;
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(156,175,136,0.1), transparent);
-    transition: left 0.6s;
-  }
-
-  &:hover {
-    background: rgba(156,175,136,0.1);
-    transform: translateY(-2px);
-    
-    &::before {
-      left: 100%;
-    }
-  }
-
-  &.active {
-    background: linear-gradient(135deg, rgba(156,175,136,0.15), rgba(139,182,119,0.1));
+  body {
+    font-family: 'Inter', sans-serif;
+    background-color: #FFFFF0;
     color: #1A1A18;
-    font-weight: 600;
-    box-shadow: 0 8px 32px rgba(156,175,136,0.1);
-    border: 1px solid rgba(156,175,136,0.2);
+    overflow-x: hidden;
   }
 `;
 
-const LogoBadge = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.5rem 1rem;
-  background: linear-gradient(135deg, rgba(156,175,136,0.15), rgba(139,182,119,0.1));
-  border-radius: 16px;
-  border: 1px solid rgba(156,175,136,0.2);
-  color: #1A1A18;
-  font-weight: 600;
-  font-size: 0.9rem;
-  letter-spacing: 0.05em;
+const fadeInUp = keyframes`
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
 `;
 
-const MobileNavItem = styled(NavItem)`
-  font-size: 1.2rem;
-  padding: 1rem 2rem;
-  width: 80%;
-  max-width: 300px;
-  justify-content: center;
+const float = keyframes`
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
 `;
 
-const CloseButton = styled.button`
-  position: absolute;
-  top: 2rem;
-  right: 2rem;
-  width: 50px;
-  height: 50px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #1A1A18, #2D2D2A);
-  color: #FFFFF0;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: all 0.3s ease;
-
-  &:hover {
-    background: linear-gradient(145deg, #9CAF88, #8BB677);
-    transform: rotate(90deg);
-  }
+const morph = keyframes`
+  0%, 100% { border-radius: 60% 40% 30% 70% / 60% 30% 70% 40%; }
+  50% { border-radius: 30% 60% 70% 30% / 50% 60% 30% 50%; }
 `;
 
 const PageContainer = styled.div`
-  background: linear-gradient(135deg, #FFFFF0 0%, #F8F7F2 50%, #FFFFF0 100%);
   min-height: 100vh;
-  position: relative;
-  overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 2rem;
-`;
-
-const AnimatedBackground = styled.div`
-  position: fixed;
-  inset: 0;
-  pointer-events: none;
-  z-index: 1;
-  
-  &::before,
-  &::after {
-    content: '';
-    position: absolute;
-    width: 200px;
-    height: 200px;
-    background: radial-gradient(circle, rgba(156,175,136,0.1) 0%, transparent 70%);
-    border-radius: 50%;
-    animation: ${floatGentle} 20s ease-in-out infinite;
-  }
-  
-  &::before {
-    top: 10%;
-    left: 10%;
-    animation-delay: 0s;
-  }
-  
-  &::after {
-    bottom: 20%;
-    right: 15%;
-    animation-delay: -10s;
-  }
-`;
-
-const ContentWrapper = styled.div`
-  position: relative;
-  z-index: 10;
-  width: 100%;
-  max-width: 800px;
-  text-align: center;
-  animation: ${fadeInUp} 1s ease-out;
-  margin-top: 4rem; 
-`;
-
-const PowerReturnButton = styled.button`
-  position: fixed;
-  top: 2.5rem;
-  right: 2.5rem;
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  background: linear-gradient(145deg, #1A1A18, #2D2D2A);
-  color: #FFFFF0;
-  border: none;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-  z-index: 100;
-  box-shadow: 
-    0 12px 40px rgba(26,26,24,0.4),
-    0 0 0 1px rgba(156,175,136,0.2) inset;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-  backdrop-filter: blur(10px);
-
-  &:hover {
-    background: linear-gradient(145deg, #9CAF88, #8BB677);
-    transform: translateY(-4px) scale(1.08);
-    box-shadow: 
-      0 25px 60px rgba(156,175,136,0.4),
-      0 0 30px rgba(156,175,136,0.3);
-    animation: ${pulseGlow} 1.5s infinite;
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
-`;
-
-const BrandHeader = styled.div`
+  padding: 80px 20px;
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 1.5rem;
-  margin-bottom: 5rem;
+  position: relative;
+  background: radial-gradient(circle at top right, #9CAF8815, transparent),
+              radial-gradient(circle at bottom left, #D4A57410, transparent);
 `;
 
-const BrandLogo = styled.div`
-  width: 90px;
-  height: 90px;
-  background: linear-gradient(145deg, #1A1A18, #2D2D2A);
-  border-radius: 50%;
+const NavContainer = styled.nav`
+  position: fixed;
+  top: 1.5rem;
+  z-index: 1000;
+  background: rgba(255, 255, 255, 0.8);
+  backdrop-filter: blur(12px);
+  padding: 0.5rem;
+  border-radius: 100px;
+  border: 1px solid rgba(26, 26, 24, 0.05);
   display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #FFFFF0;
-  font-size: 2.2rem;
-  font-weight: 900;
-  position: relative;
-  box-shadow: 0 20px 60px rgba(26,26,24,0.3);
-  animation: ${floatGentle} 6s ease-in-out infinite;
+  gap: 0.25rem;
+  box-shadow: 0 10px 30px rgba(0,0,0,0.05);
 
-  &::before {
-    content: '';
-    position: absolute;
-    inset: -3px;
-    border-radius: 50%;
-    background: linear-gradient(45deg, transparent, rgba(156,175,136,0.4), transparent);
-    animation: ${shimmer} 3s linear infinite;
-    z-index: -1;
+  @media (max-width: 1024px) {
+    display: none;
   }
 `;
 
-const BrandTitle = styled.h1`
-  font-family: 'Playfair Display', serif;
-  font-size: 4.5rem;
-  font-weight: 700;
-  margin: 0;
-  background: linear-gradient(135deg, #1A1A18 0%, #2D2D2A 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -0.02em;
-  line-height: 1.1;
-`;
-
-const BrandSubtitle = styled.p`
-  font-size: 1rem;
-  color: #8A8A82;
-  letter-spacing: 0.4em;
-  text-transform: uppercase;
-  font-weight: 500;
-`;
-
-const HeroBadge = styled.div`
-  display: inline-flex;
+const NavLink = styled.a`
+  display: flex;
   align-items: center;
-  gap: 0.75rem;
-  background: linear-gradient(135deg, #9CAF8815, #9CAF8820);
-  backdrop-filter: blur(10px);
-  color: #9CAF88;
-  padding: 1rem 2rem;
-  border-radius: 50px;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  border-radius: 100px;
+  text-decoration: none;
+  color: #6F6F68;
   font-size: 0.85rem;
-  font-weight: 600;
-  letter-spacing: 0.15em;
-  text-transform: uppercase;
-  border: 1px solid rgba(156,175,136,0.2);
-  box-shadow: 0 8px 32px rgba(156,175,136,0.1);
-`;
-
-const ContactCard = styled.div`
-  margin: 4rem 0;
-  padding: 4rem 3rem;
-  background: rgba(255, 255, 255, 0.85);
-  backdrop-filter: blur(20px);
-  border: 1px solid rgba(228, 225, 217, 0.4);
-  border-radius: 32px;
-  box-shadow: 
-    0 25px 60px rgba(0,0,0,0.1),
-    0 0 0 1px rgba(255,255,255,0.2) inset;
-  position: relative;
-  overflow: hidden;
-  animation: ${fadeInUp} 1s ease-out ${({ index }) => index * 0.2}s both;
-  transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-
-  &::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: -100%;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.4), transparent);
-    transition: left 0.6s;
-  }
-
-  &:hover {
-    transform: translateY(-12px);
-    box-shadow: 
-      0 40px 80px rgba(0,0,0,0.15),
-      0 0 0 1px rgba(156,175,136,0.3) inset;
-    
-    &::before {
-      left: 100%;
-    }
-  }
-`;
-
-const ContactIcon = styled.div`
-  width: 100px;
-  height: 100px;
-  margin: 0 auto 2rem;
-  background: linear-gradient(135deg, ${({ color }) => color.start}, ${({ color }) => color.end});
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 2.5rem;
-  color: white;
-  box-shadow: 0 20px 60px ${({ color }) => color.shadow};
-  animation: ${floatGentle} 4s ease-in-out infinite;
-`;
-
-const ContactTitle = styled.h2`
-  font-family: 'Playfair Display', serif;
-  font-size: 2.5rem;
-  color: #1A1A18;
-  margin: 0 0 1rem;
-  font-weight: 600;
-`;
-
-const ContactButton = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 1rem;
-  background: linear-gradient(135deg, #1A1A18 0%, #2D2D2A 100%);
-  color: #FFFFFF;
-  padding: 1.25rem 2.5rem;
-  border-radius: 16px;
-  text-decoration: none;
-  font-weight: 600;
-  font-size: 1rem;
-  letter-spacing: 0.05em;
-  transition: all 0.3s ease;
-  box-shadow: 0 12px 40px rgba(26,26,24,0.3);
-
-  &:hover {
-    background: linear-gradient(135deg, #9CAF88 0%, #8BB677 100%);
-    transform: translateY(-2px) scale(1.05);
-    box-shadow: 0 20px 60px rgba(156,175,136,0.4);
-    color: #FFFFFF;
-  }
-`;
-
-const InstagramHandle = styled.a`
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  color: #1A1A18;
-  text-decoration: none;
-  padding: 1.25rem 2rem;
-  background: rgba(255,255,255,0.5);
-  backdrop-filter: blur(10px);
-  border: 1px solid rgba(228,225,217,0.5);
-  border-radius: 16px;
-  font-weight: 600;
-  font-size: 1.1rem;
+  font-weight: 500;
   transition: all 0.3s ease;
 
   &:hover {
-    background: linear-gradient(135deg, #1A1A18 0%, #2D2D2A 100%);
-    color: #FFFFFF;
-    transform: translateY(-3px);
-    box-shadow: 0 20px 50px rgba(26,26,24,0.3);
-  }
-`;
-
-const EnhancedFooter = styled.footer`
-  margin-top: 6rem;
-  padding: 3rem 0;
-  border-top: 1px solid rgba(228,225,217,0.5);
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 1rem;
-  
-  div:first-child {
-    font-size: 1.1rem;
-    font-weight: 600;
     color: #1A1A18;
-    letter-spacing: 0.1em;
+    background: rgba(156, 175, 136, 0.1);
   }
-  
-  div:last-child {
-    font-size: 0.8rem;
-    color: #8A8A82;
+
+  &.active {
+    background: #1A1A18;
+    color: #FFFFF0;
+  }
+`;
+
+const MobileToggle = styled.button`
+  display: none;
+  position: fixed;
+  top: 1.5rem;
+  right: 1.5rem;
+  z-index: 1100;
+  width: 50px;
+  height: 50px;
+  border-radius: 15px;
+  background: #1A1A18;
+  color: white;
+  border: none;
+  cursor: pointer;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+
+  @media (max-width: 1024px) {
     display: flex;
     align-items: center;
-    gap: 0.5rem;
+    justify-content: center;
   }
 `;
 
-const NavigationBar = () => {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const currentPath = window.location.hash || "#/contact";
+const MobileMenuOverlay = styled.div`
+  position: fixed;
+  inset: 0;
+  background: white;
+  z-index: 1050;
+  display: flex;
+  flex-direction: column;
+  padding: 80px 40px;
+  gap: 1rem;
+  transform: translateY(${({ open }) => (open ? "0" : "-100%")});
+  transition: transform 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+`;
 
-  const navItems = [
-  { path: "#/main2", label: "Home", icon: <Home size={18} /> },
-  { path: "#/about", label: "About", icon: <User size={18} /> },
-  { path: "#/portfolio", label: "Portfolio", icon: <FolderOpen size={18} /> },
-  { path: "#/work", label: "Experience", icon: <Briefcase size={18} /> },
-  { path: "#/skills", label: "Skills", icon: <Award size={18} /> },
-  { path: "#/education", label: "Education", icon: <GraduationCap size={18} /> },
-  { path: "#/cv", label: "CV", icon: <FileText size={18} /> },
-  { path: "#/contact", label: "Contact", icon: <Mail size={18} /> },
-];
+const HeroSection = styled.header`
+  text-align: center;
+  margin-bottom: 4rem;
+  animation: ${fadeInUp} 0.8s ease-out;
+`;
 
-  const handleNavigation = (path) => {
-    setIsMobileMenuOpen(false);
-    window.location.href = path;
-  };
+const Badge = styled.span`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.6rem 1.2rem;
+  background: #9CAF8820;
+  color: #5A6B4D;
+  border-radius: 100px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  margin-bottom: 1.5rem;
+`;
 
-  useEffect(() => {
-    const handleEscape = (e) => {
-      if (e.key === 'Escape') setIsMobileMenuOpen(false);
-    };
-    window.addEventListener('keydown', handleEscape);
-    return () => window.removeEventListener('keydown', handleEscape);
-  }, []);
+const Title = styled.h1`
+  font-family: 'Playfair Display', serif;
+  font-size: clamp(2.5rem, 8vw, 4.5rem);
+  color: #1A1A18;
+  line-height: 1.1;
+  margin-bottom: 1rem;
+`;
+
+const Grid = styled.div`
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 2rem;
+  width: 100%;
+  max-width: 1100px;
+
+  @media (max-width: 850px) {
+    grid-template-columns: 1fr;
+  }
+`;
+
+const Card = styled.div`
+  background: white;
+  padding: 3rem;
+  border-radius: 40px;
+  border: 1px solid rgba(26, 26, 24, 0.05);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+  animation: ${fadeInUp} 0.8s ease-out both;
+  animation-delay: ${({ delay }) => delay}s;
+
+  &:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 30px 60px rgba(26, 26, 24, 0.05);
+    border-color: #9CAF88;
+  }
+`;
+
+const IconWrapper = styled.div`
+  width: 80px;
+  height: 80px;
+  background: ${({ bg }) => bg};
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;
+  margin-bottom: 2rem;
+  animation: ${morph} 8s ease-in-out infinite, ${float} 4s ease-in-out infinite;
+`;
+
+const CardTitle = styled.h2`
+  font-family: 'Playfair Display', serif;
+  font-size: 2rem;
+  margin-bottom: 1rem;
+`;
+
+const CardText = styled.p`
+  color: #6F6F68;
+  line-height: 1.6;
+  margin-bottom: 2.5rem;
+  font-size: 1rem;
+`;
+
+const ActionButton = styled.a`
+  display: inline-flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 1.2rem 2.5rem;
+  background: #1A1A18;
+  color: white;
+  border-radius: 100px;
+  text-decoration: none;
+  font-weight: 600;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #9CAF88;
+    gap: 1.2rem;
+    box-shadow: 0 10px 20px rgba(156, 175, 136, 0.3);
+  }
+`;
+
+const Footer = styled.footer`
+  margin-top: 6rem;
+  text-align: center;
+  color: #8A8A82;
+  font-size: 0.9rem;
+`;
+
+const Navigation = ({ activePath, isOpen, setOpen }) => {
+  const items = [
+    { path: "#/main2", label: "Home", icon: <Home size={18} /> },
+    { path: "#/about", label: "About", icon: <User size={18} /> },
+    { path: "#/portfolio", label: "Portfolio", icon: <FolderOpen size={18} /> },
+    { path: "#/work", label: "Experience", icon: <Briefcase size={18} /> },
+    { path: "#/skills", label: "Skills", icon: <Award size={18} /> },
+    { path: "#/education", label: "Education", icon: <GraduationCap size={18} /> },
+    { path: "#/cv", label: "CV", icon: <FileText size={18} /> },
+    { path: "#/contact", label: "Contact", icon: <Mail size={18} /> },
+  ];
 
   return (
     <>
-      <NavbarContainer>
-        <LogoBadge>
-          <Zap size={16} />
-          Jiya Vegad
-        </LogoBadge>
-        
-        {navItems.map((item) => (
-          <NavItem
-            key={item.path}
-            href={item.path}
-            onClick={(e) => {
-              e.preventDefault();
-              handleNavigation(item.path);
-            }}
-            className={currentPath === item.path ? 'active' : ''}
+      <NavContainer>
+        {items.map(item => (
+          <NavLink 
+            key={item.path} 
+            href={item.path} 
+            className={activePath === item.path ? 'active' : ''}
           >
-            {item.icon}
-            {item.label}
-          </NavItem>
+            {item.icon} {item.label}
+          </NavLink>
         ))}
-      </NavbarContainer>
+      </NavContainer>
 
-      <MobileMenuButton onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}>
-        {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
-      </MobileMenuButton>
+      <MobileToggle onClick={() => setOpen(!isOpen)}>
+        {isOpen ? <X size={24} /> : <Menu size={24} />}
+      </MobileToggle>
 
-      {isMobileMenuOpen && (
-        <MobileMenu>
-          <LogoBadge style={{ fontSize: '1.1rem', padding: '1rem 1.5rem' }}>
-            <Zap size={20} />
-            JIYA VEGAD
-          </LogoBadge>
-          
-          {navItems.map((item) => (
-            <MobileNavItem
-              key={item.path}
-              href={item.path}
-              onClick={(e) => {
-                e.preventDefault();
-                handleNavigation(item.path);
-              }}
-              className={currentPath === item.path ? 'active' : ''}
-            >
-              {item.icon}
-              {item.label}
-            </MobileNavItem>
-          ))}
-          
-          <CloseButton onClick={() => setIsMobileMenuOpen(false)}>
-            <X size={24} />
-          </CloseButton>
-        </MobileMenu>
-      )}
+      <MobileMenuOverlay open={isOpen}>
+        {items.map(item => (
+          <NavLink 
+            key={item.path} 
+            href={item.path} 
+            onClick={() => setOpen(false)}
+            style={{ fontSize: '1.2rem', padding: '1rem' }}
+            className={activePath === item.path ? 'active' : ''}
+          >
+            {item.icon} {item.label}
+          </NavLink>
+        ))}
+      </MobileMenuOverlay>
     </>
   );
 };
 
 const ContactPage = () => {
-  const email = "jiyavegad15@gmail.com";
-  const instagramUrl = "https://www.instagram.com/jiya_vegad";
-
-  const gmailColors = {
-    start: '#EA4335',
-    end: '#4285F4',
-    shadow: 'rgba(234, 67, 53, 0.4)'
-  };
-
-  const instagramColors = {
-    start: '#E4405F',
-    end: '#F77737',
-    shadow: 'rgba(228, 64, 95, 0.4)'
-  };
+  const [isOpen, setOpen] = useState(false);
+  const currentPath = window.location.hash || "#/contact";
 
   return (
     <PageContainer>
-      <NavigationBar />
-      
-      <PowerReturnButton onClick={() => window.location.href = "#/main2"}>
-        <Zap size={24} />
-      </PowerReturnButton>
+      <GlobalStyle />
+      <Navigation activePath={currentPath} isOpen={isOpen} setOpen={setOpen} />
 
-      <AnimatedBackground />
+      <HeroSection>
+        <Badge>
+          <Sparkles size={14} /> Available for new projects
+        </Badge>
+        <Title>Let's design something <br/> beautiful together.</Title>
+      </HeroSection>
 
-      <ContentWrapper>
-        <BrandHeader>
-          <BrandLogo>
-            <Zap size={32} />
-          </BrandLogo>
-          <BrandTitle>Jiya Vegad</BrandTitle>
-          <BrandSubtitle>FASHION DESIGNER</BrandSubtitle>
-          <HeroBadge>
-            <Sparkles size={16} />
-            Where Design Meets Creative Passion
-          </HeroBadge>
-        </BrandHeader>
+      <Grid>
+        <Card delay={0.2}>
+          <IconWrapper bg="linear-gradient(135deg, #EA4335, #FBBC05)">
+            <Mail size={32} />
+          </IconWrapper>
+          <CardTitle>Email Me</CardTitle>
+          <CardText>
+            Whether it's a job opportunity or a simple hello, my inbox is always open.
+          </CardText>
+          <ActionButton href="mailto:jiyavegad15@gmail.com">
+            Send Email <Send size={18} />
+          </ActionButton>
+        </Card>
 
-        <ContactCard index={1} color={gmailColors}>
-          <ContactIcon color={gmailColors}>
-            <Mail size={44} />
-          </ContactIcon>
-          <ContactTitle>Let's Connect</ContactTitle>
-          <p style={{ fontSize: '1.1rem', color: '#8A8A82', margin: '0 0 2rem', maxWidth: '400px', lineHeight: 1.6 }}>
-            Ready to bring your vision to life? Send me a message and let's create something extraordinary together.
-          </p>
-          <ContactButton href={`mailto:${email}`}>
-            <Send size={20} />
-            Send Message
-            <ChevronRight size={20} />
-          </ContactButton>
-        </ContactCard>
+        <Card delay={0.4}>
+          <IconWrapper bg="linear-gradient(135deg, #833AB4, #FD1D1D, #FCB045)">
+            <Instagram size={32} />
+          </IconWrapper>
+          <CardTitle>Instagram</CardTitle>
+          <CardText>
+            Follow my creative journey and check out my latest design explorations.
+          </CardText>
+          <ActionButton href="https://www.instagram.com/jiya_vegad" target="_blank">
+            Follow @jiya_vegad <ArrowUpRight size={18} />
+          </ActionButton>
+        </Card>
+      </Grid>
 
-        <ContactCard index={2} color={instagramColors}>
-          <ContactIcon color={instagramColors}>
-            <Instagram size={44} />
-          </ContactIcon>
-          <ContactTitle>Follow the Journey</ContactTitle>
-          <p style={{ fontSize: '1.1rem', color: '#8A8A82', margin: '0 0 2rem', maxWidth: '400px', lineHeight: 1.6 }}>
-            See my latest designs, behind-the-scenes, and creative process on Instagram.
-          </p>
-          <InstagramHandle href={instagramUrl} target="_blank" rel="noopener noreferrer">
-            <Instagram size={20} />
-            @jiya_vegad
-            <ArrowUpRight size={18} />
-          </InstagramHandle>
-        </ContactCard>
-
-        <EnhancedFooter>
-          
-        </EnhancedFooter>
-      </ContentWrapper>
+      <Footer>
+        <p>© Jiya Vegad. Built with passion & precision.</p>
+      </Footer>
     </PageContainer>
   );
 };

@@ -15,28 +15,49 @@ import CVPDF from "../assets/cvpdf.pdf";
 
 const useViewport = () => {
   const [viewport, setViewport] = useState({
-    width: typeof window !== 'undefined' ? window.innerWidth : 1200,
-    height: typeof window !== 'undefined' ? window.innerHeight : 800,
-    isMobile: false,
-    isTablet: false,
-    isDesktop: true,
+    width: window.innerWidth,
+    height: window.innerHeight,
+    isMobile: window.innerWidth < 768,
+    isTablet: window.innerWidth >= 768 && window.innerWidth < 1024,
+    isDesktop: window.innerWidth >= 1024,
   });
 
   useEffect(() => {
+    let ticking = false;
+
     const updateViewport = () => {
-      const width = window.innerWidth;
-      setViewport({
-        width,
-        height: window.innerHeight,
-        isMobile: width < 768,
-        isTablet: width >= 768 && width < 1024,
-        isDesktop: width >= 1024,
-      });
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          const width = window.innerWidth;
+          setViewport(prev => {
+            const isMobile = width < 768;
+            const isTablet = width >= 768 && width < 1024;
+            const isDesktop = width >= 1024;
+
+            if (
+              prev.isMobile === isMobile &&
+              prev.isTablet === isTablet &&
+              prev.isDesktop === isDesktop
+            ) {
+              return prev;
+            }
+
+            return {
+              width,
+              height: window.innerHeight,
+              isMobile,
+              isTablet,
+              isDesktop,
+            };
+          });
+          ticking = false;
+        });
+        ticking = true;
+      }
     };
 
-    updateViewport();
-    window.addEventListener('resize', updateViewport);
-    return () => window.removeEventListener('resize', updateViewport);
+    window.addEventListener("resize", updateViewport);
+    return () => window.removeEventListener("resize", updateViewport);
   }, []);
 
   return viewport;
@@ -143,28 +164,30 @@ const CVPage = () => {
     }
   };
 
-  const handleNavClick = (navItem) => {
+  const handleNavClick = React.useCallback((navItem) => {
     setActiveNav(navItem.id);
-    
-    if (navItem.type === "external") {
-      window.location.href = navItem.path;
-    }
-    
-    if (viewport.isMobile) {
-      setIsMobileMenuOpen(false);
-    }
-  };
+    window.location.href = navItem.path;
+    setIsMobileMenuOpen(false);
+  }, []);
+
 
   useEffect(() => {
-    const handleClickOutside = (event) => {
-      if (isMobileMenuOpen && !event.target.closest('.mobile-menu') && !event.target.closest('.menu-toggle')) {
+    if (!isMobileMenuOpen) return;
+
+    const handleTouch = (e) => {
+      if (
+        !e.target.closest(".mobile-menu") &&
+        !e.target.closest(".menu-toggle")
+      ) {
         setIsMobileMenuOpen(false);
       }
     };
 
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+    document.addEventListener("touchstart", handleTouch, { passive: true });
+    return () => document.removeEventListener("touchstart", handleTouch);
   }, [isMobileMenuOpen]);
+
+
 
   const styles = getResponsiveStyles(viewport);
 
@@ -729,16 +752,13 @@ const CVPage = () => {
 
           <div style={styles.pdfDownloadInfo}>
             <div style={styles.pdfDownloadInfoItem}>
-              <ExternalLink size={16} color={Theme.ACCENT} />
-              <span>Professional A4 Format</span>
+              
             </div>
             <div style={styles.pdfDownloadInfoItem}>
-              <ExternalLink size={16} color={Theme.ACCENT} />
-              <span>Optimized for Print</span>
+              
             </div>
             <div style={styles.pdfDownloadInfoItem}>
-              <ExternalLink size={16} color={Theme.ACCENT} />
-              <span>Ready for Job Applications</span>
+              
             </div>
           </div>
         </div>
@@ -900,11 +920,12 @@ const getResponsiveStyles = (viewport) => ({
     position: "sticky",
     top: 0,
     zIndex: 1000,
-    backdropFilter: "blur(20px)",
     backgroundColor: Theme.NAVBAR_BG,
     borderBottom: `1px solid ${Theme.BORDER}`,
     boxShadow: "0 2px 20px rgba(0, 0, 0, 0.05)",
+    backdropFilter: viewport.isMobile ? "none" : "blur(20px)",
   },
+
 
   navbarContent: {
     maxWidth: "1400px",

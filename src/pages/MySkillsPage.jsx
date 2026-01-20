@@ -278,7 +278,7 @@ const SkillsPage = () => {
       </main>
 
       <footer style={footerStyles.container}>
-        <span style={{ letterSpacing: "1px" }}>Jiya Vegad © 2026</span>
+        <span style={{ letterSpacing: "1px" }}>Jiya Vegad ©</span>
       </footer >
     </div>
   );
