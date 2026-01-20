@@ -115,14 +115,23 @@ const EducationPage = () => {
   ];
 
   useEffect(() => {
-    const handleClickOutside = (e) => {
-      if (isMenuOpen && !e.target.closest('.mobile-menu') && !e.target.closest('.menu-toggle')) {
+    if (!isMenuOpen) return;
+
+    const handleTouchOutside = (e) => {
+      if (
+        !e.target.closest(".mobile-menu") &&
+        !e.target.closest(".menu-toggle")
+      ) {
         setIsMenuOpen(false);
       }
     };
-    document.addEventListener('click', handleClickOutside);
-    return () => document.removeEventListener('click', handleClickOutside);
+
+    document.addEventListener("touchstart", handleTouchOutside, { passive: true });
+    return () =>
+      document.removeEventListener("touchstart", handleTouchOutside);
   }, [isMenuOpen]);
+
+
 
   const educationData = [
     {
@@ -275,10 +284,14 @@ const navStyles = {
     top: 0,
     width: "100%",
     background: Theme.NAV_BG,
-    backdropFilter: "blur(10px)",
     borderBottom: `1px solid ${Theme.LINE}`,
     zIndex: 1000,
+    backdropFilter:
+      typeof window !== "undefined" && window.innerWidth < 768
+        ? "none"
+        : "blur(10px)",
   },
+
   navContainer: {
     maxWidth: "1400px",
     margin: "0 auto",
